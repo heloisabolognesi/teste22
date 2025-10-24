@@ -1,0 +1,66 @@
+{% extends "base.html" %}
+
+{% block title %}Página Não Encontrada - L.A.A.R.I{% endblock %}
+
+{% block content %}
+<div class="error-page text-center py-5">
+    <div class="error-container">
+        <div class="error-icon mb-4">
+            <i class="fas fa-search fa-5x text-archaeological opacity-75"></i>
+        </div>
+        
+        <h1 class="display-1 fw-bold text-archaeological">404</h1>
+        <h2 class="h3 mb-4">Página Não Encontrada</h2>
+        
+        <p class="lead text-muted mb-4">
+            A página que você está procurando não existe ou foi movida para outro local.
+        </p>
+        
+        <div class="suggested-actions mb-5">
+            <div class="row justify-content-center g-3">
+                <div class="col-md-3">
+                    <a href="{{ url_for('dashboard') }}" class="btn btn-archaeological w-100">
+                        <i class="fas fa-home me-2"></i>Dashboard
+                    </a>
+                </div>
+                <div class="col-md-3">
+                    <a href="{{ url_for('acervo') }}" class="btn btn-outline-archaeological w-100">
+                        <i class="fas fa-archive me-2"></i>Acervo
+                    </a>
+                </div>
+                <div class="col-md-3">
+                    <a href="{{ url_for('catalogacao') }}" class="btn btn-outline-archaeological w-100">
+                        <i class="fas fa-tags me-2"></i>Catalogação
+                    </a>
+                </div>
+            </div>
+        </div>
+        
+        <div class="help-section">
+            <h4 class="mb-3">O que você pode fazer:</h4>
+            <div class="row justify-content-center text-start">
+                <div class="col-md-8">
+                    <ul class="list-unstyled">
+                        <li class="mb-2">
+                            <i class="fas fa-arrow-left text-archaeological me-2"></i>
+                            Use o botão voltar do seu navegador
+                        </li>
+                        <li class="mb-2">
+                            <i class="fas fa-home text-archaeological me-2"></i>
+                            Volte ao dashboard principal
+                        </li>
+                        <li class="mb-2">
+                            <i class="fas fa-search text-archaeological me-2"></i>
+                            Use a navegação para encontrar o que procura
+                        </li>
+                        <li class="mb-2">
+                            <i class="fas fa-envelope text-archaeological me-2"></i>
+                            Entre em contato com o administrador se o problema persistir
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

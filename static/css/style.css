@@ -1,0 +1,515 @@
+/* L.A.A.R.I - Archaeological Theme Styles */
+/* Colors: #E6D2B7 (light beige), #5F3A1F (dark brown) */
+
+@import url('https://fonts.googleapis.com/css2?family=Kelly+Slab&display=swap');
+
+:root {
+    --archaeological-beige: #E6D2B7;
+    --archaeological-brown: #5F3A1F;
+    --archaeological-light: #F5F0E8;
+    --archaeological-dark: #3D251A;
+    --shadow-color: rgba(95, 58, 31, 0.15);
+    --hover-shadow: rgba(95, 58, 31, 0.25);
+}
+
+/* Base Styles */
+body {
+    font-family: 'Kelly Slab', cursive;
+    background-color: var(--archaeological-light);
+    color: #333;
+    line-height: 1.6;
+}
+
+/* Typography */
+h1, h2, h3, h4, h5, h6 {
+    font-family: 'Kelly Slab', cursive;
+    color: var(--archaeological-brown);
+}
+
+.archaeological-title {
+    color: var(--archaeological-brown);
+    text-shadow: 2px 2px 4px rgba(0,0,0,0.1);
+}
+
+/* Archaeological Theme Colors */
+.bg-archaeological {
+    background-color: var(--archaeological-brown) !important;
+}
+
+.text-archaeological {
+    color: var(--archaeological-brown) !important;
+}
+
+.btn-archaeological {
+    background-color: var(--archaeological-brown);
+    border-color: var(--archaeological-brown);
+    color: white;
+    font-family: 'Kelly Slab', cursive;
+    font-weight: 500;
+    transition: all 0.3s ease;
+}
+
+.btn-archaeological:hover {
+    background-color: var(--archaeological-dark);
+    border-color: var(--archaeological-dark);
+    color: white;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px var(--hover-shadow);
+}
+
+.btn-outline-archaeological {
+    color: var(--archaeological-brown);
+    border-color: var(--archaeological-brown);
+    font-family: 'Kelly Slab', cursive;
+    transition: all 0.3s ease;
+}
+
+.btn-outline-archaeological:hover {
+    background-color: var(--archaeological-brown);
+    border-color: var(--archaeological-brown);
+    color: white;
+    transform: translateY(-2px);
+}
+
+/* Cards */
+.card {
+    border: none;
+    box-shadow: 0 2px 10px var(--shadow-color);
+    border-radius: 12px;
+    transition: all 0.3s ease;
+}
+
+.card:hover {
+    box-shadow: 0 8px 25px var(--hover-shadow);
+}
+
+.card-header {
+    border-radius: 12px 12px 0 0 !important;
+    border: none;
+}
+
+/* Navigation */
+.navbar-dark {
+    box-shadow: 0 2px 10px var(--shadow-color);
+}
+
+.navbar-brand {
+    font-size: 1.8rem;
+    font-weight: bold;
+}
+
+.navbar-nav .nav-link {
+    font-weight: 500;
+    transition: color 0.3s ease;
+}
+
+.navbar-nav .nav-link:hover {
+    color: var(--archaeological-beige) !important;
+}
+
+/* Welcome Page Styles */
+.welcome-container {
+    min-height: 80vh;
+    display: flex;
+    align-items: center;
+    padding: 2rem 0;
+}
+
+.welcome-header {
+    margin-bottom: 3rem;
+}
+
+.archaeological-icon {
+    font-size: 4rem;
+    color: var(--archaeological-brown);
+    margin-bottom: 1rem;
+}
+
+.action-card {
+    transition: all 0.3s ease;
+    border: 2px solid transparent;
+}
+
+.action-card:hover {
+    border-color: var(--archaeological-beige);
+    transform: translateY(-5px);
+}
+
+.feature-item {
+    text-align: center;
+    padding: 1rem;
+}
+
+/* Dashboard Styles */
+.stat-icon {
+    width: 80px;
+    height: 80px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.module-card {
+    transition: all 0.3s ease;
+    cursor: pointer;
+}
+
+.module-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 12px 30px var(--hover-shadow);
+}
+
+.module-icon {
+    width: 80px;
+    height: 80px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* Forms */
+.form-control, .form-select {
+    border-radius: 8px;
+    border: 2px solid #e9ecef;
+    font-family: 'Kelly Slab', cursive;
+    transition: border-color 0.3s ease;
+}
+
+.form-control:focus, .form-select:focus {
+    border-color: var(--archaeological-brown);
+    box-shadow: 0 0 0 0.2rem rgba(95, 58, 31, 0.25);
+}
+
+.form-label {
+    color: var(--archaeological-brown);
+    font-weight: 600;
+}
+
+/* Artifact Cards */
+.artifact-card {
+    transition: all 0.3s ease;
+}
+
+.artifact-card:hover {
+    transform: translateY(-3px);
+}
+
+.card-img-top-container {
+    height: 200px;
+    overflow: hidden;
+    border-radius: 12px 12px 0 0;
+}
+
+.artifact-photo {
+    width: 100%;
+    height: 200px;
+    object-fit: cover;
+}
+
+.no-image {
+    height: 200px;
+    background-color: #f8f9fa;
+    border-radius: 12px 12px 0 0;
+}
+
+.detail-item {
+    font-size: 0.9rem;
+}
+
+/* Professional Cards */
+.professional-card {
+    transition: all 0.3s ease;
+}
+
+.professional-card:hover {
+    transform: translateY(-5px);
+}
+
+.profile-photo-container {
+    display: flex;
+    justify-content: center;
+    margin-bottom: 1rem;
+}
+
+.profile-photo {
+    width: 120px;
+    height: 120px;
+    object-fit: cover;
+    border: 4px solid var(--archaeological-beige);
+}
+
+.profile-photo-placeholder {
+    width: 120px;
+    height: 120px;
+    background-color: #f8f9fa;
+    border: 4px solid #e9ecef;
+}
+
+.profile-photo-large {
+    width: 200px;
+    height: 200px;
+    object-fit: cover;
+    border: 6px solid var(--archaeological-beige);
+}
+
+.profile-photo-large-placeholder {
+    width: 200px;
+    height: 200px;
+    background-color: #f8f9fa;
+    border: 6px solid #e9ecef;
+}
+
+/* Table Styles */
+.table {
+    font-family: 'Kelly Slab', cursive;
+}
+
+.table th {
+    background-color: var(--archaeological-light);
+    color: var(--archaeological-brown);
+    font-weight: 600;
+    border: none;
+}
+
+.table-hover tbody tr:hover {
+    background-color: rgba(230, 210, 183, 0.1);
+}
+
+.artifact-thumbnail {
+    width: 50px;
+    height: 50px;
+    object-fit: cover;
+    border-radius: 6px;
+}
+
+.no-photo-thumbnail {
+    width: 50px;
+    height: 50px;
+    background-color: #f8f9fa;
+    border-radius: 6px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.artifact-thumbnail-sm {
+    width: 40px;
+    height: 40px;
+    object-fit: cover;
+    border-radius: 4px;
+}
+
+.no-photo-thumbnail-sm {
+    width: 40px;
+    height: 40px;
+    background-color: #f8f9fa;
+    border-radius: 4px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* Badges */
+.badge {
+    font-family: 'Kelly Slab', cursive;
+    font-weight: 500;
+}
+
+.badge.bg-archaeological {
+    background-color: var(--archaeological-brown) !important;
+}
+
+/* Alerts */
+.alert {
+    border-radius: 8px;
+    border: none;
+    font-family: 'Kelly Slab', cursive;
+}
+
+/* Empty States */
+.empty-state {
+    background-color: white;
+    border-radius: 12px;
+    box-shadow: 0 2px 10px var(--shadow-color);
+    margin: 2rem 0;
+}
+
+/* Footer */
+footer {
+    margin-top: auto;
+    font-size: 0.9rem;
+}
+
+/* Admin Styles */
+.user-checkbox {
+    transform: scale(1.2);
+}
+
+.admin-actions .btn {
+    font-size: 0.9rem;
+}
+
+.system-info .info-item {
+    margin-bottom: 0.5rem;
+}
+
+/* Error Pages */
+.error-page {
+    min-height: 70vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.error-icon {
+    opacity: 0.7;
+}
+
+/* Transport Styles */
+.transport-route {
+    font-size: 0.85rem;
+}
+
+.route-arrow {
+    height: 20px;
+    display: flex;
+    align-items: center;
+}
+
+/* Scanner 3D Styles */
+.tip-item h6 {
+    color: var(--archaeological-brown);
+    margin-bottom: 0.25rem;
+}
+
+/* Inventory Styles */
+.type-summary, .conservation-summary, .specialization-item {
+    border: 1px solid #e9ecef;
+    border-radius: 8px;
+    transition: all 0.3s ease;
+}
+
+.type-summary:hover, .conservation-summary:hover, .specialization-item:hover {
+    border-color: var(--archaeological-beige);
+    box-shadow: 0 2px 8px var(--shadow-color);
+}
+
+/* Responsive Adjustments */
+@media (max-width: 768px) {
+    .archaeological-icon {
+        font-size: 3rem;
+    }
+    
+    .display-1 {
+        font-size: 4rem;
+    }
+    
+    .stat-icon, .module-icon {
+        width: 60px;
+        height: 60px;
+    }
+    
+    .profile-photo {
+        width: 100px;
+        height: 100px;
+    }
+    
+    .profile-photo-large {
+        width: 150px;
+        height: 150px;
+    }
+    
+    .card-img-top-container {
+        height: 150px;
+    }
+    
+    .artifact-photo {
+        height: 150px;
+    }
+    
+    .no-image {
+        height: 150px;
+    }
+}
+
+@media (max-width: 576px) {
+    .btn-group-vertical .btn {
+        margin-bottom: 0.5rem;
+    }
+    
+    .table-responsive {
+        font-size: 0.9rem;
+    }
+    
+    .navbar-brand {
+        font-size: 1.5rem;
+    }
+}
+
+/* Animation Classes */
+.fade-in {
+    animation: fadeIn 0.6s ease-in;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.slide-in-left {
+    animation: slideInLeft 0.5s ease-out;
+}
+
+@keyframes slideInLeft {
+    from { opacity: 0; transform: translateX(-50px); }
+    to { opacity: 1; transform: translateX(0); }
+}
+
+/* Utility Classes */
+.text-monospace {
+    font-family: 'Courier New', monospace;
+}
+
+.shadow-archaeological {
+    box-shadow: 0 4px 15px var(--shadow-color) !important;
+}
+
+.border-archaeological {
+    border-color: var(--archaeological-brown) !important;
+}
+
+/* Print Styles */
+@media print {
+    .navbar, .btn, .card-footer {
+        display: none !important;
+    }
+    
+    .card {
+        box-shadow: none !important;
+        border: 1px solid #ddd !important;
+    }
+    
+    body {
+        background-color: white !important;
+    }
+}
+
+/* High Contrast Mode Support */
+@media (prefers-contrast: high) {
+    .card {
+        border: 2px solid var(--archaeological-brown);
+    }
+    
+    .btn-archaeological {
+        border-width: 2px;
+    }
+}
+
+/* Reduced Motion Support */
+@media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+    }
+}

@@ -1,0 +1,227 @@
+{% extends "base.html" %}
+
+{% block title %}{{ _('Cadastrar') }} - L.A.A.R.I{% endblock %}
+
+{% block content %}
+<!-- Language Selector for Public Pages -->
+<div class="position-fixed top-0 end-0 p-3" style="z-index: 1050;">
+    <div class="dropdown">
+        <button class="btn btn-archaeological dropdown-toggle" type="button" id="languageDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+            <i class="fas fa-globe me-2"></i>{{ _('Idioma') }}
+        </button>
+        <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="languageDropdown">
+            <li><a class="dropdown-item" href="{{ url_for('set_language', language='pt') }}">
+                <span class="me-2">🇧🇷</span>Português
+            </a></li>
+            <li><a class="dropdown-item" href="{{ url_for('set_language', language='en') }}">
+                <span class="me-2">🇬🇧</span>English
+            </a></li>
+            <li><a class="dropdown-item" href="{{ url_for('set_language', language='es') }}">
+                <span class="me-2">🇪🇸</span>Español
+            </a></li>
+            <li><a class="dropdown-item" href="{{ url_for('set_language', language='fr') }}">
+                <span class="me-2">🇫🇷</span>Français
+            </a></li>
+        </ul>
+    </div>
+</div>
+
+<div class="row justify-content-center">
+    <div class="col-lg-6 col-md-8">
+        <div class="card shadow border-0">
+            <div class="card-header bg-archaeological text-white text-center py-4">
+                <i class="fas fa-user-plus fa-2x mb-2"></i>
+                <h2 class="h4 mb-0">{{ _('Criar Conta no L.A.A.R.I') }}</h2>
+            </div>
+            
+            <div class="card-body p-4">
+                <form method="POST" class="needs-validation" novalidate id="registerForm">
+                    {{ form.hidden_tag() }}
+                    
+                    <div class="mb-3">
+                        <label for="{{ form.username.id }}" class="form-label">
+                            <i class="fas fa-user me-2"></i>{{ _('Nome de Usuário') }}
+                        </label>
+                        {{ form.username(class="form-control form-control-lg") }}
+                        {% if form.username.errors %}
+                            <div class="invalid-feedback d-block">
+                                {% for error in form.username.errors %}
+                                    {{ error }}
+                                {% endfor %}
+                            </div>
+                        {% endif %}
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="{{ form.email.id }}" class="form-label">
+                            <i class="fas fa-envelope me-2"></i>{{ _('Email') }}
+                        </label>
+                        {{ form.email(class="form-control form-control-lg") }}
+                        {% if form.email.errors %}
+                            <div class="invalid-feedback d-block">
+                                {% for error in form.email.errors %}
+                                    {{ error }}
+                                {% endfor %}
+                            </div>
+                        {% endif %}
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="{{ form.password.id }}" class="form-label">
+                            <i class="fas fa-lock me-2"></i>{{ _('Senha') }}
+                        </label>
+                        {{ form.password(class="form-control form-control-lg") }}
+                        <small class="form-text text-muted">Mínimo de 6 caracteres</small>
+                        {% if form.password.errors %}
+                            <div class="invalid-feedback d-block">
+                                {% for error in form.password.errors %}
+                                    {{ error }}
+                                {% endfor %}
+                            </div>
+                        {% endif %}
+                    </div>
+                    
+                    <div class="mb-4">
+                        <label for="{{ form.account_type.id }}" class="form-label">
+                            <i class="fas fa-briefcase me-2"></i>Tipo de Conta <span class="text-danger">*</span>
+                        </label>
+                        {{ form.account_type(class="form-select form-select-lg", id="accountType") }}
+                        {% if form.account_type.errors %}
+                            <div class="invalid-feedback d-block">
+                                {% for error in form.account_type.errors %}
+                                    {{ error }}
+                                {% endfor %}
+                            </div>
+                        {% endif %}
+                    </div>
+                    
+                    <div id="academicFields" style="display: none;">
+                        <hr class="my-4">
+                        <h5 class="mb-3"><i class="fas fa-graduation-cap me-2"></i>Informações Acadêmicas</h5>
+                        
+                        <div class="mb-3">
+                            <label for="{{ form.university.id }}" class="form-label">
+                                Faculdade <span class="text-danger">*</span>
+                            </label>
+                            {{ form.university(class="form-select", id="universitySelect") }}
+                            {% if form.university.errors %}
+                                <div class="invalid-feedback d-block">
+                                    {% for error in form.university.errors %}
+                                        {{ error }}
+                                    {% endfor %}
+                                </div>
+                            {% endif %}
+                        </div>
+                        
+                        <div class="mb-3" id="customUniversityField" style="display: none;">
+                            <label for="{{ form.university_custom.id }}" class="form-label">
+                                Digite o nome da faculdade <span class="text-danger">*</span>
+                            </label>
+                            {{ form.university_custom(class="form-control", id="universityCustom") }}
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="{{ form.course.id }}" class="form-label">
+                                Curso/Área de estudo <span class="text-danger">*</span>
+                            </label>
+                            {{ form.course(class="form-control", placeholder="Ex: Arqueologia, História, Antropologia") }}
+                        </div>
+                        
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="{{ form.entry_year.id }}" class="form-label">
+                                    Ano de entrada <span class="text-danger">*</span>
+                                </label>
+                                {{ form.entry_year(class="form-control", placeholder="Ex: 2020") }}
+                            </div>
+                            
+                            <div class="col-md-6 mb-3">
+                                <label for="{{ form.institution_type.id }}" class="form-label">
+                                    Tipo de instituição <span class="text-danger">*</span>
+                                </label>
+                                {{ form.institution_type(class="form-select") }}
+                            </div>
+                        </div>
+                        
+                        <div class="row">
+                            <div class="col-md-4 mb-3">
+                                <label for="{{ form.city.id }}" class="form-label">
+                                    Cidade <span class="text-danger">*</span>
+                                </label>
+                                {{ form.city(class="form-control", placeholder="Ex: São Paulo") }}
+                            </div>
+                            
+                            <div class="col-md-4 mb-3">
+                                <label for="{{ form.state.id }}" class="form-label">
+                                    Estado <span class="text-danger">*</span>
+                                </label>
+                                {{ form.state(class="form-control", placeholder="Ex: SP") }}
+                            </div>
+                            
+                            <div class="col-md-4 mb-3">
+                                <label for="{{ form.country.id }}" class="form-label">
+                                    País <span class="text-danger">*</span>
+                                </label>
+                                {{ form.country(class="form-control", placeholder="Ex: Brasil") }}
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="d-grid mb-3 mt-4">
+                        <button type="submit" class="btn btn-archaeological btn-lg">
+                            <i class="fas fa-user-plus me-2"></i>{{ _('Criar Conta') }}
+                        </button>
+                    </div>
+                    
+                    <div class="text-center">
+                        <p class="mb-0">{{ _('Já possui uma conta?') }} 
+                            <a href="{{ url_for('login') }}" class="text-archaeological">{{ _('Faça login aqui') }}</a>
+                        </p>
+                    </div>
+                </form>
+            </div>
+        </div>
+        
+        <div class="text-center mt-3">
+            <a href="{{ url_for('index') }}" class="text-muted">
+                <i class="fas fa-arrow-left me-2"></i>{{ _('Voltar ao início') }}
+            </a>
+        </div>
+    </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const accountTypeSelect = document.getElementById('accountType');
+    const academicFields = document.getElementById('academicFields');
+    const universitySelect = document.getElementById('universitySelect');
+    const customUniversityField = document.getElementById('customUniversityField');
+    
+    accountTypeSelect.addEventListener('change', function() {
+        const selectedType = this.value;
+        
+        if (selectedType === 'estudante' || selectedType === 'universitaria') {
+            academicFields.style.display = 'block';
+        } else {
+            academicFields.style.display = 'none';
+        }
+    });
+    
+    universitySelect.addEventListener('change', function() {
+        if (this.value === 'custom') {
+            customUniversityField.style.display = 'block';
+        } else {
+            customUniversityField.style.display = 'none';
+        }
+    });
+    
+    if (accountTypeSelect.value === 'estudante' || accountTypeSelect.value === 'universitaria') {
+        academicFields.style.display = 'block';
+    }
+    
+    if (universitySelect.value === 'custom') {
+        customUniversityField.style.display = 'block';
+    }
+});
+</script>
+{% endblock %}

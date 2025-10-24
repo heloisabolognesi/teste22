@@ -1,0 +1,87 @@
+{% extends "base.html" %}
+
+{% block title %}Galeria de Fotos - L.A.A.R.I{% endblock %}
+
+{% block content %}
+<div class="page-header mb-4">
+    <h1 class="display-6 fw-bold">
+        <i class="fas fa-images me-3"></i>Galeria de Fotos
+    </h1>
+    <p class="lead text-muted">Mural de imagens arqueológicas publicadas</p>
+</div>
+
+{% if photos %}
+<div class="row g-4">
+    {% for photo in photos %}
+    <div class="col-md-6 col-lg-4">
+        <div class="card border-0 shadow h-100">
+            <div class="position-relative">
+                <img src="{{ url_for('static', filename=photo.image_path) }}" 
+                     class="card-img-top" 
+                     alt="{{ photo.title }}"
+                     style="height: 250px; object-fit: cover;"
+                     data-bs-toggle="modal" 
+                     data-bs-target="#photoModal{{ photo.id }}">
+                <div class="position-absolute top-0 end-0 m-2">
+                    <span class="badge bg-dark bg-opacity-75">
+                        <i class="fas fa-calendar me-1"></i>{{ photo.created_at.strftime('%d/%m/%Y') }}
+                    </span>
+                </div>
+            </div>
+            <div class="card-body">
+                <h5 class="card-title">{{ photo.title }}</h5>
+                {% if photo.description %}
+                <p class="card-text text-muted">{{ photo.description[:100] }}{% if photo.description|length > 100 %}...{% endif %}</p>
+                {% endif %}
+                <div class="d-flex justify-content-between align-items-center">
+                    <small class="text-muted">
+                        <i class="fas fa-user me-1"></i>{{ photo.created_by.username }}
+                    </small>
+                    <button class="btn btn-outline-archaeological btn-sm" 
+                            data-bs-toggle="modal" 
+                            data-bs-target="#photoModal{{ photo.id }}">
+                        <i class="fas fa-expand me-1"></i>Ver completa
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Photo Modal -->
+    <div class="modal fade" id="photoModal{{ photo.id }}" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header bg-archaeological text-white">
+                    <h5 class="modal-title">{{ photo.title }}</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body text-center">
+                    <img src="{{ url_for('static', filename=photo.image_path) }}" 
+                         class="img-fluid rounded mb-3" 
+                         alt="{{ photo.title }}">
+                    {% if photo.description %}
+                    <p class="text-muted">{{ photo.description }}</p>
+                    {% endif %}
+                    <div class="d-flex justify-content-between text-muted small">
+                        <span><i class="fas fa-user me-1"></i>{{ photo.created_by.username }}</span>
+                        <span><i class="fas fa-calendar me-1"></i>{{ photo.created_at.strftime('%d/%m/%Y às %H:%M') }}</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+{% else %}
+<div class="empty-state text-center py-5">
+    <i class="fas fa-images fa-4x text-muted mb-4"></i>
+    <h3 class="text-muted">Galeria Vazia</h3>
+    <p class="lead text-muted mb-4">Não há fotos publicadas na galeria ainda.</p>
+    {% if current_user.is_admin %}
+    <a href="{{ url_for('admin_galeria') }}" class="btn btn-archaeological btn-lg">
+        <i class="fas fa-plus me-2"></i>Adicionar Primeira Foto
+    </a>
+    {% endif %}
+</div>
+{% endif %}
+{% endblock %}

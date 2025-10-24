@@ -1,0 +1,149 @@
+{% extends "base.html" %}
+
+{% block title %}Catalogação - L.A.A.R.I{% endblock %}
+
+{% block content %}
+<div class="page-header mb-4">
+    <div class="d-flex justify-content-between align-items-center">
+        <div>
+            <h1 class="display-6 fw-bold">
+                <i class="fas fa-tags me-3"></i>{{ _('Catalogação de Artefatos') }}
+            </h1>
+            <p class="lead text-muted">{{ _('Gerencie e visualize todos os artefatos catalogados') }}</p>
+        </div>
+        <a href="{{ url_for('catalogar_novo') }}" class="btn btn-archaeological btn-lg">
+            <i class="fas fa-plus me-2"></i>{{ _('Catalogar Novo') }}
+        </a>
+    </div>
+</div>
+
+{% if artifacts %}
+<div class="artifacts-grid">
+    <div class="row g-4">
+        {% for artifact in artifacts %}
+        <div class="col-lg-4 col-md-6">
+            <div class="card artifact-card h-100 border-0 shadow-sm">
+                {% if artifact.photo_path %}
+                <div class="card-img-top-container">
+                    <img src="{{ url_for('static', filename=artifact.photo_path) }}" class="card-img-top artifact-photo" alt="{{ artifact.name }}">
+                </div>
+                {% else %}
+                <div class="card-img-top no-image d-flex align-items-center justify-content-center">
+                    <i class="fas fa-image fa-3x text-muted"></i>
+                </div>
+                {% endif %}
+                
+                <div class="card-body p-3">
+                    <h5 class="card-title fw-bold">{{ artifact.name }}</h5>
+                    
+                    <div class="artifact-details">
+                        <div class="detail-item mb-2">
+                            <i class="fas fa-qrcode me-2 text-archaeological"></i>
+                            <span class="badge bg-light text-dark">{{ artifact.qr_code }}</span>
+                        </div>
+                        
+                        {% if artifact.artifact_type %}
+                        <div class="detail-item mb-2">
+                            <i class="fas fa-tag me-2 text-archaeological"></i>
+                            <small class="text-muted">{{ artifact.artifact_type|title }}</small>
+                        </div>
+                        {% endif %}
+                        
+                        {% if artifact.discovery_date %}
+                        <div class="detail-item mb-2">
+                            <i class="fas fa-calendar me-2 text-archaeological"></i>
+                            <small class="text-muted">{{ artifact.discovery_date.strftime('%d/%m/%Y') }}</small>
+                        </div>
+                        {% endif %}
+                        
+                        {% if artifact.origin_location %}
+                        <div class="detail-item mb-2">
+                            <i class="fas fa-map-marker-alt me-2 text-archaeological"></i>
+                            <small class="text-muted">{{ artifact.origin_location }}</small>
+                        </div>
+                        {% endif %}
+                        
+                        <div class="detail-item mb-2">
+                            <i class="fas fa-heart-pulse me-2 text-archaeological"></i>
+                            {% if artifact.conservation_state == 'excelente' %}
+                                <span class="badge bg-success">Excelente</span>
+                            {% elif artifact.conservation_state == 'bom' %}
+                                <span class="badge bg-info">Bom</span>
+                            {% elif artifact.conservation_state == 'regular' %}
+                                <span class="badge bg-warning">Regular</span>
+                            {% elif artifact.conservation_state == 'ruim' %}
+                                <span class="badge bg-danger">Ruim</span>
+                            {% else %}
+                                <span class="badge bg-secondary">{{ artifact.conservation_state|title }}</span>
+                            {% endif %}
+                        </div>
+                        
+                        <div class="detail-item mb-2">
+                            <i class="fas fa-user me-2 text-archaeological"></i>
+                            <small class="text-muted">Por {{ artifact.cataloged_by.username }}</small>
+                        </div>
+                    </div>
+                    
+                    {% if artifact.observations %}
+                    <div class="mt-3">
+                        <p class="card-text">
+                            <small class="text-muted">
+                                {{ artifact.observations[:100] }}{% if artifact.observations|length > 100 %}...{% endif %}
+                            </small>
+                        </p>
+                    </div>
+                    {% endif %}
+                </div>
+                
+                <div class="card-footer bg-transparent border-0 p-3">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <small class="text-muted">
+                            <i class="fas fa-clock me-1"></i>
+                            {{ artifact.created_at.strftime('%d/%m/%Y') }}
+                        </small>
+                        <div class="artifact-actions">
+                            {% if artifact.model_3d_path %}
+                            <span class="badge bg-archaeological me-1">
+                                <i class="fas fa-cube me-1"></i>3D
+                            </span>
+                            {% endif %}
+                            {% if artifact.scans_3d %}
+                            <span class="badge bg-success me-1">
+                                <i class="fas fa-scanner me-1"></i>Scanned
+                            </span>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+{% else %}
+<div class="empty-state text-center py-5">
+    <i class="fas fa-archive fa-4x text-muted mb-4"></i>
+    <h3 class="text-muted">{{ _('Nenhum Artefato Catalogado') }}</h3>
+    <p class="lead text-muted mb-4">{{ _('Comece catalogando seu primeiro artefato no sistema L.A.A.R.I') }}</p>
+    <a href="{{ url_for('catalogar_novo') }}" class="btn btn-archaeological btn-lg">
+        <i class="fas fa-plus me-2"></i>{{ _('Catalogar Primeiro Artefato') }}
+    </a>
+</div>
+{% endif %}
+{% endblock %}
+
+{% block scripts %}
+<script>
+    // Add hover effects to artifact cards
+    document.querySelectorAll('.artifact-card').forEach(card => {
+        card.addEventListener('mouseenter', function() {
+            this.style.transform = 'translateY(-3px)';
+            this.style.transition = 'transform 0.2s ease';
+        });
+        
+        card.addEventListener('mouseleave', function() {
+            this.style.transform = 'translateY(0)';
+        });
+    });
+</script>
+{% endblock %}

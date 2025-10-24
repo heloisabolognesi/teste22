@@ -1,0 +1,161 @@
+{% extends "base.html" %}
+
+{% block title %}Gerenciar Galeria - L.A.A.R.I{% endblock %}
+
+{% block content %}
+<div class="page-header mb-4">
+    <h1 class="display-6 fw-bold">
+        <i class="fas fa-images me-3"></i>Gerenciar Galeria
+    </h1>
+    <p class="lead text-muted">Administre as fotos da galeria arqueológica</p>
+</div>
+
+<div class="row">
+    <!-- Add New Photo Form -->
+    <div class="col-lg-4">
+        <div class="card border-0 shadow sticky-top">
+            <div class="card-header bg-archaeological text-white">
+                <h5 class="mb-0">
+                    <i class="fas fa-plus me-2"></i>Adicionar Nova Foto
+                </h5>
+            </div>
+            <div class="card-body">
+                <form method="POST" enctype="multipart/form-data">
+                    {{ form.hidden_tag() }}
+                    
+                    <div class="mb-3">
+                        <label for="{{ form.title.id }}" class="form-label fw-bold">
+                            <i class="fas fa-heading me-2"></i>Título *
+                        </label>
+                        {{ form.title(class="form-control", placeholder="Título da foto") }}
+                        {% if form.title.errors %}
+                            <div class="text-danger small">
+                                {% for error in form.title.errors %}{{ error }}{% endfor %}
+                            </div>
+                        {% endif %}
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="{{ form.description.id }}" class="form-label fw-bold">
+                            <i class="fas fa-align-left me-2"></i>Descrição
+                        </label>
+                        {{ form.description(class="form-control", rows="3", placeholder="Descrição da imagem...") }}
+                        {% if form.description.errors %}
+                            <div class="text-danger small">
+                                {% for error in form.description.errors %}{{ error }}{% endfor %}
+                            </div>
+                        {% endif %}
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="{{ form.image.id }}" class="form-label fw-bold">
+                            <i class="fas fa-camera me-2"></i>Imagem *
+                        </label>
+                        {{ form.image(class="form-control", accept=".jpg,.jpeg,.png,.gif") }}
+                        <small class="form-text text-muted">Formatos: JPG, JPEG, PNG, GIF</small>
+                        {% if form.image.errors %}
+                            <div class="text-danger small">
+                                {% for error in form.image.errors %}{{ error }}{% endfor %}
+                            </div>
+                        {% endif %}
+                    </div>
+                    
+                    <div class="mb-3">
+                        <div class="form-check">
+                            {{ form.is_published(class="form-check-input") }}
+                            <label class="form-check-label" for="{{ form.is_published.id }}">
+                                <i class="fas fa-eye me-2"></i>Publicar no mural
+                            </label>
+                        </div>
+                    </div>
+                    
+                    <button type="submit" class="btn btn-archaeological w-100">
+                        <i class="fas fa-upload me-2"></i>Adicionar Foto
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Photos List -->
+    <div class="col-lg-8">
+        <div class="card border-0 shadow">
+            <div class="card-header bg-light">
+                <h5 class="mb-0">
+                    <i class="fas fa-list me-2"></i>Fotos na Galeria ({{ photos|length }} itens)
+                </h5>
+            </div>
+            <div class="card-body p-0">
+                {% if photos %}
+                <div class="table-responsive">
+                    <table class="table table-hover mb-0">
+                        <thead class="table-light">
+                            <tr>
+                                <th width="80">Imagem</th>
+                                <th>Título</th>
+                                <th>Status</th>
+                                <th>Data</th>
+                                <th width="150">Ações</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for photo in photos %}
+                            <tr>
+                                <td>
+                                    <img src="{{ url_for('static', filename=photo.image_path) }}" 
+                                         alt="{{ photo.title }}" 
+                                         class="rounded"
+                                         style="width: 60px; height: 60px; object-fit: cover;">
+                                </td>
+                                <td>
+                                    <div class="fw-bold">{{ photo.title }}</div>
+                                    {% if photo.description %}
+                                    <small class="text-muted">{{ photo.description[:50] }}{% if photo.description|length > 50 %}...{% endif %}</small>
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    {% if photo.is_published %}
+                                        <span class="badge bg-success">
+                                            <i class="fas fa-eye me-1"></i>Publicada
+                                        </span>
+                                    {% else %}
+                                        <span class="badge bg-secondary">
+                                            <i class="fas fa-eye-slash me-1"></i>Rascunho
+                                        </span>
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    <small class="text-muted">{{ photo.created_at.strftime('%d/%m/%Y') }}</small>
+                                </td>
+                                <td>
+                                    <div class="btn-group btn-group-sm">
+                                        <a href="{{ url_for('toggle_photo_publication', photo_id=photo.id) }}" 
+                                           class="btn btn-outline-primary" 
+                                           title="{% if photo.is_published %}Despublicar{% else %}Publicar{% endif %}">
+                                            <i class="fas fa-{% if photo.is_published %}eye-slash{% else %}eye{% endif %}"></i>
+                                        </a>
+                                        <a href="{{ url_for('delete_photo', photo_id=photo.id) }}" 
+                                           class="btn btn-outline-danger" 
+                                           title="Excluir"
+                                           onclick="return confirm('Tem certeza que deseja excluir esta foto?')">
+                                            <i class="fas fa-trash"></i>
+                                        </a>
+                                    </div>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                {% else %}
+                <div class="text-center py-5">
+                    <i class="fas fa-images fa-3x text-muted mb-3"></i>
+                    <h5 class="text-muted">Nenhuma foto adicionada</h5>
+                    <p class="text-muted">Use o formulário ao lado para adicionar a primeira foto.</p>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,378 @@
+{% extends "base.html" %}
+
+{% block title %}Administração - L.A.A.R.I{% endblock %}
+
+{% block content %}
+<div class="page-header mb-4">
+    <h1 class="display-6 fw-bold">
+        <i class="fas fa-cog me-3"></i>Painel Administrativo
+    </h1>
+    <p class="lead text-muted">Gerenciamento de usuários e configurações do sistema</p>
+</div>
+
+<!-- Admin Statistics -->
+<div class="row g-4 mb-5">
+    <div class="col-lg-3 col-md-6">
+        <div class="card border-0 shadow-sm h-100">
+            <div class="card-body text-center p-4">
+                <div class="stat-icon bg-archaeological text-white rounded-circle mx-auto mb-3">
+                    <i class="fas fa-users fa-2x"></i>
+                </div>
+                <h3 class="h4 fw-bold">{{ users|length }}</h3>
+                <p class="text-muted mb-0">Total de Usuários</p>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-lg-3 col-md-6">
+        <div class="card border-0 shadow-sm h-100">
+            <div class="card-body text-center p-4">
+                <div class="stat-icon bg-success text-white rounded-circle mx-auto mb-3">
+                    <i class="fas fa-user-check fa-2x"></i>
+                </div>
+                <h3 class="h4 fw-bold">{{ users|selectattr('is_active_user')|list|length }}</h3>
+                <p class="text-muted mb-0">Usuários Ativos</p>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-lg-3 col-md-6">
+        <div class="card border-0 shadow-sm h-100">
+            <div class="card-body text-center p-4">
+                <div class="stat-icon bg-warning text-white rounded-circle mx-auto mb-3">
+                    <i class="fas fa-user-times fa-2x"></i>
+                </div>
+                <h3 class="h4 fw-bold">{{ users|rejectattr('is_active_user')|list|length }}</h3>
+                <p class="text-muted mb-0">Usuários Desativados</p>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-lg-3 col-md-6">
+        <div class="card border-0 shadow-sm h-100">
+            <div class="card-body text-center p-4">
+                <div class="stat-icon bg-info text-white rounded-circle mx-auto mb-3">
+                    <i class="fas fa-crown fa-2x"></i>
+                </div>
+                <h3 class="h4 fw-bold">{{ users|selectattr('is_admin')|list|length }}</h3>
+                <p class="text-muted mb-0">Administradores</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- User Management -->
+<div class="user-management">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h3 class="h4 mb-0">Gerenciamento de Usuários</h3>
+        <div class="admin-actions">
+            <button type="button" class="btn btn-outline-archaeological me-2" data-bs-toggle="modal" data-bs-target="#bulkActionsModal">
+                <i class="fas fa-tasks me-2"></i>Ações em Lote
+            </button>
+            <button type="button" class="btn btn-archaeological" onclick="exportUserList()">
+                <i class="fas fa-download me-2"></i>Exportar Lista
+            </button>
+        </div>
+    </div>
+    
+    <div class="card border-0 shadow">
+        <div class="card-body p-0">
+            <div class="table-responsive">
+                <table class="table table-hover mb-0">
+                    <thead class="table-light">
+                        <tr>
+                            <th width="40">
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" id="selectAll">
+                                </div>
+                            </th>
+                            <th>Usuário</th>
+                            <th>Email</th>
+                            <th>Data de Cadastro</th>
+                            <th>Status</th>
+                            <th>Tipo</th>
+                            <th>Ações</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for user in users %}
+                        <tr>
+                            <td>
+                                <div class="form-check">
+                                    <input class="form-check-input user-checkbox" type="checkbox" value="{{ user.id }}">
+                                </div>
+                            </td>
+                            <td>
+                                <div class="user-info">
+                                    <div class="fw-bold">{{ user.username }}</div>
+                                    <small class="text-muted">ID: {{ user.id }}</small>
+                                </div>
+                            </td>
+                            <td>
+                                <div class="email-info">
+                                    <span class="text-monospace">{{ user.email }}</span>
+                                    {% if user.email == 'heloisasabinobolognesi@gmail.com' %}
+                                        <i class="fas fa-star text-warning ms-2" title="Conta principal"></i>
+                                    {% endif %}
+                                </div>
+                            </td>
+                            <td>
+                                <div class="date-info">
+                                    <div>{{ user.created_at.strftime('%d/%m/%Y') }}</div>
+                                    <small class="text-muted">{{ user.created_at.strftime('%H:%M') }}</small>
+                                </div>
+                            </td>
+                            <td>
+                                {% if user.is_active_user %}
+                                    <span class="badge bg-success">
+                                        <i class="fas fa-check me-1"></i>Ativo
+                                    </span>
+                                {% else %}
+                                    <span class="badge bg-danger">
+                                        <i class="fas fa-times me-1"></i>Desativado
+                                    </span>
+                                {% endif %}
+                            </td>
+                            <td>
+                                {% if user.is_admin %}
+                                    <span class="badge bg-info">
+                                        <i class="fas fa-crown me-1"></i>Admin
+                                    </span>
+                                {% else %}
+                                    <span class="badge bg-secondary">
+                                        <i class="fas fa-user me-1"></i>Usuário
+                                    </span>
+                                {% endif %}
+                            </td>
+                            <td>
+                                <div class="btn-group btn-group-sm">
+                                    {% if user.id != current_user.id %}
+                                        <a href="{{ url_for('toggle_user_status', user_id=user.id) }}" 
+                                           class="btn {% if user.is_active_user %}btn-outline-danger{% else %}btn-outline-success{% endif %}"
+                                           title="{% if user.is_active_user %}Desativar{% else %}Ativar{% endif %}"
+                                           onclick="return confirm('Tem certeza que deseja {% if user.is_active_user %}desativar{% else %}ativar{% endif %} este usuário?')">
+                                            <i class="fas {% if user.is_active_user %}fa-user-slash{% else %}fa-user-check{% endif %}"></i>
+                                        </a>
+                                        
+                                        <a href="{{ url_for('toggle_admin_status', user_id=user.id) }}" 
+                                           class="btn {% if user.is_admin %}btn-outline-warning{% else %}btn-outline-info{% endif %}"
+                                           title="{% if user.is_admin %}Remover Admin{% else %}Tornar Admin{% endif %}"
+                                           onclick="return confirm('Tem certeza que deseja {% if user.is_admin %}remover os privilégios de administrador{% else %}tornar este usuário administrador{% endif %}?')">
+                                            <i class="fas {% if user.is_admin %}fa-crown{% else %}fa-user-cog{% endif %}"></i>
+                                        </a>
+                                    {% else %}
+                                        <span class="badge bg-light text-dark">Sua conta</span>
+                                    {% endif %}
+                                    
+                                    <button type="button" class="btn btn-outline-archaeological" 
+                                            title="Ver detalhes" onclick="showUserDetails({{ user.id }})">
+                                        <i class="fas fa-eye"></i>
+                                    </button>
+                                </div>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- System Information -->
+<div class="system-info mt-5">
+    <h3 class="h4 mb-4">Informações do Sistema</h3>
+    
+    <div class="row g-4">
+        <div class="col-md-6">
+            <div class="card border-0 shadow">
+                <div class="card-header bg-light">
+                    <h5 class="mb-0">
+                        <i class="fas fa-database me-2"></i>Banco de Dados
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="info-item mb-2">
+                        <strong>Tipo:</strong> SQLite
+                    </div>
+                    <div class="info-item mb-2">
+                        <strong>Localização:</strong> <code>laari.db</code>
+                    </div>
+                    <div class="info-item mb-2">
+                        <strong>Status:</strong> <span class="badge bg-success">Conectado</span>
+                    </div>
+                    <div class="mt-3">
+                        <button type="button" class="btn btn-sm btn-outline-info" onclick="backupDatabase()">
+                            <i class="fas fa-download me-1"></i>Backup
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-6">
+            <div class="card border-0 shadow">
+                <div class="card-header bg-light">
+                    <h5 class="mb-0">
+                        <i class="fas fa-server me-2"></i>Sistema
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="info-item mb-2">
+                        <strong>Versão:</strong> L.A.A.R.I v1.0.0
+                    </div>
+                    <div class="info-item mb-2">
+                        <strong>Framework:</strong> Flask
+                    </div>
+                    <div class="info-item mb-2">
+                        <strong>Status:</strong> <span class="badge bg-success">Online</span>
+                    </div>
+                    <div class="mt-3">
+                        <button type="button" class="btn btn-sm btn-outline-warning" onclick="viewSystemLogs()">
+                            <i class="fas fa-file-alt me-1"></i>Logs
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Bulk Actions Modal -->
+<div class="modal fade" id="bulkActionsModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Ações em Lote</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <p>Selecione os usuários na tabela e escolha uma ação:</p>
+                <div class="d-grid gap-2">
+                    <button type="button" class="btn btn-success" onclick="bulkActivate()">
+                        <i class="fas fa-user-check me-2"></i>Ativar Selecionados
+                    </button>
+                    <button type="button" class="btn btn-danger" onclick="bulkDeactivate()">
+                        <i class="fas fa-user-slash me-2"></i>Desativar Selecionados
+                    </button>
+                    <button type="button" class="btn btn-info" onclick="bulkMakeAdmin()">
+                        <i class="fas fa-crown me-2"></i>Tornar Administradores
+                    </button>
+                    <button type="button" class="btn btn-warning" onclick="bulkRemoveAdmin()">
+                        <i class="fas fa-user-cog me-2"></i>Remover Privilégios Admin
+                    </button>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fechar</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- User Details Modal -->
+<div class="modal fade" id="userDetailsModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header bg-archaeological text-white">
+                <h5 class="modal-title">Detalhes do Usuário</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body" id="userDetailsContent">
+                <!-- Content will be loaded here -->
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    // Select all checkbox functionality
+    document.getElementById('selectAll').addEventListener('change', function() {
+        const checkboxes = document.querySelectorAll('.user-checkbox');
+        checkboxes.forEach(checkbox => {
+            checkbox.checked = this.checked;
+        });
+    });
+    
+    // Individual checkbox change
+    document.querySelectorAll('.user-checkbox').forEach(checkbox => {
+        checkbox.addEventListener('change', function() {
+            const selectAll = document.getElementById('selectAll');
+            const allCheckboxes = document.querySelectorAll('.user-checkbox');
+            const checkedBoxes = document.querySelectorAll('.user-checkbox:checked');
+            
+            selectAll.checked = allCheckboxes.length === checkedBoxes.length;
+        });
+    });
+    
+    function getSelectedUsers() {
+        const selected = [];
+        document.querySelectorAll('.user-checkbox:checked').forEach(checkbox => {
+            selected.push(checkbox.value);
+        });
+        return selected;
+    }
+    
+    function bulkActivate() {
+        const users = getSelectedUsers();
+        if (users.length === 0) {
+            alert('Selecione pelo menos um usuário.');
+            return;
+        }
+        alert(`Ativar usuários: ${users.join(', ')}`);
+    }
+    
+    function bulkDeactivate() {
+        const users = getSelectedUsers();
+        if (users.length === 0) {
+            alert('Selecione pelo menos um usuário.');
+            return;
+        }
+        if (confirm(`Tem certeza que deseja desativar ${users.length} usuário(s)?`)) {
+            alert(`Desativar usuários: ${users.join(', ')}`);
+        }
+    }
+    
+    function bulkMakeAdmin() {
+        const users = getSelectedUsers();
+        if (users.length === 0) {
+            alert('Selecione pelo menos um usuário.');
+            return;
+        }
+        alert(`Tornar administradores: ${users.join(', ')}`);
+    }
+    
+    function bulkRemoveAdmin() {
+        const users = getSelectedUsers();
+        if (users.length === 0) {
+            alert('Selecione pelo menos um usuário.');
+            return;
+        }
+        alert(`Remover privilégios admin: ${users.join(', ')}`);
+    }
+    
+    function showUserDetails(userId) {
+        document.getElementById('userDetailsContent').innerHTML = `
+            <div class="text-center">
+                <i class="fas fa-spinner fa-spin fa-2x text-archaeological mb-3"></i>
+                <p>Carregando detalhes do usuário ${userId}...</p>
+            </div>
+        `;
+        new bootstrap.Modal(document.getElementById('userDetailsModal')).show();
+    }
+    
+    function exportUserList() {
+        alert('Funcionalidade de exportação será implementada em breve.');
+    }
+    
+    function backupDatabase() {
+        alert('Backup do banco de dados será implementado em breve.');
+    }
+    
+    function viewSystemLogs() {
+        alert('Visualização de logs será implementada em breve.');
+    }
+</script>
+{% endblock %}

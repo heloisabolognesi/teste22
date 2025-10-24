@@ -1,0 +1,220 @@
+{% extends "base.html" %}
+
+{% block title %}Adicionar Profissional - L.A.A.R.I{% endblock %}
+
+{% block content %}
+<div class="page-header mb-4">
+    <h1 class="display-6 fw-bold">
+        <i class="fas fa-user-plus me-3"></i>Adicionar Profissional
+    </h1>
+    <p class="lead text-muted">Cadastre um novo profissional no diretório L.A.A.R.I</p>
+</div>
+
+<div class="row justify-content-center">
+    <div class="col-lg-8">
+        <div class="card border-0 shadow">
+            <div class="card-header bg-archaeological text-white">
+                <h4 class="mb-0">
+                    <i class="fas fa-user me-2"></i>Informações do Profissional
+                </h4>
+            </div>
+            
+            <div class="card-body p-4">
+                <form method="POST" enctype="multipart/form-data" class="needs-validation" novalidate>
+                    {{ form.hidden_tag() }}
+                    
+                    <div class="row g-3">
+                        <!-- Nome -->
+                        <div class="col-12">
+                            <label for="{{ form.name.id }}" class="form-label fw-bold">
+                                <i class="fas fa-signature me-2"></i>Nome Completo *
+                            </label>
+                            {{ form.name(class="form-control form-control-lg", placeholder="Digite o nome completo do profissional") }}
+                            {% if form.name.errors %}
+                                <div class="invalid-feedback d-block">
+                                    {% for error in form.name.errors %}{{ error }}{% endfor %}
+                                </div>
+                            {% endif %}
+                        </div>
+                        
+                        <!-- Idade e Especialização -->
+                        <div class="col-md-4">
+                            <label for="{{ form.age.id }}" class="form-label fw-bold">
+                                <i class="fas fa-birthday-cake me-2"></i>Idade
+                            </label>
+                            {{ form.age(class="form-control", placeholder="Ex: 35") }}
+                            {% if form.age.errors %}
+                                <div class="invalid-feedback d-block">
+                                    {% for error in form.age.errors %}{{ error }}{% endfor %}
+                                </div>
+                            {% endif %}
+                        </div>
+                        
+                        <div class="col-md-8">
+                            <label for="{{ form.specialization.id }}" class="form-label fw-bold">
+                                <i class="fas fa-star me-2"></i>Especialização
+                            </label>
+                            {{ form.specialization(class="form-control", placeholder="Ex: Arqueologia Pré-Histórica, Conservação, etc.") }}
+                            {% if form.specialization.errors %}
+                                <div class="invalid-feedback d-block">
+                                    {% for error in form.specialization.errors %}{{ error }}{% endfor %}
+                                </div>
+                            {% endif %}
+                        </div>
+                        
+                        <!-- Foto de Perfil -->
+                        <div class="col-12">
+                            <label for="{{ form.profile_photo.id }}" class="form-label fw-bold">
+                                <i class="fas fa-camera me-2"></i>Foto de Perfil
+                            </label>
+                            {{ form.profile_photo(class="form-control", accept=".jpg,.jpeg,.png") }}
+                            <small class="form-text text-muted">Formatos aceitos: JPG, JPEG, PNG (Recomendado: foto quadrada)</small>
+                            {% if form.profile_photo.errors %}
+                                <div class="invalid-feedback d-block">
+                                    {% for error in form.profile_photo.errors %}{{ error }}{% endfor %}
+                                </div>
+                            {% endif %}
+                        </div>
+                        
+                        <!-- Descrição -->
+                        <div class="col-12">
+                            <label for="{{ form.description.id }}" class="form-label fw-bold">
+                                <i class="fas fa-info-circle me-2"></i>Descrição Profissional
+                            </label>
+                            {{ form.description(class="form-control", rows="4", placeholder="Breve descrição sobre o profissional, sua área de atuação, interesses de pesquisa, etc.") }}
+                            {% if form.description.errors %}
+                                <div class="invalid-feedback d-block">
+                                    {% for error in form.description.errors %}{{ error }}{% endfor %}
+                                </div>
+                            {% endif %}
+                        </div>
+                        
+                        <!-- Experiência -->
+                        <div class="col-12">
+                            <label for="{{ form.experience.id }}" class="form-label fw-bold">
+                                <i class="fas fa-medal me-2"></i>Experiência Profissional
+                            </label>
+                            {{ form.experience(class="form-control", rows="6", placeholder="Descreva a experiência profissional, projetos realizados, instituições onde trabalhou, títulos acadêmicos, publicações relevantes, etc.") }}
+                            <small class="form-text text-muted">Você pode usar quebras de linha para organizar melhor as informações</small>
+                            {% if form.experience.errors %}
+                                <div class="invalid-feedback d-block">
+                                    {% for error in form.experience.errors %}{{ error }}{% endfor %}
+                                </div>
+                            {% endif %}
+                        </div>
+                    </div>
+                    
+                    <!-- Form Actions -->
+                    <div class="d-flex justify-content-between mt-4">
+                        <a href="{{ url_for('profissionais') }}" class="btn btn-secondary btn-lg">
+                            <i class="fas fa-arrow-left me-2"></i>Voltar
+                        </a>
+                        
+                        <button type="submit" class="btn btn-archaeological btn-lg">
+                            <i class="fas fa-save me-2"></i>Cadastrar Profissional
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+        
+        <!-- Guidelines Card -->
+        <div class="mt-4 p-4 bg-light rounded">
+            <h6 class="fw-bold mb-3">
+                <i class="fas fa-lightbulb me-2"></i>Diretrizes para Cadastro
+            </h6>
+            <div class="row g-3">
+                <div class="col-md-6">
+                    <ul class="list-unstyled mb-0">
+                        <li class="mb-2">
+                            <i class="fas fa-check text-success me-2"></i>
+                            <small>Apenas o nome é obrigatório</small>
+                        </li>
+                        <li class="mb-2">
+                            <i class="fas fa-check text-success me-2"></i>
+                            <small>Use fotos profissionais quando possível</small>
+                        </li>
+                        <li class="mb-2">
+                            <i class="fas fa-check text-success me-2"></i>
+                            <small>Seja detalhado na descrição da experiência</small>
+                        </li>
+                    </ul>
+                </div>
+                <div class="col-md-6">
+                    <ul class="list-unstyled mb-0">
+                        <li class="mb-2">
+                            <i class="fas fa-info-circle text-info me-2"></i>
+                            <small>As informações podem ser editadas posteriormente</small>
+                        </li>
+                        <li class="mb-2">
+                            <i class="fas fa-info-circle text-info me-2"></i>
+                            <small>O perfil será visível para todos os usuários</small>
+                        </li>
+                        <li class="mb-2">
+                            <i class="fas fa-info-circle text-info me-2"></i>
+                            <small>Mantenha as informações atualizadas</small>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    // Photo preview functionality
+    document.getElementById('profile_photo').addEventListener('change', function(e) {
+        const file = e.target.files[0];
+        if (file) {
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                // Create preview if it doesn't exist
+                let preview = document.getElementById('photo-preview');
+                if (!preview) {
+                    preview = document.createElement('div');
+                    preview.id = 'photo-preview';
+                    preview.className = 'mt-3 text-center';
+                    this.parentNode.appendChild(preview);
+                }
+                
+                preview.innerHTML = `
+                    <div class="photo-preview-container">
+                        <img src="${e.target.result}" alt="Preview" style="max-width: 150px; max-height: 150px; border-radius: 50%; object-fit: cover;" class="border">
+                        <div class="mt-2">
+                            <small class="text-muted">Preview da foto de perfil</small>
+                        </div>
+                    </div>
+                `;
+            };
+            reader.readAsDataURL(file);
+        }
+    }.bind(document.getElementById('profile_photo').parentNode));
+    
+    // Character count for text areas
+    function addCharacterCount(textareaId, maxLength = null) {
+        const textarea = document.getElementById(textareaId);
+        if (textarea) {
+            const counter = document.createElement('small');
+            counter.className = 'form-text text-muted';
+            counter.id = textareaId + '-counter';
+            
+            function updateCounter() {
+                const length = textarea.value.length;
+                counter.textContent = maxLength ? 
+                    `${length}/${maxLength} caracteres` : 
+                    `${length} caracteres`;
+            }
+            
+            textarea.addEventListener('input', updateCounter);
+            textarea.parentNode.appendChild(counter);
+            updateCounter();
+        }
+    }
+    
+    // Add character counters
+    addCharacterCount('description');
+    addCharacterCount('experience');
+</script>
+{% endblock %}

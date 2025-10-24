@@ -1,0 +1,195 @@
+{% extends "base.html" %}
+
+{% block title %}Catalogar Novo Artefato - L.A.A.R.I{% endblock %}
+
+{% block content %}
+<div class="page-header mb-4">
+    <h1 class="display-6 fw-bold">
+        <i class="fas fa-plus-circle me-3"></i>Catalogar Novo Artefato
+    </h1>
+    <p class="lead text-muted">Adicione um novo artefato ao sistema L.A.A.R.I</p>
+</div>
+
+<div class="row justify-content-center">
+    <div class="col-lg-8">
+        <div class="card border-0 shadow">
+            <div class="card-header bg-archaeological text-white">
+                <h4 class="mb-0">
+                    <i class="fas fa-tags me-2"></i>Informações do Artefato
+                </h4>
+            </div>
+            
+            <div class="card-body p-4">
+                <form method="POST" enctype="multipart/form-data" class="needs-validation" novalidate>
+                    {{ form.hidden_tag() }}
+                    
+                    <div class="row g-3">
+                        <!-- Nome do Artefato -->
+                        <div class="col-md-8">
+                            <label for="{{ form.name.id }}" class="form-label fw-bold">
+                                <i class="fas fa-signature me-2"></i>Nome do Artefato *
+                            </label>
+                            {{ form.name(class="form-control form-control-lg", placeholder="Digite o nome do artefato") }}
+                            {% if form.name.errors %}
+                                <div class="invalid-feedback d-block">
+                                    {% for error in form.name.errors %}{{ error }}{% endfor %}
+                                </div>
+                            {% endif %}
+                        </div>
+                        
+                        <!-- Código do Artefato -->
+                        <div class="col-md-4">
+                            <label for="{{ form.code.id }}" class="form-label fw-bold">
+                                <i class="fas fa-barcode me-2"></i>Código do Artefato
+                            </label>
+                            {{ form.code(class="form-control form-control-lg", placeholder="Código único") }}
+                            <small class="form-text text-muted">Se vazio, será gerado automaticamente</small>
+                            {% if form.code.errors %}
+                                <div class="invalid-feedback d-block">
+                                    {% for error in form.code.errors %}{{ error }}{% endfor %}
+                                </div>
+                            {% endif %}
+                        </div>
+                        
+                        <!-- Data de Descoberta -->
+                        <div class="col-md-6">
+                            <label for="{{ form.discovery_date.id }}" class="form-label fw-bold">
+                                <i class="fas fa-calendar me-2"></i>Data de Descoberta
+                            </label>
+                            {{ form.discovery_date(class="form-control") }}
+                            {% if form.discovery_date.errors %}
+                                <div class="invalid-feedback d-block">
+                                    {% for error in form.discovery_date.errors %}{{ error }}{% endfor %}
+                                </div>
+                            {% endif %}
+                        </div>
+                        
+                        <!-- Tipo de Artefato -->
+                        <div class="col-md-6">
+                            <label for="{{ form.artifact_type.id }}" class="form-label fw-bold">
+                                <i class="fas fa-tag me-2"></i>Tipo de Artefato
+                            </label>
+                            {{ form.artifact_type(class="form-select") }}
+                            {% if form.artifact_type.errors %}
+                                <div class="invalid-feedback d-block">
+                                    {% for error in form.artifact_type.errors %}{{ error }}{% endfor %}
+                                </div>
+                            {% endif %}
+                        </div>
+                        
+                        <!-- Local de Origem -->
+                        <div class="col-12">
+                            <label for="{{ form.origin_location.id }}" class="form-label fw-bold">
+                                <i class="fas fa-map-marker-alt me-2"></i>Local de Origem
+                            </label>
+                            {{ form.origin_location(class="form-control", placeholder="Digite o local onde o artefato foi encontrado") }}
+                            {% if form.origin_location.errors %}
+                                <div class="invalid-feedback d-block">
+                                    {% for error in form.origin_location.errors %}{{ error }}{% endfor %}
+                                </div>
+                            {% endif %}
+                        </div>
+                        
+                        <!-- Estado de Conservação -->
+                        <div class="col-12">
+                            <label for="{{ form.conservation_state.id }}" class="form-label fw-bold">
+                                <i class="fas fa-heart-pulse me-2"></i>Estado de Conservação
+                            </label>
+                            {{ form.conservation_state(class="form-select") }}
+                            {% if form.conservation_state.errors %}
+                                <div class="invalid-feedback d-block">
+                                    {% for error in form.conservation_state.errors %}{{ error }}{% endfor %}
+                                </div>
+                            {% endif %}
+                        </div>
+                        
+                        <!-- Observações -->
+                        <div class="col-12">
+                            <label for="{{ form.observations.id }}" class="form-label fw-bold">
+                                <i class="fas fa-comments me-2"></i>Observações
+                            </label>
+                            {{ form.observations(class="form-control", rows="4", placeholder="Adicione observações relevantes sobre o artefato") }}
+                            {% if form.observations.errors %}
+                                <div class="invalid-feedback d-block">
+                                    {% for error in form.observations.errors %}{{ error }}{% endfor %}
+                                </div>
+                            {% endif %}
+                        </div>
+                        
+                        <!-- Upload de Arquivos -->
+                        <div class="col-12">
+                            <div class="row g-3">
+                                <div class="col-md-6">
+                                    <label for="{{ form.photo.id }}" class="form-label fw-bold">
+                                        <i class="fas fa-camera me-2"></i>Foto do Artefato
+                                    </label>
+                                    {{ form.photo(class="form-control", accept=".jpg,.jpeg,.png,.gif") }}
+                                    <small class="form-text text-muted">Formatos aceitos: JPG, JPEG, PNG, GIF</small>
+                                    {% if form.photo.errors %}
+                                        <div class="invalid-feedback d-block">
+                                            {% for error in form.photo.errors %}{{ error }}{% endfor %}
+                                        </div>
+                                    {% endif %}
+                                </div>
+                                
+                                <div class="col-md-6">
+                                    <label for="{{ form.model_3d.id }}" class="form-label fw-bold">
+                                        <i class="fas fa-cube me-2"></i>Modelo 3D
+                                    </label>
+                                    {{ form.model_3d(class="form-control", accept=".obj,.ply,.stl,.fbx") }}
+                                    <small class="form-text text-muted">Formatos aceitos: OBJ, PLY, STL, FBX</small>
+                                    {% if form.model_3d.errors %}
+                                        <div class="invalid-feedback d-block">
+                                            {% for error in form.model_3d.errors %}{{ error }}{% endfor %}
+                                        </div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Form Actions -->
+                    <div class="d-flex justify-content-between mt-4">
+                        <a href="{{ url_for('catalogacao') }}" class="btn btn-secondary btn-lg">
+                            <i class="fas fa-arrow-left me-2"></i>Voltar
+                        </a>
+                        
+                        <button type="submit" class="btn btn-archaeological btn-lg">
+                            <i class="fas fa-save me-2"></i>Catalogar Artefato
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+        
+        <div class="mt-4 p-3 bg-light rounded">
+            <h6 class="fw-bold"><i class="fas fa-info-circle me-2"></i>Informações Importantes</h6>
+            <ul class="mb-0 small text-muted">
+                <li>Todos os artefatos receberão automaticamente um código QR único para identificação</li>
+                <li>Apenas o campo "Nome do Artefato" é obrigatório</li>
+                <li>Você pode adicionar fotos e modelos 3D para melhor documentação</li>
+                <li>As informações podem ser editadas posteriormente se necessário</li>
+            </ul>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    // File upload preview
+    document.getElementById('photo').addEventListener('change', function(e) {
+        const file = e.target.files[0];
+        if (file) {
+            console.log('Foto selecionada:', file.name);
+        }
+    });
+    
+    document.getElementById('model_3d').addEventListener('change', function(e) {
+        const file = e.target.files[0];
+        if (file) {
+            console.log('Modelo 3D selecionado:', file.name);
+        }
+    });
+</script>
+{% endblock %}

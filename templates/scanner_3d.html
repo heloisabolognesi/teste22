@@ -1,0 +1,268 @@
+{% extends "base.html" %}
+
+{% block title %}Scanner 3D - L.A.A.R.I{% endblock %}
+
+{% block content %}
+<div class="page-header mb-4">
+    <h1 class="display-6 fw-bold">
+        <i class="fas fa-cube me-3"></i>Scanner 3D
+    </h1>
+    <p class="lead text-muted">Integração com tecnologia de digitalização tridimensional</p>
+</div>
+
+<!-- Scanner 3D Form -->
+<div class="row">
+    <div class="col-lg-8">
+        <div class="card border-0 shadow">
+            <div class="card-header bg-archaeological text-white">
+                <h4 class="mb-0">
+                    <i class="fas fa-plus-circle me-2"></i>Registrar Novo Scan 3D
+                </h4>
+            </div>
+            
+            <div class="card-body p-4">
+                <form method="POST" enctype="multipart/form-data">
+                    {{ form.hidden_tag() }}
+                    
+                    <div class="row g-3">
+                        <!-- Artifact Selection -->
+                        <div class="col-12">
+                            <label for="{{ form.artifact_id.id }}" class="form-label fw-bold">
+                                <i class="fas fa-archive me-2"></i>Artefato *
+                            </label>
+                            {{ form.artifact_id(class="form-select form-select-lg") }}
+                            {% if form.artifact_id.errors %}
+                                <div class="invalid-feedback d-block">
+                                    {% for error in form.artifact_id.errors %}{{ error }}{% endfor %}
+                                </div>
+                            {% endif %}
+                        </div>
+                        
+                        <!-- Scanner Type -->
+                        <div class="col-md-6">
+                            <label for="{{ form.scanner_type.id }}" class="form-label fw-bold">
+                                <i class="fas fa-scanner me-2"></i>Tipo de Scanner
+                            </label>
+                            {{ form.scanner_type(class="form-control", placeholder="Ex: Artec Eva, NextEngine, etc.") }}
+                            {% if form.scanner_type.errors %}
+                                <div class="invalid-feedback d-block">
+                                    {% for error in form.scanner_type.errors %}{{ error }}{% endfor %}
+                                </div>
+                            {% endif %}
+                        </div>
+                        
+                        <!-- Resolution -->
+                        <div class="col-md-6">
+                            <label for="{{ form.resolution.id }}" class="form-label fw-bold">
+                                <i class="fas fa-expand-arrows-alt me-2"></i>Resolução
+                            </label>
+                            {{ form.resolution(class="form-control", placeholder="Ex: 0.1mm, 0.5mm, etc.") }}
+                            {% if form.resolution.errors %}
+                                <div class="invalid-feedback d-block">
+                                    {% for error in form.resolution.errors %}{{ error }}{% endfor %}
+                                </div>
+                            {% endif %}
+                        </div>
+                        
+                        <!-- Scan File Upload -->
+                        <div class="col-12">
+                            <label for="{{ form.scan_file.id }}" class="form-label fw-bold">
+                                <i class="fas fa-file-upload me-2"></i>Arquivo do Scan 3D
+                            </label>
+                            {{ form.scan_file(class="form-control", accept=".obj,.ply,.stl,.fbx") }}
+                            <small class="form-text text-muted">Formatos aceitos: OBJ, PLY, STL, FBX (Máx. 16MB)</small>
+                            {% if form.scan_file.errors %}
+                                <div class="invalid-feedback d-block">
+                                    {% for error in form.scan_file.errors %}{{ error }}{% endfor %}
+                                </div>
+                            {% endif %}
+                        </div>
+                        
+                        <!-- Notes -->
+                        <div class="col-12">
+                            <label for="{{ form.notes.id }}" class="form-label fw-bold">
+                                <i class="fas fa-sticky-note me-2"></i>Observações
+                            </label>
+                            {{ form.notes(class="form-control", rows="4", placeholder="Adicione observações sobre o processo de digitalização, qualidade do scan, etc.") }}
+                            {% if form.notes.errors %}
+                                <div class="invalid-feedback d-block">
+                                    {% for error in form.notes.errors %}{{ error }}{% endfor %}
+                                </div>
+                            {% endif %}
+                        </div>
+                    </div>
+                    
+                    <!-- Form Actions -->
+                    <div class="d-flex justify-content-between mt-4">
+                        <a href="{{ url_for('dashboard') }}" class="btn btn-secondary btn-lg">
+                            <i class="fas fa-arrow-left me-2"></i>Voltar
+                        </a>
+                        
+                        <button type="submit" class="btn btn-archaeological btn-lg">
+                            <i class="fas fa-save me-2"></i>Registrar Scan
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Scanner Info Sidebar -->
+    <div class="col-lg-4">
+        <div class="card border-0 shadow mb-4">
+            <div class="card-header bg-info text-white">
+                <h5 class="mb-0">
+                    <i class="fas fa-info-circle me-2"></i>Sobre Scanner 3D
+                </h5>
+            </div>
+            <div class="card-body">
+                <p class="mb-3">A digitalização 3D é uma tecnologia fundamental na arqueologia moderna, permitindo:</p>
+                <ul class="list-unstyled">
+                    <li class="mb-2"><i class="fas fa-check text-success me-2"></i>Preservação digital permanente</li>
+                    <li class="mb-2"><i class="fas fa-check text-success me-2"></i>Análise detalhada sem manuseio</li>
+                    <li class="mb-2"><i class="fas fa-check text-success me-2"></i>Compartilhamento de dados</li>
+                    <li class="mb-2"><i class="fas fa-check text-success me-2"></i>Reconstrução virtual</li>
+                    <li class="mb-2"><i class="fas fa-check text-success me-2"></i>Documentação científica</li>
+                </ul>
+            </div>
+        </div>
+        
+        <!-- Quick Tips -->
+        <div class="card border-0 shadow">
+            <div class="card-header bg-warning text-white">
+                <h5 class="mb-0">
+                    <i class="fas fa-lightbulb me-2"></i>Dicas de Digitalização
+                </h5>
+            </div>
+            <div class="card-body">
+                <div class="tip-item mb-3">
+                    <h6 class="fw-bold">Preparação</h6>
+                    <small class="text-muted">Limpe cuidadosamente o artefato antes do scan</small>
+                </div>
+                <div class="tip-item mb-3">
+                    <h6 class="fw-bold">Iluminação</h6>
+                    <small class="text-muted">Use iluminação uniforme e difusa</small>
+                </div>
+                <div class="tip-item mb-3">
+                    <h6 class="fw-bold">Múltiplos Ângulos</h6>
+                    <small class="text-muted">Capture todas as superfícies visíveis</small>
+                </div>
+                <div class="tip-item">
+                    <h6 class="fw-bold">Validação</h6>
+                    <small class="text-muted">Sempre verifique a qualidade do modelo final</small>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Existing Scans -->
+{% if scans %}
+<div class="mt-5">
+    <h3 class="h4 mb-4">Scans 3D Registrados</h3>
+    
+    <div class="card border-0 shadow">
+        <div class="card-body p-0">
+            <div class="table-responsive">
+                <table class="table table-hover mb-0">
+                    <thead class="table-light">
+                        <tr>
+                            <th>Artefato</th>
+                            <th>Data do Scan</th>
+                            <th>Scanner</th>
+                            <th>Resolução</th>
+                            <th>Tamanho</th>
+                            <th>Arquivo</th>
+                            <th>Ações</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for scan in scans %}
+                        <tr>
+                            <td>
+                                <div class="fw-bold">{{ scan.artifact.name }}</div>
+                                <small class="text-muted">{{ scan.artifact.qr_code }}</small>
+                            </td>
+                            <td>{{ scan.scan_date.strftime('%d/%m/%Y %H:%M') }}</td>
+                            <td>
+                                <span class="badge bg-archaeological">
+                                    {{ scan.scanner_type or 'Não especificado' }}
+                                </span>
+                            </td>
+                            <td>
+                                <small class="text-muted">{{ scan.resolution or '-' }}</small>
+                            </td>
+                            <td>
+                                {% if scan.file_size %}
+                                    <small class="text-muted">{{ "%.2f"|format(scan.file_size / 1024 / 1024) }} MB</small>
+                                {% else %}
+                                    <small class="text-muted">-</small>
+                                {% endif %}
+                            </td>
+                            <td>
+                                {% if scan.file_path %}
+                                    <span class="badge bg-success">
+                                        <i class="fas fa-file-alt me-1"></i>Disponível
+                                    </span>
+                                {% else %}
+                                    <span class="badge bg-secondary">
+                                        <i class="fas fa-file-times me-1"></i>Sem arquivo
+                                    </span>
+                                {% endif %}
+                            </td>
+                            <td>
+                                <div class="btn-group btn-group-sm">
+                                    {% if scan.file_path %}
+                                    <button type="button" class="btn btn-outline-archaeological" title="Visualizar" onclick="viewScan3D({{ scan.id }})">
+                                        <i class="fas fa-eye"></i>
+                                    </button>
+                                    <button type="button" class="btn btn-outline-success" title="Download" onclick="downloadScan({{ scan.id }})">
+                                        <i class="fas fa-download"></i>
+                                    </button>
+                                    {% endif %}
+                                    <button type="button" class="btn btn-outline-info" title="Detalhes" onclick="showScanDetails({{ scan.id }})">
+                                        <i class="fas fa-info"></i>
+                                    </button>
+                                </div>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+{% endif %}
+{% endblock %}
+
+{% block scripts %}
+<script>
+    function viewScan3D(scanId) {
+        alert(`Visualização 3D do scan ${scanId} será implementada em breve com WebGL.`);
+    }
+    
+    function downloadScan(scanId) {
+        alert(`Download do scan ${scanId} será implementado em breve.`);
+    }
+    
+    function showScanDetails(scanId) {
+        alert(`Detalhes do scan ${scanId} serão exibidos em modal.`);
+    }
+    
+    // File upload feedback
+    document.getElementById('scan_file').addEventListener('change', function(e) {
+        const file = e.target.files[0];
+        if (file) {
+            const fileSize = (file.size / 1024 / 1024).toFixed(2);
+            console.log(`Arquivo selecionado: ${file.name} (${fileSize} MB)`);
+            
+            // Check file size limit (16MB)
+            if (file.size > 16 * 1024 * 1024) {
+                alert('Arquivo muito grande! O limite é 16MB.');
+                this.value = '';
+            }
+        }
+    });
+</script>
+{% endblock %}

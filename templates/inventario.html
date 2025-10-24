@@ -1,0 +1,266 @@
+{% extends "base.html" %}
+
+{% block title %}Inventário - L.A.A.R.I{% endblock %}
+
+{% block content %}
+<div class="page-header mb-4">
+    <h1 class="display-6 fw-bold">
+        <i class="fas fa-clipboard-list me-3"></i>Inventário Geral
+    </h1>
+    <p class="lead text-muted">Controle detalhado do inventário arqueológico</p>
+</div>
+
+<!-- Inventory Summary Cards -->
+<div class="row g-4 mb-5">
+    <div class="col-lg-3 col-md-6">
+        <div class="card border-0 shadow-sm h-100">
+            <div class="card-body text-center p-4">
+                <div class="stat-icon bg-archaeological text-white rounded-circle mx-auto mb-3">
+                    <i class="fas fa-boxes fa-2x"></i>
+                </div>
+                <h3 class="h4 fw-bold">{{ artifacts|length }}</h3>
+                <p class="text-muted mb-0">Total de Itens</p>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-lg-3 col-md-6">
+        <div class="card border-0 shadow-sm h-100">
+            <div class="card-body text-center p-4">
+                <div class="stat-icon bg-success text-white rounded-circle mx-auto mb-3">
+                    <i class="fas fa-check-circle fa-2x"></i>
+                </div>
+                <h3 class="h4 fw-bold">{{ artifacts|selectattr('conservation_state', 'in', ['excelente', 'bom'])|list|length }}</h3>
+                <p class="text-muted mb-0">Bom Estado</p>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-lg-3 col-md-6">
+        <div class="card border-0 shadow-sm h-100">
+            <div class="card-body text-center p-4">
+                <div class="stat-icon bg-warning text-white rounded-circle mx-auto mb-3">
+                    <i class="fas fa-exclamation-triangle fa-2x"></i>
+                </div>
+                <h3 class="h4 fw-bold">{{ artifacts|selectattr('conservation_state', 'in', ['regular', 'ruim', 'pessimo'])|list|length }}</h3>
+                <p class="text-muted mb-0">Necessita Atenção</p>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-lg-3 col-md-6">
+        <div class="card border-0 shadow-sm h-100">
+            <div class="card-body text-center p-4">
+                <div class="stat-icon bg-info text-white rounded-circle mx-auto mb-3">
+                    <i class="fas fa-camera fa-2x"></i>
+                </div>
+                <h3 class="h4 fw-bold">{{ artifacts|selectattr('photo_path')|list|length }}</h3>
+                <p class="text-muted mb-0">Com Documentação Visual</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% if artifacts %}
+<!-- Inventory by Type -->
+<div class="mb-5">
+    <h3 class="h4 mb-3">Inventário por Tipo de Artefato</h3>
+    <div class="card border-0 shadow">
+        <div class="card-body">
+            <div class="row g-4">
+                {% set types = artifacts|groupby('artifact_type') %}
+                {% for type, items in types %}
+                <div class="col-md-4">
+                    <div class="type-summary p-3 rounded border">
+                        <div class="d-flex justify-content-between align-items-center mb-2">
+                            <h5 class="mb-0">{{ type|title if type else 'Não Classificado' }}</h5>
+                            <span class="badge bg-archaeological fs-6">{{ items|list|length }}</span>
+                        </div>
+                        <div class="progress mb-2" style="height: 6px;">
+                            <div class="progress-bar bg-archaeological" style="width: {{ (items|list|length / artifacts|length * 100)|round(1) }}%"></div>
+                        </div>
+                        <small class="text-muted">{{ (items|list|length / artifacts|length * 100)|round(1) }}% do acervo</small>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Conservation Status Overview -->
+<div class="mb-5">
+    <h3 class="h4 mb-3">Estado de Conservação</h3>
+    <div class="card border-0 shadow">
+        <div class="card-body">
+            <div class="row g-4">
+                {% set conservation_groups = artifacts|groupby('conservation_state') %}
+                {% for state, items in conservation_groups %}
+                <div class="col-md-6 col-lg-4">
+                    <div class="conservation-summary p-3 rounded border">
+                        <div class="d-flex justify-content-between align-items-center mb-2">
+                            <h6 class="mb-0 d-flex align-items-center">
+                                {% if state == 'excelente' %}
+                                    <span class="badge bg-success me-2">Excelente</span>
+                                {% elif state == 'bom' %}
+                                    <span class="badge bg-info me-2">Bom</span>
+                                {% elif state == 'regular' %}
+                                    <span class="badge bg-warning me-2">Regular</span>
+                                {% elif state == 'ruim' %}
+                                    <span class="badge bg-danger me-2">Ruim</span>
+                                {% elif state == 'pessimo' %}
+                                    <span class="badge bg-dark me-2">Péssimo</span>
+                                {% else %}
+                                    <span class="badge bg-secondary me-2">Não Definido</span>
+                                {% endif %}
+                            </h6>
+                            <span class="fw-bold">{{ items|list|length }}</span>
+                        </div>
+                        <div class="progress" style="height: 8px;">
+                            {% if state in ['excelente', 'bom'] %}
+                                <div class="progress-bar bg-success" style="width: {{ (items|list|length / artifacts|length * 100)|round(1) }}%"></div>
+                            {% elif state == 'regular' %}
+                                <div class="progress-bar bg-warning" style="width: {{ (items|list|length / artifacts|length * 100)|round(1) }}%"></div>
+                            {% else %}
+                                <div class="progress-bar bg-danger" style="width: {{ (items|list|length / artifacts|length * 100)|round(1) }}%"></div>
+                            {% endif %}
+                        </div>
+                        <small class="text-muted mt-1 d-block">{{ (items|list|length / artifacts|length * 100)|round(1) }}% do total</small>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Recent Additions -->
+<div class="mb-5">
+    <h3 class="h4 mb-3">Adições Recentes</h3>
+    <div class="card border-0 shadow">
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-hover mb-0">
+                    <thead class="table-light">
+                        <tr>
+                            <th>Artefato</th>
+                            <th>Tipo</th>
+                            <th>Data de Catalogação</th>
+                            <th>Catalogado Por</th>
+                            <th>Estado</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for artifact in artifacts[:10] %}
+                        <tr>
+                            <td>
+                                <div class="d-flex align-items-center">
+                                    {% if artifact.photo_path %}
+                                        <img src="{{ url_for('static', filename=artifact.photo_path) }}" alt="{{ artifact.name }}" class="artifact-thumbnail-sm me-3">
+                                    {% else %}
+                                        <div class="no-photo-thumbnail-sm me-3">
+                                            <i class="fas fa-image text-muted"></i>
+                                        </div>
+                                    {% endif %}
+                                    <div>
+                                        <div class="fw-bold">{{ artifact.name }}</div>
+                                        <small class="text-muted">{{ artifact.qr_code }}</small>
+                                    </div>
+                                </div>
+                            </td>
+                            <td>
+                                {% if artifact.artifact_type %}
+                                    <span class="badge bg-archaeological">{{ artifact.artifact_type|title }}</span>
+                                {% else %}
+                                    <span class="text-muted">-</span>
+                                {% endif %}
+                            </td>
+                            <td>{{ artifact.created_at.strftime('%d/%m/%Y %H:%M') }}</td>
+                            <td>{{ artifact.cataloged_by.username }}</td>
+                            <td>
+                                {% if artifact.conservation_state == 'excelente' %}
+                                    <span class="badge bg-success">Excelente</span>
+                                {% elif artifact.conservation_state == 'bom' %}
+                                    <span class="badge bg-info">Bom</span>
+                                {% elif artifact.conservation_state == 'regular' %}
+                                    <span class="badge bg-warning">Regular</span>
+                                {% elif artifact.conservation_state == 'ruim' %}
+                                    <span class="badge bg-danger">Ruim</span>
+                                {% else %}
+                                    <span class="badge bg-secondary">{{ artifact.conservation_state|title if artifact.conservation_state else 'N/A' }}</span>
+                                {% endif %}
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Quick Actions -->
+<div class="quick-actions">
+    <h3 class="h4 mb-3">Ações Rápidas</h3>
+    <div class="row g-3">
+        <div class="col-md-3">
+            <a href="{{ url_for('catalogar_novo') }}" class="btn btn-archaeological w-100 p-3">
+                <i class="fas fa-plus fa-2x mb-2 d-block"></i>
+                Catalogar Novo Item
+            </a>
+        </div>
+        <div class="col-md-3">
+            <a href="{{ url_for('acervo') }}" class="btn btn-outline-archaeological w-100 p-3">
+                <i class="fas fa-search fa-2x mb-2 d-block"></i>
+                Buscar no Acervo
+            </a>
+        </div>
+        <div class="col-md-3">
+            <button type="button" class="btn btn-outline-success w-100 p-3" onclick="exportInventory()">
+                <i class="fas fa-download fa-2x mb-2 d-block"></i>
+                Exportar Inventário
+            </button>
+        </div>
+        <div class="col-md-3">
+            <button type="button" class="btn btn-outline-info w-100 p-3" onclick="generateReport()">
+                <i class="fas fa-chart-bar fa-2x mb-2 d-block"></i>
+                Gerar Relatório
+            </button>
+        </div>
+    </div>
+</div>
+{% else %}
+<div class="empty-state text-center py-5">
+    <i class="fas fa-clipboard-list fa-4x text-muted mb-4"></i>
+    <h3 class="text-muted">Inventário Vazio</h3>
+    <p class="lead text-muted mb-4">Não há itens catalogados para exibir no inventário.</p>
+    <a href="{{ url_for('catalogar_novo') }}" class="btn btn-archaeological btn-lg">
+        <i class="fas fa-plus me-2"></i>Catalogar Primeiro Item
+    </a>
+</div>
+{% endif %}
+{% endblock %}
+
+{% block scripts %}
+<script>
+    function exportInventory() {
+        alert('Funcionalidade de exportação será implementada em breve.');
+    }
+    
+    function generateReport() {
+        alert('Funcionalidade de relatórios será implementada em breve.');
+    }
+    
+    // Add some visual feedback to cards
+    document.querySelectorAll('.card').forEach(card => {
+        card.addEventListener('mouseenter', function() {
+            this.style.transform = 'translateY(-2px)';
+            this.style.transition = 'transform 0.2s ease';
+        });
+        
+        card.addEventListener('mouseleave', function() {
+            this.style.transform = 'translateY(0)';
+        });
+    });
+</script>
+{% endblock %}

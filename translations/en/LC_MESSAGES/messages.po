@@ -1,0 +1,66 @@
+# English translations for L.A.A.R.I
+msgid "Bem-vindo"
+msgstr "Welcome"
+
+msgid "Laboratório e Acervo Arqueológico Remoto Integrado"
+msgstr "Remote Integrated Archaeological Laboratory and Collection"
+
+msgid "Sistema completo de gestão arqueológica para centralizar documentação, catalogação, acervo e inventário, facilitando a comunicação entre equipes de campo e laboratório."
+msgstr "Complete archaeological management system to centralize documentation, cataloging, collection and inventory, facilitating communication between field and laboratory teams."
+
+msgid "Entrar"
+msgstr "Login"
+
+msgid "Acesse sua conta existente no sistema L.A.A.R.I"
+msgstr "Access your existing L.A.A.R.I system account"
+
+msgid "Fazer Login"
+msgstr "Sign In"
+
+msgid "Cadastrar"
+msgstr "Register"
+
+msgid "Crie uma nova conta para acessar o sistema"
+msgstr "Create a new account to access the system"
+
+msgid "Criar Conta"
+msgstr "Create Account"
+
+msgid "Funcionalidades Principais"
+msgstr "Main Features"
+
+msgid "Acervo Digital"
+msgstr "Digital Collection"
+
+msgid "Consulta organizada de todos os itens catalogados"
+msgstr "Organized consultation of all cataloged items"
+
+msgid "Catalogação"
+msgstr "Cataloging"
+
+msgid "Sistema completo de registro de artefatos"
+msgstr "Complete artifact registration system"
+
+msgid "Scanner 3D"
+msgstr "3D Scanner"
+
+msgid "Integração com digitalização 3D"
+msgstr "Integration with 3D digitization"
+
+msgid "Profissionais"
+msgstr "Professionals"
+
+msgid "Diretório de arqueólogos da região"
+msgstr "Directory of archaeologists in the region"
+
+msgid "Inventário"
+msgstr "Inventory"
+
+msgid "Controle completo do inventário"
+msgstr "Complete inventory control"
+
+msgid "Transporte"
+msgstr "Transport"
+
+msgid "Rastreamento de movimentação"
+msgstr "Movement tracking"

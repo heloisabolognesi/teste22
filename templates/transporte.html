@@ -1,0 +1,324 @@
+{% extends "base.html" %}
+
+{% block title %}Transporte de Artefatos - L.A.A.R.I{% endblock %}
+
+{% block content %}
+<div class="page-header mb-4">
+    <h1 class="display-6 fw-bold">
+        <i class="fas fa-truck me-3"></i>Transporte de Artefatos
+    </h1>
+    <p class="lead text-muted">Controle e rastreamento da movimentação de itens arqueológicos</p>
+</div>
+
+<!-- Transport Form -->
+<div class="row">
+    <div class="col-lg-8">
+        <div class="card border-0 shadow">
+            <div class="card-header bg-archaeological text-white">
+                <h4 class="mb-0">
+                    <i class="fas fa-plus-circle me-2"></i>Registrar Novo Transporte
+                </h4>
+            </div>
+            
+            <div class="card-body p-4">
+                <form method="POST">
+                    {{ form.hidden_tag() }}
+                    
+                    <div class="row g-3">
+                        <!-- Artifact Selection -->
+                        <div class="col-12">
+                            <label for="{{ form.artifact_id.id }}" class="form-label fw-bold">
+                                <i class="fas fa-archive me-2"></i>Artefato *
+                            </label>
+                            {{ form.artifact_id(class="form-select form-select-lg") }}
+                            {% if form.artifact_id.errors %}
+                                <div class="invalid-feedback d-block">
+                                    {% for error in form.artifact_id.errors %}{{ error }}{% endfor %}
+                                </div>
+                            {% endif %}
+                        </div>
+                        
+                        <!-- Origin and Destination -->
+                        <div class="col-md-6">
+                            <label for="{{ form.origin_location.id }}" class="form-label fw-bold">
+                                <i class="fas fa-map-marker-alt me-2"></i>Local de Origem *
+                            </label>
+                            {{ form.origin_location(class="form-control", placeholder="De onde o artefato está saindo") }}
+                            {% if form.origin_location.errors %}
+                                <div class="invalid-feedback d-block">
+                                    {% for error in form.origin_location.errors %}{{ error }}{% endfor %}
+                                </div>
+                            {% endif %}
+                        </div>
+                        
+                        <div class="col-md-6">
+                            <label for="{{ form.destination_location.id }}" class="form-label fw-bold">
+                                <i class="fas fa-map-marker-alt me-2"></i>Local de Destino *
+                            </label>
+                            {{ form.destination_location(class="form-control", placeholder="Para onde o artefato está indo") }}
+                            {% if form.destination_location.errors %}
+                                <div class="invalid-feedback d-block">
+                                    {% for error in form.destination_location.errors %}{{ error }}{% endfor %}
+                                </div>
+                            {% endif %}
+                        </div>
+                        
+                        <!-- Transport Date and Responsible -->
+                        <div class="col-md-6">
+                            <label for="{{ form.transport_date.id }}" class="form-label fw-bold">
+                                <i class="fas fa-calendar me-2"></i>Data de Transporte
+                            </label>
+                            {{ form.transport_date(class="form-control") }}
+                            {% if form.transport_date.errors %}
+                                <div class="invalid-feedback d-block">
+                                    {% for error in form.transport_date.errors %}{{ error }}{% endfor %}
+                                </div>
+                            {% endif %}
+                        </div>
+                        
+                        <div class="col-md-6">
+                            <label for="{{ form.responsible_person.id }}" class="form-label fw-bold">
+                                <i class="fas fa-user-tie me-2"></i>Responsável
+                            </label>
+                            {{ form.responsible_person(class="form-control", placeholder="Nome do responsável pelo transporte") }}
+                            {% if form.responsible_person.errors %}
+                                <div class="invalid-feedback d-block">
+                                    {% for error in form.responsible_person.errors %}{{ error }}{% endfor %}
+                                </div>
+                            {% endif %}
+                        </div>
+                        
+                        <!-- Status -->
+                        <div class="col-12">
+                            <label for="{{ form.status.id }}" class="form-label fw-bold">
+                                <i class="fas fa-flag me-2"></i>Status do Transporte
+                            </label>
+                            {{ form.status(class="form-select") }}
+                            {% if form.status.errors %}
+                                <div class="invalid-feedback d-block">
+                                    {% for error in form.status.errors %}{{ error }}{% endfor %}
+                                </div>
+                            {% endif %}
+                        </div>
+                        
+                        <!-- Notes -->
+                        <div class="col-12">
+                            <label for="{{ form.notes.id }}" class="form-label fw-bold">
+                                <i class="fas fa-sticky-note me-2"></i>Observações
+                            </label>
+                            {{ form.notes(class="form-control", rows="4", placeholder="Instruções especiais, condições de transporte, cuidados necessários, etc.") }}
+                            {% if form.notes.errors %}
+                                <div class="invalid-feedback d-block">
+                                    {% for error in form.notes.errors %}{{ error }}{% endfor %}
+                                </div>
+                            {% endif %}
+                        </div>
+                    </div>
+                    
+                    <!-- Form Actions -->
+                    <div class="d-flex justify-content-between mt-4">
+                        <a href="{{ url_for('dashboard') }}" class="btn btn-secondary btn-lg">
+                            <i class="fas fa-arrow-left me-2"></i>Voltar
+                        </a>
+                        
+                        <button type="submit" class="btn btn-archaeological btn-lg">
+                            <i class="fas fa-save me-2"></i>Registrar Transporte
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Transport Guidelines Sidebar -->
+    <div class="col-lg-4">
+        <div class="card border-0 shadow mb-4">
+            <div class="card-header bg-warning text-white">
+                <h5 class="mb-0">
+                    <i class="fas fa-exclamation-triangle me-2"></i>Diretrizes de Transporte
+                </h5>
+            </div>
+            <div class="card-body">
+                <ul class="list-unstyled">
+                    <li class="mb-3">
+                        <div class="fw-bold text-archaeological">Embalagem Adequada</div>
+                        <small class="text-muted">Use materiais apropriados para proteger o artefato</small>
+                    </li>
+                    <li class="mb-3">
+                        <div class="fw-bold text-archaeological">Documentação</div>
+                        <small class="text-muted">Mantenha todos os documentos de identificação</small>
+                    </li>
+                    <li class="mb-3">
+                        <div class="fw-bold text-archaeological">Condições Ambientais</div>
+                        <small class="text-muted">Controle temperatura e umidade durante o transporte</small>
+                    </li>
+                    <li class="mb-3">
+                        <div class="fw-bold text-archaeological">Seguro</div>
+                        <small class="text-muted">Certifique-se de que o item esteja segurado</small>
+                    </li>
+                    <li class="mb-0">
+                        <div class="fw-bold text-archaeological">Rastreamento</div>
+                        <small class="text-muted">Mantenha comunicação constante sobre o status</small>
+                    </li>
+                </ul>
+            </div>
+        </div>
+        
+        <!-- Status Legend -->
+        <div class="card border-0 shadow">
+            <div class="card-header bg-info text-white">
+                <h5 class="mb-0">
+                    <i class="fas fa-info-circle me-2"></i>Status de Transporte
+                </h5>
+            </div>
+            <div class="card-body">
+                <div class="status-item mb-3">
+                    <span class="badge bg-warning me-2">Pendente</span>
+                    <small class="text-muted">Transporte programado, aguardando execução</small>
+                </div>
+                <div class="status-item mb-3">
+                    <span class="badge bg-info me-2">Em Trânsito</span>
+                    <small class="text-muted">Artefato sendo transportado</small>
+                </div>
+                <div class="status-item">
+                    <span class="badge bg-success me-2">Concluído</span>
+                    <small class="text-muted">Artefato entregue no destino</small>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Transport History -->
+{% if transports %}
+<div class="mt-5">
+    <h3 class="h4 mb-4">Histórico de Transportes</h3>
+    
+    <div class="card border-0 shadow">
+        <div class="card-body p-0">
+            <div class="table-responsive">
+                <table class="table table-hover mb-0">
+                    <thead class="table-light">
+                        <tr>
+                            <th>Artefato</th>
+                            <th>Rota</th>
+                            <th>Data</th>
+                            <th>Responsável</th>
+                            <th>Status</th>
+                            <th>Ações</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for transport in transports %}
+                        <tr>
+                            <td>
+                                <div class="fw-bold">{{ transport.artifact.name }}</div>
+                                <small class="text-muted">{{ transport.artifact.qr_code }}</small>
+                            </td>
+                            <td>
+                                <div class="transport-route">
+                                    <div class="route-item mb-1">
+                                        <i class="fas fa-circle text-archaeological me-1" style="font-size: 0.5rem;"></i>
+                                        <small class="text-muted">{{ transport.origin_location }}</small>
+                                    </div>
+                                    <div class="route-arrow text-center">
+                                        <i class="fas fa-arrow-down text-muted" style="font-size: 0.7rem;"></i>
+                                    </div>
+                                    <div class="route-item">
+                                        <i class="fas fa-circle text-success me-1" style="font-size: 0.5rem;"></i>
+                                        <small class="text-muted">{{ transport.destination_location }}</small>
+                                    </div>
+                                </div>
+                            </td>
+                            <td>
+                                {% if transport.transport_date %}
+                                    {{ transport.transport_date.strftime('%d/%m/%Y') }}
+                                {% else %}
+                                    <span class="text-muted">Não definida</span>
+                                {% endif %}
+                            </td>
+                            <td>
+                                {% if transport.responsible_person %}
+                                    <span class="badge bg-light text-dark">{{ transport.responsible_person }}</span>
+                                {% else %}
+                                    <span class="text-muted">-</span>
+                                {% endif %}
+                            </td>
+                            <td>
+                                {% if transport.status == 'pendente' %}
+                                    <span class="badge bg-warning">
+                                        <i class="fas fa-clock me-1"></i>Pendente
+                                    </span>
+                                {% elif transport.status == 'em_transito' %}
+                                    <span class="badge bg-info">
+                                        <i class="fas fa-truck me-1"></i>Em Trânsito
+                                    </span>
+                                {% elif transport.status == 'concluido' %}
+                                    <span class="badge bg-success">
+                                        <i class="fas fa-check me-1"></i>Concluído
+                                    </span>
+                                {% else %}
+                                    <span class="badge bg-secondary">{{ transport.status|title }}</span>
+                                {% endif %}
+                            </td>
+                            <td>
+                                <div class="btn-group btn-group-sm">
+                                    <button type="button" class="btn btn-outline-archaeological" title="Rastrear" onclick="trackTransport({{ transport.id }})">
+                                        <i class="fas fa-map-marker-alt"></i>
+                                    </button>
+                                    <button type="button" class="btn btn-outline-info" title="Detalhes" onclick="showTransportDetails({{ transport.id }})">
+                                        <i class="fas fa-eye"></i>
+                                    </button>
+                                    {% if transport.status != 'concluido' %}
+                                    <button type="button" class="btn btn-outline-success" title="Atualizar Status" onclick="updateStatus({{ transport.id }})">
+                                        <i class="fas fa-edit"></i>
+                                    </button>
+                                    {% endif %}
+                                </div>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+{% else %}
+<div class="empty-transport-state mt-5">
+    <div class="text-center py-5">
+        <i class="fas fa-truck fa-4x text-muted mb-4"></i>
+        <h3 class="text-muted">Nenhum Transporte Registrado</h3>
+        <p class="lead text-muted mb-4">Registre o primeiro transporte de artefatos no sistema.</p>
+    </div>
+</div>
+{% endif %}
+{% endblock %}
+
+{% block scripts %}
+<script>
+    function trackTransport(transportId) {
+        alert(`Rastreamento do transporte ${transportId} será implementado com integração de mapas.`);
+    }
+    
+    function showTransportDetails(transportId) {
+        alert(`Detalhes do transporte ${transportId} serão exibidos em modal.`);
+    }
+    
+    function updateStatus(transportId) {
+        const newStatus = prompt('Novo status (pendente/em_transito/concluido):');
+        if (newStatus) {
+            alert(`Status do transporte ${transportId} será atualizado para: ${newStatus}`);
+        }
+    }
+    
+    // Auto-fill today's date
+    document.addEventListener('DOMContentLoaded', function() {
+        const dateInput = document.getElementById('transport_date');
+        if (dateInput && !dateInput.value) {
+            const today = new Date().toISOString().split('T')[0];
+            dateInput.value = today;
+        }
+    });
+</script>
+{% endblock %}

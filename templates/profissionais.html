@@ -1,0 +1,199 @@
+{% extends "base.html" %}
+
+{% block title %}Profissionais da Região - L.A.A.R.I{% endblock %}
+
+{% block content %}
+<div class="page-header mb-4">
+    <div class="d-flex justify-content-between align-items-center">
+        <div>
+            <h1 class="display-6 fw-bold">
+                <i class="fas fa-users me-3"></i>Profissionais da Região
+            </h1>
+            <p class="lead text-muted">Diretório completo de arqueólogos e especialistas</p>
+        </div>
+        <a href="{{ url_for('adicionar_profissional') }}" class="btn btn-archaeological btn-lg">
+            <i class="fas fa-user-plus me-2"></i>Adicionar Profissional
+        </a>
+    </div>
+</div>
+
+{% if professionals %}
+<!-- Professionals Grid -->
+<div class="professionals-grid">
+    <div class="row g-4">
+        {% for professional in professionals %}
+        <div class="col-lg-4 col-md-6">
+            <div class="card professional-card h-100 border-0 shadow-sm">
+                <div class="card-body p-4 text-center">
+                    <!-- Profile Photo -->
+                    <div class="profile-photo-container mb-3">
+                        {% if professional.profile_photo %}
+                            <img src="{{ url_for('static', filename=professional.profile_photo) }}" 
+                                 alt="{{ professional.name }}" 
+                                 class="profile-photo rounded-circle">
+                        {% else %}
+                            <div class="profile-photo-placeholder rounded-circle d-flex align-items-center justify-content-center">
+                                <i class="fas fa-user fa-3x text-muted"></i>
+                            </div>
+                        {% endif %}
+                    </div>
+                    
+                    <!-- Professional Info -->
+                    <h4 class="card-title fw-bold mb-2">{{ professional.name }}</h4>
+                    
+                    {% if professional.age %}
+                    <p class="text-muted mb-2">
+                        <i class="fas fa-birthday-cake me-2"></i>{{ professional.age }} anos
+                    </p>
+                    {% endif %}
+                    
+                    {% if professional.specialization %}
+                    <div class="mb-3">
+                        <span class="badge bg-archaeological fs-6">{{ professional.specialization }}</span>
+                    </div>
+                    {% endif %}
+                    
+                    {% if professional.description %}
+                    <p class="card-text text-muted mb-3">
+                        {{ professional.description[:100] }}{% if professional.description|length > 100 %}...{% endif %}
+                    </p>
+                    {% endif %}
+                    
+                    <!-- Action Button -->
+                    <a href="{{ url_for('perfil_profissional', id=professional.id) }}" class="btn btn-outline-archaeological">
+                        <i class="fas fa-eye me-2"></i>Ver Mais
+                    </a>
+                </div>
+                
+                <div class="card-footer bg-transparent border-0 text-center">
+                    <small class="text-muted">
+                        <i class="fas fa-calendar me-1"></i>
+                        Cadastrado em {{ professional.created_at.strftime('%d/%m/%Y') }}
+                    </small>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+
+<!-- Specializations Summary -->
+<div class="specializations-summary mt-5">
+    <h3 class="h4 mb-4">Especializações Disponíveis</h3>
+    <div class="card border-0 shadow">
+        <div class="card-body">
+            {% set specializations = professionals|groupby('specialization') %}
+            <div class="row g-3">
+                {% for specialization, profs in specializations %}
+                <div class="col-md-4">
+                    <div class="specialization-item p-3 rounded border">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <h6 class="mb-0">{{ specialization or 'Não Especificado' }}</h6>
+                            <span class="badge bg-archaeological">{{ profs|list|length }}</span>
+                        </div>
+                        <small class="text-muted">profissional{{ 's' if profs|list|length > 1 else '' }}</small>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+</div>
+{% else %}
+<div class="empty-state text-center py-5">
+    <i class="fas fa-users fa-4x text-muted mb-4"></i>
+    <h3 class="text-muted">Nenhum Profissional Cadastrado</h3>
+    <p class="lead text-muted mb-4">Comece adicionando profissionais ao diretório do L.A.A.R.I</p>
+    <a href="{{ url_for('adicionar_profissional') }}" class="btn btn-archaeological btn-lg">
+        <i class="fas fa-user-plus me-2"></i>Adicionar Primeiro Profissional
+    </a>
+</div>
+{% endif %}
+
+<!-- Search Modal -->
+<div class="modal fade" id="searchModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Buscar Profissionais</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <div class="mb-3">
+                    <label for="searchName" class="form-label">Nome</label>
+                    <input type="text" class="form-control" id="searchName" placeholder="Digite o nome...">
+                </div>
+                <div class="mb-3">
+                    <label for="searchSpecialization" class="form-label">Especialização</label>
+                    <select class="form-select" id="searchSpecialization">
+                        <option value="">Todas as especializações</option>
+                        {% for professional in professionals %}
+                            {% if professional.specialization %}
+                                <option value="{{ professional.specialization }}">{{ professional.specialization }}</option>
+                            {% endif %}
+                        {% endfor %}
+                    </select>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fechar</button>
+                <button type="button" class="btn btn-archaeological" onclick="filterProfessionals()">Buscar</button>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    // Add hover effects to professional cards
+    document.querySelectorAll('.professional-card').forEach(card => {
+        card.addEventListener('mouseenter', function() {
+            this.style.transform = 'translateY(-5px)';
+            this.style.transition = 'transform 0.3s ease';
+        });
+        
+        card.addEventListener('mouseleave', function() {
+            this.style.transform = 'translateY(0)';
+        });
+    });
+    
+    // Search functionality
+    function filterProfessionals() {
+        const name = document.getElementById('searchName').value.toLowerCase();
+        const specialization = document.getElementById('searchSpecialization').value;
+        const cards = document.querySelectorAll('.professional-card');
+        
+        cards.forEach(card => {
+            const cardName = card.querySelector('.card-title').textContent.toLowerCase();
+            const cardSpec = card.querySelector('.badge') ? card.querySelector('.badge').textContent : '';
+            
+            const matchesName = !name || cardName.includes(name);
+            const matchesSpec = !specialization || cardSpec === specialization;
+            
+            if (matchesName && matchesSpec) {
+                card.closest('.col-lg-4').style.display = '';
+            } else {
+                card.closest('.col-lg-4').style.display = 'none';
+            }
+        });
+        
+        // Close modal
+        bootstrap.Modal.getInstance(document.getElementById('searchModal')).hide();
+    }
+    
+    // Add search button to header (if needed)
+    if ({{ professionals|length }} > 6) {
+        const searchBtn = document.createElement('button');
+        searchBtn.className = 'btn btn-outline-archaeological me-2';
+        searchBtn.innerHTML = '<i class="fas fa-search me-2"></i>Buscar';
+        searchBtn.setAttribute('data-bs-toggle', 'modal');
+        searchBtn.setAttribute('data-bs-target', '#searchModal');
+        
+        const addBtn = document.querySelector('.page-header .btn-archaeological');
+        if (addBtn) {
+            addBtn.parentNode.insertBefore(searchBtn, addBtn);
+        }
+    }
+</script>
+{% endblock %}

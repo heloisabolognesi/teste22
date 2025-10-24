@@ -1,0 +1,229 @@
+{% extends "base.html" %}
+
+{% block title %}{{ professional.name }} - Perfil Profissional - L.A.A.R.I{% endblock %}
+
+{% block content %}
+<div class="page-header mb-4">
+    <div class="d-flex justify-content-between align-items-center">
+        <div>
+            <h1 class="display-6 fw-bold">
+                <i class="fas fa-user me-3"></i>Perfil Profissional
+            </h1>
+            <p class="lead text-muted">Detalhes completos do profissional</p>
+        </div>
+        <a href="{{ url_for('profissionais') }}" class="btn btn-outline-archaeological">
+            <i class="fas fa-arrow-left me-2"></i>Voltar à Lista
+        </a>
+    </div>
+</div>
+
+<div class="row">
+    <!-- Professional Profile Card -->
+    <div class="col-lg-4">
+        <div class="card professional-profile-card border-0 shadow h-100">
+            <div class="card-body text-center p-4">
+                <!-- Profile Photo -->
+                <div class="profile-photo-large-container mb-4">
+                    {% if professional.profile_photo %}
+                        <img src="{{ url_for('static', filename=professional.profile_photo) }}" 
+                             alt="{{ professional.name }}" 
+                             class="profile-photo-large rounded-circle">
+                    {% else %}
+                        <div class="profile-photo-large-placeholder rounded-circle d-flex align-items-center justify-content-center mx-auto">
+                            <i class="fas fa-user fa-4x text-muted"></i>
+                        </div>
+                    {% endif %}
+                </div>
+                
+                <!-- Basic Info -->
+                <h2 class="h3 fw-bold mb-2">{{ professional.name }}</h2>
+                
+                {% if professional.specialization %}
+                <div class="mb-3">
+                    <span class="badge bg-archaeological fs-6 px-3 py-2">{{ professional.specialization }}</span>
+                </div>
+                {% endif %}
+                
+                {% if professional.age %}
+                <p class="text-muted mb-3">
+                    <i class="fas fa-birthday-cake me-2"></i>{{ professional.age }} anos
+                </p>
+                {% endif %}
+                
+                <!-- Contact/Social section placeholder -->
+                <div class="contact-info mt-4 pt-3 border-top">
+                    <h6 class="fw-bold mb-3">Informações de Contato</h6>
+                    <div class="text-muted">
+                        <i class="fas fa-envelope me-2"></i>Informações de contato não disponíveis
+                    </div>
+                </div>
+            </div>
+            
+            <div class="card-footer bg-transparent border-0 text-center">
+                <small class="text-muted">
+                    <i class="fas fa-calendar-plus me-1"></i>
+                    Cadastrado em {{ professional.created_at.strftime('%d/%m/%Y às %H:%M') }}
+                </small>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Professional Details -->
+    <div class="col-lg-8">
+        <div class="professional-details">
+            <!-- Description -->
+            {% if professional.description %}
+            <div class="card border-0 shadow mb-4">
+                <div class="card-header bg-archaeological text-white">
+                    <h4 class="mb-0">
+                        <i class="fas fa-info-circle me-2"></i>Descrição Profissional
+                    </h4>
+                </div>
+                <div class="card-body p-4">
+                    <p class="mb-0" style="line-height: 1.7;">{{ professional.description }}</p>
+                </div>
+            </div>
+            {% endif %}
+            
+            <!-- Experience -->
+            {% if professional.experience %}
+            <div class="card border-0 shadow mb-4">
+                <div class="card-header bg-archaeological text-white">
+                    <h4 class="mb-0">
+                        <i class="fas fa-medal me-2"></i>Experiência Profissional
+                    </h4>
+                </div>
+                <div class="card-body p-4">
+                    <div class="experience-content" style="line-height: 1.7;">
+                        {{ professional.experience|replace('\n', '<br>')|safe }}
+                    </div>
+                </div>
+            </div>
+            {% endif %}
+            
+            <!-- Professional Statistics/Timeline -->
+            <div class="card border-0 shadow mb-4">
+                <div class="card-header bg-light">
+                    <h5 class="mb-0">
+                        <i class="fas fa-chart-line me-2"></i>Resumo Profissional
+                    </h5>
+                </div>
+                <div class="card-body p-4">
+                    <div class="row g-4">
+                        <div class="col-md-6">
+                            <div class="stat-item text-center p-3 rounded border">
+                                <i class="fas fa-calendar-alt fa-2x text-archaeological mb-2"></i>
+                                <h6 class="fw-bold">Tempo no Sistema</h6>
+                                <p class="text-muted mb-0">
+                                    {{ (moment().utcnow() - professional.created_at).days if moment else 'N/A' }} dias
+                                </p>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="stat-item text-center p-3 rounded border">
+                                <i class="fas fa-star fa-2x text-archaeological mb-2"></i>
+                                <h6 class="fw-bold">Especialização</h6>
+                                <p class="text-muted mb-0">
+                                    {{ professional.specialization or 'Não especificado' }}
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Related Artifacts (placeholder for future implementation) -->
+            <div class="card border-0 shadow">
+                <div class="card-header bg-light">
+                    <h5 class="mb-0">
+                        <i class="fas fa-archive me-2"></i>Artefatos Relacionados
+                    </h5>
+                </div>
+                <div class="card-body p-4">
+                    <div class="text-center text-muted py-4">
+                        <i class="fas fa-box-open fa-3x mb-3"></i>
+                        <p class="mb-0">Funcionalidade de vinculação de artefatos será implementada em breve.</p>
+                        <small>Aqui serão exibidos artefatos descobertos ou estudados por este profissional.</small>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Action Buttons -->
+<div class="action-buttons mt-4">
+    <div class="card border-0 shadow-sm">
+        <div class="card-body text-center p-4">
+            <h6 class="mb-3">Ações Disponíveis</h6>
+            <div class="btn-group-vertical btn-group-lg">
+                <button type="button" class="btn btn-outline-archaeological mb-2" onclick="contactProfessional()">
+                    <i class="fas fa-envelope me-2"></i>Entrar em Contato
+                </button>
+                <button type="button" class="btn btn-outline-info mb-2" onclick="viewProjects()">
+                    <i class="fas fa-project-diagram me-2"></i>Ver Projetos Relacionados
+                </button>
+                <button type="button" class="btn btn-outline-success" onclick="shareProfile()">
+                    <i class="fas fa-share me-2"></i>Compartilhar Perfil
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Empty state for missing information -->
+{% if not professional.description and not professional.experience %}
+<div class="missing-info-alert mt-4">
+    <div class="alert alert-warning border-0">
+        <h6 class="alert-heading">
+            <i class="fas fa-exclamation-triangle me-2"></i>Informações Limitadas
+        </h6>
+        <p class="mb-0">Este perfil possui informações básicas. Entre em contato com o profissional para obter mais detalhes sobre sua experiência e especialização.</p>
+    </div>
+</div>
+{% endif %}
+{% endblock %}
+
+{% block scripts %}
+<script>
+    function contactProfessional() {
+        alert('Funcionalidade de contato será implementada em breve.\nPor enquanto, utilize os canais convencionais de comunicação.');
+    }
+    
+    function viewProjects() {
+        alert('Funcionalidade de projetos relacionados será implementada em breve.');
+    }
+    
+    function shareProfile() {
+        if (navigator.share) {
+            navigator.share({
+                title: 'Perfil de {{ professional.name }} - L.A.A.R.I',
+                text: 'Veja o perfil profissional de {{ professional.name }} no sistema L.A.A.R.I',
+                url: window.location.href
+            });
+        } else {
+            // Fallback for browsers without Web Share API
+            navigator.clipboard.writeText(window.location.href).then(() => {
+                alert('Link do perfil copiado para a área de transferência!');
+            }).catch(() => {
+                alert('Não foi possível copiar o link. URL: ' + window.location.href);
+            });
+        }
+    }
+    
+    // Add some smooth animations
+    document.addEventListener('DOMContentLoaded', function() {
+        const cards = document.querySelectorAll('.card');
+        cards.forEach((card, index) => {
+            card.style.opacity = '0';
+            card.style.transform = 'translateY(20px)';
+            
+            setTimeout(() => {
+                card.style.transition = 'opacity 0.5s ease, transform 0.5s ease';
+                card.style.opacity = '1';
+                card.style.transform = 'translateY(0)';
+            }, index * 100);
+        });
+    });
+</script>
+{% endblock %}
