@@ -3,8 +3,11 @@
 {% block title %}L.A.A.R.I - {{ _('Bem-vindo') }}{% endblock %}
 
 {% block content %}
-<!-- Language Selector for Public Pages -->
-<div class="position-fixed top-0 end-0 p-3" style="z-index: 1050;">
+<!-- Theme and Language Controls for Public Pages -->
+<div class="d-flex justify-content-end p-3 gap-2">
+    <button class="btn btn-archaeological rounded-circle" type="button" id="themeToggle" style="width: 45px; height: 45px;" aria-label="Alternar tema">
+        <span id="themeIcon">🌙</span>
+    </button>
     <div class="dropdown">
         <button class="btn btn-archaeological dropdown-toggle" type="button" id="languageDropdown" data-bs-toggle="dropdown" aria-expanded="false">
             <i class="fas fa-globe me-2"></i>{{ _('Idioma') }}

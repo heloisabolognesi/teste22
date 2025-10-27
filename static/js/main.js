@@ -283,14 +283,42 @@ function initializeAnimations() {
  * Initialize theme controls
  */
 function initializeThemeControls() {
-    // Add dark mode toggle (future feature)
-    const prefersDark = window.matchMedia('(prefers-color-scheme: dark)');
+    const themeToggle = document.getElementById('themeToggle');
+    const themeIcon = document.getElementById('themeIcon');
     
-    // Listen for changes in system theme preference
-    prefersDark.addEventListener('change', function(e) {
-        console.log('System theme changed:', e.matches ? 'dark' : 'light');
-        // Future: Apply dark theme
+    if (!themeToggle) return;
+    
+    const savedTheme = Storage.get('theme', 'light');
+    applyTheme(savedTheme);
+    
+    themeToggle.addEventListener('click', function() {
+        const currentTheme = document.documentElement.getAttribute('data-theme') || 'light';
+        const newTheme = currentTheme === 'light' ? 'dark' : 'light';
+        applyTheme(newTheme);
+        Storage.set('theme', newTheme);
     });
+    
+    const prefersDark = window.matchMedia('(prefers-color-scheme: dark)');
+    prefersDark.addEventListener('change', function(e) {
+        if (!Storage.get('theme')) {
+            applyTheme(e.matches ? 'dark' : 'light');
+        }
+    });
+}
+
+/**
+ * Apply theme to the page
+ */
+function applyTheme(theme) {
+    const themeIcon = document.getElementById('themeIcon');
+    
+    if (theme === 'dark') {
+        document.documentElement.setAttribute('data-theme', 'dark');
+        if (themeIcon) themeIcon.textContent = '☀️';
+    } else {
+        document.documentElement.setAttribute('data-theme', 'light');
+        if (themeIcon) themeIcon.textContent = '🌙';
+    }
 }
 
 /**
