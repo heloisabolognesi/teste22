@@ -80,6 +80,7 @@ class ArtifactForm(FlaskForm):
     code = StringField('Código do Artefato', validators=[Length(max=50)])
     discovery_date = DateField('Data de Descoberta', validators=[Optional()])
     origin_location = StringField('Local de Origem', validators=[Length(max=300)])
+    archaeological_site = StringField('Sítio Arqueológico', validators=[Length(max=300)])
     artifact_type = SelectField('Tipo de Artefato', choices=[
         ('ceramica', 'Cerâmica'),
         ('litico', 'Lítico'),

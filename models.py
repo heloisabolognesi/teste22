@@ -40,9 +40,10 @@ class Professional(db.Model):
 class Artifact(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(200), nullable=False)
-    code = db.Column(db.String(50), unique=True)  # Código do artefato
+    code = db.Column(db.String(50), unique=True)
     discovery_date = db.Column(db.Date)
     origin_location = db.Column(db.String(300))
+    archaeological_site = db.Column(db.String(300))
     artifact_type = db.Column(db.String(100))
     conservation_state = db.Column(db.String(100))
     observations = db.Column(db.Text)
