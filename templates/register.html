@@ -3,8 +3,11 @@
 {% block title %}{{ _('Cadastrar') }} - L.A.A.R.I{% endblock %}
 
 {% block content %}
-<!-- Language Selector for Public Pages -->
-<div class="position-fixed top-0 end-0 p-3" style="z-index: 1050;">
+<!-- Theme and Language Controls for Public Pages -->
+<div class="position-fixed top-0 end-0 p-3 d-flex gap-2" style="z-index: 1050;">
+    <button class="btn btn-archaeological rounded-circle d-flex align-items-center justify-content-center p-0" type="button" id="themeToggle" style="width: 45px; height: 45px; font-size: 1.3rem; line-height: 1;" aria-label="Alternar tema">
+        <span id="themeIcon">🌙</span>
+    </button>
     <div class="dropdown">
         <button class="btn btn-archaeological dropdown-toggle" type="button" id="languageDropdown" data-bs-toggle="dropdown" aria-expanded="false">
             <i class="fas fa-globe me-2"></i>{{ _('Idioma') }}
