@@ -31,37 +31,37 @@
                 <ul class="navbar-nav me-auto">
                     <li class="nav-item">
                         <a class="nav-link" href="{{ url_for('dashboard') }}">
-                            <i class="fas fa-home me-1"></i>{{ _('Dashboard') }}
+                            <i class="fas fa-home me-1"></i><span data-i18n="nav_dashboard">Dashboard</span>
                         </a>
                     </li>
                     <li class="nav-item">
                         <a class="nav-link" href="{{ url_for('acervo') }}">
-                            <i class="fas fa-archive me-1"></i>{{ _('Acervo') }}
+                            <i class="fas fa-archive me-1"></i><span data-i18n="nav_acervo">Acervo</span>
                         </a>
                     </li>
                     <li class="nav-item">
                         <a class="nav-link" href="{{ url_for('catalogacao') }}">
-                            <i class="fas fa-tags me-1"></i>{{ _('Catalogação') }}
+                            <i class="fas fa-tags me-1"></i><span data-i18n="nav_catalogacao">Catalogação</span>
                         </a>
                     </li>
                     <li class="nav-item">
                         <a class="nav-link" href="{{ url_for('scanner_3d') }}">
-                            <i class="fas fa-cube me-1"></i>{{ _('Modelo 3D') }}
+                            <i class="fas fa-cube me-1"></i><span data-i18n="nav_modelo_3d">Modelo 3D</span>
                         </a>
                     </li>
                     <li class="nav-item">
                         <a class="nav-link" href="{{ url_for('profissionais') }}">
-                            <i class="fas fa-users me-1"></i>{{ _('Profissionais') }}
+                            <i class="fas fa-users me-1"></i><span data-i18n="nav_profissionais">Profissionais</span>
                         </a>
                     </li>
                     <li class="nav-item">
                         <a class="nav-link" href="{{ url_for('inventario') }}">
-                            <i class="fas fa-clipboard-list me-1"></i>{{ _('Inventário') }}
+                            <i class="fas fa-clipboard-list me-1"></i><span data-i18n="nav_inventario">Inventário</span>
                         </a>
                     </li>
                     <li class="nav-item">
                         <a class="nav-link" href="{{ url_for('transporte') }}">
-                            <i class="fas fa-truck me-1"></i>{{ _('Transporte') }}
+                            <i class="fas fa-truck me-1"></i><span data-i18n="nav_transporte">Transporte</span>
                         </a>
                     </li>
                 </ul>
@@ -69,7 +69,7 @@
                 <ul class="navbar-nav">
                     <li class="nav-item">
                         <a class="nav-link" href="{{ url_for('galeria') }}">
-                            <i class="fas fa-images me-1"></i>{{ _('Galeria') }}
+                            <i class="fas fa-images me-1"></i><span data-i18n="nav_galeria">Galeria</span>
                         </a>
                     </li>
                     <li class="nav-item">
@@ -79,20 +79,20 @@
                     </li>
                     <li class="nav-item dropdown">
                         <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">
-                            <i class="fas fa-globe me-1"></i>{{ _('Idioma') }}
+                            <i class="fas fa-globe me-1"></i><span data-i18n="nav_idioma">Idioma</span>
                         </a>
                         <ul class="dropdown-menu">
-                            <li><a class="dropdown-item" href="{{ url_for('set_language', language='pt') }}">
-                                <span class="me-2">🇧🇷</span>Português
+                            <li><a class="dropdown-item" href="#" data-language="pt-BR">
+                                <span class="me-2">🇧🇷</span><span data-i18n="language_pt">Português</span>
                             </a></li>
-                            <li><a class="dropdown-item" href="{{ url_for('set_language', language='en') }}">
-                                <span class="me-2">🇬🇧</span>English
+                            <li><a class="dropdown-item" href="#" data-language="en">
+                                <span class="me-2">🇬🇧</span><span data-i18n="language_en">English</span>
                             </a></li>
-                            <li><a class="dropdown-item" href="{{ url_for('set_language', language='es') }}">
-                                <span class="me-2">🇪🇸</span>Español
+                            <li><a class="dropdown-item" href="#" data-language="es">
+                                <span class="me-2">🇪🇸</span><span data-i18n="language_es">Español</span>
                             </a></li>
-                            <li><a class="dropdown-item" href="{{ url_for('set_language', language='fr') }}">
-                                <span class="me-2">🇫🇷</span>Français
+                            <li><a class="dropdown-item" href="#" data-language="fr">
+                                <span class="me-2">🇫🇷</span><span data-i18n="language_fr">Français</span>
                             </a></li>
                         </ul>
                     </li>
@@ -103,15 +103,15 @@
                         <ul class="dropdown-menu">
                             {% if current_user.is_admin %}
                             <li><a class="dropdown-item" href="{{ url_for('admin') }}">
-                                <i class="fas fa-cog me-1"></i>{{ _('Administração') }}
+                                <i class="fas fa-cog me-1"></i><span data-i18n="nav_administracao">Administração</span>
                             </a></li>
                             <li><a class="dropdown-item" href="{{ url_for('admin_galeria') }}">
-                                <i class="fas fa-images me-1"></i>{{ _('Gerenciar Galeria') }}
+                                <i class="fas fa-images me-1"></i><span data-i18n="nav_gerenciar_galeria">Gerenciar Galeria</span>
                             </a></li>
                             <li><hr class="dropdown-divider"></li>
                             {% endif %}
                             <li><a class="dropdown-item" href="{{ url_for('logout') }}">
-                                <i class="fas fa-sign-out-alt me-1"></i>{{ _('Sair') }}
+                                <i class="fas fa-sign-out-alt me-1"></i><span data-i18n="nav_sair">Sair</span>
                             </a></li>
                         </ul>
                     </li>
@@ -143,15 +143,19 @@
     <!-- Footer -->
     <footer class="bg-archaeological text-light mt-5 py-4">
         <div class="container text-center">
-            <p>&copy; 2025 L.A.A.R.I - Laboratório e Acervo Arqueológico Remoto Integrado</p>
-            <p class="mb-1">Sistema de Gestão Arqueológica</p>
-            <p class="mb-1 small">Equipe Tech Era</p>
-            <p class="mb-0 small">Desenvolvido por Heloisa Bolognesi</p>
+            <p data-i18n="footer_copyright">&copy; 2025 L.A.A.R.I - Laboratório e Acervo Arqueológico Remoto Integrado</p>
+            <p class="mb-1" data-i18n="footer_subtitle">Sistema de Gestão Arqueológica</p>
+            <p class="mb-1 small" data-i18n="footer_team">Equipe Tech Era</p>
+            <p class="mb-0 small" data-i18n="footer_developer">Desenvolvido por Heloisa Bolognesi</p>
         </div>
     </footer>
 
     <!-- Bootstrap JS -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- Translations -->
+    <script src="{{ url_for('static', filename='js/translations.js') }}"></script>
+    <!-- i18n System -->
+    <script src="{{ url_for('static', filename='js/i18n.js') }}"></script>
     <!-- Custom JS -->
     <script src="{{ url_for('static', filename='js/main.js') }}"></script>
     
