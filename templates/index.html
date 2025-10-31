@@ -5,25 +5,25 @@
 {% block content %}
 <!-- Theme and Language Controls for Public Pages -->
 <div class="position-absolute top-0 end-0 p-3 d-flex gap-2" style="z-index: 1050;">
-    <button class="btn btn-archaeological rounded-circle d-flex align-items-center justify-content-center p-0" type="button" id="themeToggle" style="width: 45px; height: 45px; font-size: 1.3rem; line-height: 1;" aria-label="Alternar tema">
+    <button class="btn btn-archaeological rounded-circle d-flex align-items-center justify-content-center p-0" type="button" id="themeToggle" style="width: 45px; height: 45px; font-size: 1.3rem; line-height: 1;" data-i18n-aria="theme_toggle">
         <span id="themeIcon">🌙</span>
     </button>
     <div class="dropdown">
         <button class="btn btn-archaeological dropdown-toggle" type="button" id="languageDropdown" data-bs-toggle="dropdown" aria-expanded="false">
-            <i class="fas fa-globe me-2"></i>{{ _('Idioma') }}
+            <i class="fas fa-globe me-2"></i><span data-i18n="nav_idioma">Idioma</span>
         </button>
         <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="languageDropdown">
-            <li><a class="dropdown-item" href="{{ url_for('set_language', language='pt') }}">
-                <span class="me-2">🇧🇷</span>Português
+            <li><a class="dropdown-item" href="#" data-language="pt-BR">
+                <span class="me-2">🇧🇷</span><span data-i18n="language_pt">Português</span>
             </a></li>
-            <li><a class="dropdown-item" href="{{ url_for('set_language', language='en') }}">
-                <span class="me-2">🇬🇧</span>English
+            <li><a class="dropdown-item" href="#" data-language="en">
+                <span class="me-2">🇬🇧</span><span data-i18n="language_en">English</span>
             </a></li>
-            <li><a class="dropdown-item" href="{{ url_for('set_language', language='es') }}">
-                <span class="me-2">🇪🇸</span>Español
+            <li><a class="dropdown-item" href="#" data-language="es">
+                <span class="me-2">🇪🇸</span><span data-i18n="language_es">Español</span>
             </a></li>
-            <li><a class="dropdown-item" href="{{ url_for('set_language', language='fr') }}">
-                <span class="me-2">🇫🇷</span>Français
+            <li><a class="dropdown-item" href="#" data-language="fr">
+                <span class="me-2">🇫🇷</span><span data-i18n="language_fr">Français</span>
             </a></li>
         </ul>
     </div>
@@ -36,9 +36,9 @@
         <div class="col-lg-8 text-center">
             <div class="welcome-header mb-5">
                 <i class="fas fa-university archaeological-icon mb-3"></i>
-                <h1 class="display-4 fw-bold archaeological-title">L.A.A.R.I</h1>
-                <h2 class="h4 mb-4 text-muted">{{ _('Laboratório e Acervo Arqueológico Remoto Integrado') }}</h2>
-                <p class="lead">{{ _('Sistema completo de gestão arqueológica para centralizar documentação, catalogação, acervo e inventário, facilitando a comunicação entre equipes de campo e laboratório.') }}</p>
+                <h1 class="display-4 fw-bold archaeological-title" data-i18n="app_name">L.A.A.R.I</h1>
+                <h2 class="h4 mb-4 text-muted" data-i18n="app_full_name">Laboratório e Acervo Arqueológico Remoto Integrado</h2>
+                <p class="lead" data-i18n="app_description">Sistema completo de gestão arqueológica para centralizar documentação, catalogação, acervo e inventário, facilitando a comunicação entre equipes de campo e laboratório.</p>
             </div>
 
             <div class="welcome-actions">
@@ -47,10 +47,10 @@
                         <div class="card h-100 shadow-sm border-0 action-card">
                             <div class="card-body text-center p-4">
                                 <i class="fas fa-sign-in-alt fa-3x mb-3 text-archaeological"></i>
-                                <h4 class="card-title">{{ _('Entrar') }}</h4>
-                                <p class="card-text">{{ _('Acesse sua conta existente no sistema L.A.A.R.I') }}</p>
+                                <h4 class="card-title" data-i18n="login_title">Entrar</h4>
+                                <p class="card-text" data-i18n="login_description">Acesse sua conta existente no sistema L.A.A.R.I</p>
                                 <a href="{{ url_for('login') }}" class="btn btn-archaeological btn-lg">
-                                    <i class="fas fa-arrow-right me-2"></i>{{ _('Fazer Login') }}
+                                    <i class="fas fa-arrow-right me-2"></i><span data-i18n="btn_fazer_login">Fazer Login</span>
                                 </a>
                             </div>
                         </div>
@@ -60,10 +60,10 @@
                         <div class="card h-100 shadow-sm border-0 action-card">
                             <div class="card-body text-center p-4">
                                 <i class="fas fa-user-plus fa-3x mb-3 text-archaeological"></i>
-                                <h4 class="card-title">{{ _('Cadastrar') }}</h4>
-                                <p class="card-text">{{ _('Crie uma nova conta para acessar o sistema') }}</p>
+                                <h4 class="card-title" data-i18n="register_title">Cadastrar</h4>
+                                <p class="card-text" data-i18n="register_description">Crie uma nova conta para acessar o sistema</p>
                                 <a href="{{ url_for('register') }}" class="btn btn-outline-archaeological btn-lg">
-                                    <i class="fas fa-user-plus me-2"></i>{{ _('Criar Conta') }}
+                                    <i class="fas fa-user-plus me-2"></i><span data-i18n="btn_criar_conta">Criar Conta</span>
                                 </a>
                             </div>
                         </div>
@@ -73,48 +73,48 @@
 
             <!-- Features overview -->
             <div class="features-overview mt-5">
-                <h3 class="mb-4">{{ _('Funcionalidades Principais') }}</h3>
+                <h3 class="mb-4" data-i18n="features_title">Funcionalidades Principais</h3>
                 <div class="row g-3">
                     <div class="col-md-4">
                         <div class="feature-item">
                             <i class="fas fa-archive fa-2x mb-2 text-archaeological"></i>
-                            <h5>{{ _('Acervo Digital') }}</h5>
-                            <p class="small text-muted">{{ _('Consulta organizada de todos os itens catalogados') }}</p>
+                            <h5 data-i18n="feature_acervo">Acervo Digital</h5>
+                            <p class="small text-muted" data-i18n="feature_acervo_desc">Consulta organizada de todos os itens catalogados</p>
                         </div>
                     </div>
                     <div class="col-md-4">
                         <div class="feature-item">
                             <i class="fas fa-tags fa-2x mb-2 text-archaeological"></i>
-                            <h5>{{ _('Catalogação') }}</h5>
-                            <p class="small text-muted">{{ _('Sistema completo de registro de artefatos') }}</p>
+                            <h5 data-i18n="feature_catalogacao">Catalogação</h5>
+                            <p class="small text-muted" data-i18n="feature_catalogacao_desc">Sistema completo de registro de artefatos</p>
                         </div>
                     </div>
                     <div class="col-md-4">
                         <div class="feature-item">
                             <i class="fas fa-cube fa-2x mb-2 text-archaeological"></i>
-                            <h5>{{ _('Scanner 3D') }}</h5>
-                            <p class="small text-muted">{{ _('Integração com digitalização 3D') }}</p>
+                            <h5 data-i18n="feature_scanner">Scanner 3D</h5>
+                            <p class="small text-muted" data-i18n="feature_scanner_desc">Integração com digitalização 3D</p>
                         </div>
                     </div>
                     <div class="col-md-4">
                         <div class="feature-item">
                             <i class="fas fa-users fa-2x mb-2 text-archaeological"></i>
-                            <h5>{{ _('Profissionais') }}</h5>
-                            <p class="small text-muted">{{ _('Diretório de arqueólogos da região') }}</p>
+                            <h5 data-i18n="feature_profissionais">Profissionais</h5>
+                            <p class="small text-muted" data-i18n="feature_profissionais_desc">Diretório de arqueólogos da região</p>
                         </div>
                     </div>
                     <div class="col-md-4">
                         <div class="feature-item">
                             <i class="fas fa-clipboard-list fa-2x mb-2 text-archaeological"></i>
-                            <h5>{{ _('Inventário') }}</h5>
-                            <p class="small text-muted">{{ _('Controle completo do inventário') }}</p>
+                            <h5 data-i18n="feature_inventario">Inventário</h5>
+                            <p class="small text-muted" data-i18n="feature_inventario_desc">Controle completo do inventário</p>
                         </div>
                     </div>
                     <div class="col-md-4">
                         <div class="feature-item">
                             <i class="fas fa-truck fa-2x mb-2 text-archaeological"></i>
-                            <h5>{{ _('Transporte') }}</h5>
-                            <p class="small text-muted">{{ _('Rastreamento de movimentação') }}</p>
+                            <h5 data-i18n="feature_transporte">Transporte</h5>
+                            <p class="small text-muted" data-i18n="feature_transporte_desc">Rastreamento de movimentação</p>
                         </div>
                     </div>
                 </div>
