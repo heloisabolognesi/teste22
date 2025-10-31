@@ -50,6 +50,12 @@ class Artifact(db.Model):
     photo_path = db.Column(db.String(255))
     model_3d_path = db.Column(db.String(255))
     qr_code = db.Column(db.String(100), unique=True)
+    
+    # Campos de localização arqueológica
+    depth = db.Column(db.String(50))  # Profundidade
+    level = db.Column(db.String(100))  # Nível estratigráfico
+    coordinates = db.Column(db.String(200))  # Coordenadas (GPS ou grid)
+    
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
     updated_at = db.Column(db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
     

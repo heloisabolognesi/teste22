@@ -98,6 +98,12 @@ class ArtifactForm(FlaskForm):
         ('ruim', 'Ruim'),
         ('pessimo', 'Péssimo')
     ])
+    
+    # Campos de localização arqueológica
+    depth = StringField('Profundidade', validators=[Length(max=50)])
+    level = StringField('Nível Estratigráfico', validators=[Length(max=100)])
+    coordinates = StringField('Coordenadas', validators=[Length(max=200)])
+    
     observations = TextAreaField('Observações')
     photo = FileField('Foto', validators=[FileAllowed(['jpg', 'jpeg', 'png', 'gif'], 'Apenas imagens são permitidas!')])
     model_3d = FileField('Modelo 3D', validators=[FileAllowed(['obj', 'ply', 'stl', 'fbx'], 'Apenas modelos 3D são permitidos!')])

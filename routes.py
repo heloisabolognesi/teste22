@@ -175,6 +175,9 @@ def catalogar_novo():
             origin_location=form.origin_location.data,
             artifact_type=form.artifact_type.data,
             conservation_state=form.conservation_state.data,
+            depth=form.depth.data,
+            level=form.level.data,
+            coordinates=form.coordinates.data,
             observations=form.observations.data,
             user_id=current_user.id,
             qr_code=f"LAARI-{uuid.uuid4().hex[:8].upper()}"

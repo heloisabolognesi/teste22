@@ -90,6 +90,60 @@
                             {% endif %}
                         </div>
                         
+                        <!-- Campos de Localização Arqueológica -->
+                        <div class="col-12">
+                            <div class="card bg-light border-0 mb-0">
+                                <div class="card-body">
+                                    <h6 class="fw-bold mb-3">
+                                        <i class="fas fa-layer-group me-2"></i>Localização Arqueológica
+                                    </h6>
+                                    <div class="row g-3">
+                                        <!-- Profundidade -->
+                                        <div class="col-md-4">
+                                            <label for="{{ form.depth.id }}" class="form-label fw-bold">
+                                                <i class="fas fa-arrows-alt-v me-2"></i>Profundidade
+                                            </label>
+                                            {{ form.depth(class="form-control", placeholder="Ex: 1.5m, 150cm") }}
+                                            <small class="form-text text-muted">Profundidade onde foi encontrado</small>
+                                            {% if form.depth.errors %}
+                                                <div class="invalid-feedback d-block">
+                                                    {% for error in form.depth.errors %}{{ error }}{% endfor %}
+                                                </div>
+                                            {% endif %}
+                                        </div>
+                                        
+                                        <!-- Nível Estratigráfico -->
+                                        <div class="col-md-4">
+                                            <label for="{{ form.level.id }}" class="form-label fw-bold">
+                                                <i class="fas fa-layer-group me-2"></i>Nível Estratigráfico
+                                            </label>
+                                            {{ form.level(class="form-control", placeholder="Ex: Nível III, Camada A") }}
+                                            <small class="form-text text-muted">Nível ou camada estratigráfica</small>
+                                            {% if form.level.errors %}
+                                                <div class="invalid-feedback d-block">
+                                                    {% for error in form.level.errors %}{{ error }}{% endfor %}
+                                                </div>
+                                            {% endif %}
+                                        </div>
+                                        
+                                        <!-- Coordenadas -->
+                                        <div class="col-md-4">
+                                            <label for="{{ form.coordinates.id }}" class="form-label fw-bold">
+                                                <i class="fas fa-compass me-2"></i>Coordenadas
+                                            </label>
+                                            {{ form.coordinates(class="form-control", placeholder="Ex: -23.5505, -46.6333") }}
+                                            <small class="form-text text-muted">GPS ou coordenadas do grid</small>
+                                            {% if form.coordinates.errors %}
+                                                <div class="invalid-feedback d-block">
+                                                    {% for error in form.coordinates.errors %}{{ error }}{% endfor %}
+                                                </div>
+                                            {% endif %}
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
                         <!-- Estado de Conservação -->
                         <div class="col-12">
                             <label for="{{ form.conservation_state.id }}" class="form-label fw-bold">
