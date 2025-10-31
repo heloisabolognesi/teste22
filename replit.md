@@ -85,20 +85,37 @@ Preferred communication style: Simple, everyday language.
 - **Host Binding**: 0.0.0.0 binding for container deployments
 
 ### Internationalization (i18n)
-- **Supported Languages**: Portuguese (pt), English (en), Spanish (es), French (fr)
-- **Language Selector**: Dropdown menu with flag emojis (🇧🇷 🇬🇧 🇪🇸 🇫🇷) in navigation
-- **Translation System**: Simple dictionary-based translation function (_) injected into template context
-- **Language Detection**: Automatic browser language detection with session-based persistence
+- **Supported Languages**: Portuguese (pt-BR), English (en), Spanish (es), French (fr)
+- **Language Selector**: Dropdown menu with flag emojis (🇧🇷 🇬🇧 🇪🇸 🇫🇷) in navigation and public pages
+- **Translation System**: Client-side JavaScript-based i18n system with dynamic translation
+- **Architecture**:
+  - `static/js/translations.js`: Complete translation dictionary for all 4 languages
+  - `static/js/i18n.js`: i18n engine with automatic detection, localStorage persistence, and dynamic DOM updates
+  - HTML elements use `data-i18n` attributes for automatic translation
+- **Language Detection**: Automatic browser language detection on first visit
+- **Persistence**: User language preference saved in localStorage
 - **Translation Coverage**: All interface elements including menus, buttons, forms, labels, messages, and content
+- **Dynamic Updates**: Language changes apply instantly without page reload
 - **Translation Examples**: 
-  - "Pesquisar por Sítio Arqueológico" → "Search by Archaeological Site" (EN) / "Buscar por Sitio Arqueológico" (ES) / "Rechercher par Site Archéologique" (FR)
+  - "Laboratório e Acervo Arqueológico Remoto Integrado" → "Integrated Remote Archaeological Laboratory and Collection" (EN)
   - Dashboard, Cataloging, Collection, Scanner 3D, Professionals, Inventory, Transport modules fully translated
+- **Formatters**: Built-in number and date formatters respecting locale conventions
 
 ## Recent Changes
 
+**Date:** October 31, 2025
+- **JavaScript Multilingual System**: Completely refactored multilingual system to use client-side JavaScript
+  - Created `static/js/translations.js` with comprehensive translation dictionary for 4 languages (PT-BR, EN, ES, FR)
+  - Implemented `static/js/i18n.js` with automatic language detection, localStorage persistence, and dynamic DOM updates
+  - Added `data-i18n` attributes throughout templates for automatic translation
+  - Language changes now apply instantly without page reload
+  - User language preference persists across sessions via localStorage
+  - Removed Flask-Babel dependency in favor of pure JavaScript solution
+- **Documentation**: Created comprehensive guides
+  - `MULTILINGUAL_GUIDE.md`: Technical documentation for developers
+  - `COMO_USAR_MULTILINGUE.md`: Quick user guide in Portuguese
+- **Template Updates**: Updated `base.html` and `index.html` with data-i18n attributes for dynamic translation
+
 **Date:** October 24, 2025
-- **Multilingual Support**: Implemented comprehensive multilingual system with 4 languages (Portuguese, English, Spanish, French)
-- **Flag-Based Language Selector**: Added visual language selector with country flag emojis in navigation menu
-- **Translation Dictionary**: Created extensive translation dictionary with 100+ terms covering all major system modules
 - **Admin Account**: Created administrator account (roboticos415f2@gmail.com)
 - **Form Improvements**: Added autocomplete attributes to login/register forms for better UX
