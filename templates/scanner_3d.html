@@ -1,22 +1,22 @@
 {% extends "base.html" %}
 
-{% block title %}Scanner 3D - L.A.A.R.I{% endblock %}
+{% block title %}Modelo 3D - L.A.A.R.I{% endblock %}
 
 {% block content %}
 <div class="page-header mb-4">
     <h1 class="display-6 fw-bold">
-        <i class="fas fa-cube me-3"></i>Scanner 3D
+        <i class="fas fa-cube me-3"></i>Modelo 3D
     </h1>
     <p class="lead text-muted">Integração com tecnologia de digitalização tridimensional</p>
 </div>
 
-<!-- Scanner 3D Form -->
+<!-- Modelo 3D Form -->
 <div class="row">
     <div class="col-lg-8">
         <div class="card border-0 shadow">
             <div class="card-header bg-archaeological text-white">
                 <h4 class="mb-0">
-                    <i class="fas fa-plus-circle me-2"></i>Registrar Novo Scan 3D
+                    <i class="fas fa-plus-circle me-2"></i>Registrar Novo Modelo 3D
                 </h4>
             </div>
             
@@ -67,7 +67,7 @@
                         <!-- Scan File Upload -->
                         <div class="col-12">
                             <label for="{{ form.scan_file.id }}" class="form-label fw-bold">
-                                <i class="fas fa-file-upload me-2"></i>Arquivo do Scan 3D
+                                <i class="fas fa-file-upload me-2"></i>Arquivo do Modelo 3D
                             </label>
                             {{ form.scan_file(class="form-control", accept=".obj,.ply,.stl,.fbx") }}
                             <small class="form-text text-muted">Formatos aceitos: OBJ, PLY, STL, FBX (Máx. 16MB)</small>
@@ -99,7 +99,7 @@
                         </a>
                         
                         <button type="submit" class="btn btn-archaeological btn-lg">
-                            <i class="fas fa-save me-2"></i>Registrar Scan
+                            <i class="fas fa-save me-2"></i>Registrar Modelo
                         </button>
                     </div>
                 </form>
@@ -107,12 +107,12 @@
         </div>
     </div>
     
-    <!-- Scanner Info Sidebar -->
+    <!-- Modelo 3D Info Sidebar -->
     <div class="col-lg-4">
         <div class="card border-0 shadow mb-4">
             <div class="card-header bg-info text-white">
                 <h5 class="mb-0">
-                    <i class="fas fa-info-circle me-2"></i>Sobre Scanner 3D
+                    <i class="fas fa-info-circle me-2"></i>Sobre Modelo 3D
                 </h5>
             </div>
             <div class="card-body">
@@ -137,7 +137,7 @@
             <div class="card-body">
                 <div class="tip-item mb-3">
                     <h6 class="fw-bold">Preparação</h6>
-                    <small class="text-muted">Limpe cuidadosamente o artefato antes do scan</small>
+                    <small class="text-muted">Limpe cuidadosamente o artefato antes da digitalização</small>
                 </div>
                 <div class="tip-item mb-3">
                     <h6 class="fw-bold">Iluminação</h6>
@@ -156,10 +156,10 @@
     </div>
 </div>
 
-<!-- Existing Scans -->
+<!-- Existing Models -->
 {% if scans %}
 <div class="mt-5">
-    <h3 class="h4 mb-4">Scans 3D Registrados</h3>
+    <h3 class="h4 mb-4">Modelos 3D Registrados</h3>
     
     <div class="card border-0 shadow">
         <div class="card-body p-0">
@@ -168,8 +168,8 @@
                     <thead class="table-light">
                         <tr>
                             <th>Artefato</th>
-                            <th>Data do Scan</th>
-                            <th>Scanner</th>
+                            <th>Data do Modelo</th>
+                            <th>Equipamento</th>
                             <th>Resolução</th>
                             <th>Tamanho</th>
                             <th>Arquivo</th>

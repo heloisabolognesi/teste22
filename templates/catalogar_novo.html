@@ -29,7 +29,8 @@
                             <label for="{{ form.name.id }}" class="form-label fw-bold">
                                 <i class="fas fa-signature me-2"></i>Nome do Artefato *
                             </label>
-                            {{ form.name(class="form-control form-control-lg", placeholder="Digite o nome do artefato") }}
+                            {{ form.name(class="form-control form-control-lg", placeholder="Ex: ST001, ARQ-2024-015") }}
+                            <small class="form-text text-muted"><i class="fas fa-info-circle me-1"></i>Use a sigla do sítio seguida da numeração do artefato</small>
                             {% if form.name.errors %}
                                 <div class="invalid-feedback d-block">
                                     {% for error in form.name.errors %}{{ error }}{% endfor %}
