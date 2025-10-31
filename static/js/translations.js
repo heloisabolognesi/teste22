@@ -58,6 +58,9 @@ const translations = {
         "footer_developer": "Desenvolvido por Heloisa Bolognesi",
         
         "theme_toggle": "Alternar tema",
+        "btn_galeria": "Galeria",
+        "galeria_title": "Galeria de Fotos",
+        "galeria_description": "Mural de imagens arqueológicas, eventos e equipe",
         "language_pt": "Português",
         "language_en": "English",
         "language_es": "Español",
@@ -124,6 +127,9 @@ const translations = {
         "footer_developer": "Developed by Heloisa Bolognesi",
         
         "theme_toggle": "Toggle theme",
+        "btn_galeria": "Gallery",
+        "galeria_title": "Photo Gallery",
+        "galeria_description": "Archaeological images, events and team gallery",
         "language_pt": "Português",
         "language_en": "English",
         "language_es": "Español",
@@ -190,6 +196,9 @@ const translations = {
         "footer_developer": "Desarrollado por Heloisa Bolognesi",
         
         "theme_toggle": "Cambiar tema",
+        "btn_galeria": "Galería",
+        "galeria_title": "Galería de Fotos",
+        "galeria_description": "Galería de imágenes arqueológicas, eventos y equipo",
         "language_pt": "Português",
         "language_en": "English",
         "language_es": "Español",
@@ -256,6 +265,9 @@ const translations = {
         "footer_developer": "Développé par Heloisa Bolognesi",
         
         "theme_toggle": "Changer de thème",
+        "btn_galeria": "Galerie",
+        "galeria_title": "Galerie de Photos",
+        "galeria_description": "Galerie d'images archéologiques, événements et équipe",
         "language_pt": "Português",
         "language_en": "English",
         "language_es": "Español",
