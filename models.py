@@ -49,6 +49,7 @@ class Artifact(db.Model):
     observations = db.Column(db.Text)
     photo_path = db.Column(db.String(255))
     model_3d_path = db.Column(db.String(255))
+    iphan_form_path = db.Column(db.String(255))
     qr_code = db.Column(db.String(100), unique=True)
     
     # Campos de localização arqueológica

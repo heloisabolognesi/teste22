@@ -199,6 +199,14 @@ def catalogar_novo():
             else:
                 flash('Erro ao fazer upload do modelo 3D. Tente novamente.', 'warning')
         
+        # Handle IPHAN form upload
+        if form.iphan_form.data:
+            iphan_path = save_uploaded_file(form.iphan_form.data, 'uploads/iphan_forms')
+            if iphan_path:
+                artifact.iphan_form_path = iphan_path
+            else:
+                flash('Erro ao fazer upload da ficha IPHAN. Tente novamente.', 'warning')
+        
         db.session.add(artifact)
         db.session.commit()
         flash('Artefato catalogado com sucesso!', 'success')

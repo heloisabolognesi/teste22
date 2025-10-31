@@ -107,6 +107,11 @@
                                 <i class="fas fa-cube me-1"></i>3D
                             </span>
                             {% endif %}
+                            {% if artifact.iphan_form_path %}
+                            <span class="badge bg-primary me-1" title="Possui ficha IPHAN">
+                                <i class="fas fa-file-alt me-1"></i>IPHAN
+                            </span>
+                            {% endif %}
                             {% if artifact.scans_3d %}
                             <span class="badge bg-success me-1">
                                 <i class="fas fa-scanner me-1"></i>Scanned

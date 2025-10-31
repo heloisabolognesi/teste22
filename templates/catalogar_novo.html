@@ -173,7 +173,7 @@
                         <!-- Upload de Arquivos -->
                         <div class="col-12">
                             <div class="row g-3">
-                                <div class="col-md-6">
+                                <div class="col-md-4">
                                     <label for="{{ form.photo.id }}" class="form-label fw-bold">
                                         <i class="fas fa-camera me-2"></i>Foto do Artefato
                                     </label>
@@ -186,7 +186,7 @@
                                     {% endif %}
                                 </div>
                                 
-                                <div class="col-md-6">
+                                <div class="col-md-4">
                                     <label for="{{ form.model_3d.id }}" class="form-label fw-bold">
                                         <i class="fas fa-cube me-2"></i>Modelo 3D
                                     </label>
@@ -195,6 +195,19 @@
                                     {% if form.model_3d.errors %}
                                         <div class="invalid-feedback d-block">
                                             {% for error in form.model_3d.errors %}{{ error }}{% endfor %}
+                                        </div>
+                                    {% endif %}
+                                </div>
+                                
+                                <div class="col-md-4">
+                                    <label for="{{ form.iphan_form.id }}" class="form-label fw-bold">
+                                        <i class="fas fa-file-alt me-2"></i>Ficha IPHAN
+                                    </label>
+                                    {{ form.iphan_form(class="form-control", accept=".pdf,.doc,.docx,.jpg,.jpeg,.png") }}
+                                    <small class="form-text text-muted">PDF, DOC, DOCX ou imagem</small>
+                                    {% if form.iphan_form.errors %}
+                                        <div class="invalid-feedback d-block">
+                                            {% for error in form.iphan_form.errors %}{{ error }}{% endfor %}
                                         </div>
                                     {% endif %}
                                 </div>
@@ -221,7 +234,8 @@
             <ul class="mb-0 small text-muted">
                 <li>Todos os artefatos receberão automaticamente um código QR único para identificação</li>
                 <li>Apenas o campo "Nome do Artefato" é obrigatório</li>
-                <li>Você pode adicionar fotos e modelos 3D para melhor documentação</li>
+                <li>Você pode adicionar fotos, modelos 3D e fichas IPHAN para melhor documentação</li>
+                <li>As fichas IPHAN podem ser anexadas em PDF, DOC, DOCX ou imagem (JPG, PNG)</li>
                 <li>As informações podem ser editadas posteriormente se necessário</li>
             </ul>
         </div>

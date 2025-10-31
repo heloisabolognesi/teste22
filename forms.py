@@ -107,6 +107,7 @@ class ArtifactForm(FlaskForm):
     observations = TextAreaField('Observações')
     photo = FileField('Foto', validators=[FileAllowed(['jpg', 'jpeg', 'png', 'gif'], 'Apenas imagens são permitidas!')])
     model_3d = FileField('Modelo 3D', validators=[FileAllowed(['obj', 'ply', 'stl', 'fbx'], 'Apenas modelos 3D são permitidos!')])
+    iphan_form = FileField('Ficha IPHAN', validators=[FileAllowed(['pdf', 'doc', 'docx', 'jpg', 'jpeg', 'png'], 'Apenas PDF, DOC, DOCX ou imagens são permitidos!')])
 
 class ProfessionalForm(FlaskForm):
     name = StringField('Nome', validators=[DataRequired(), Length(max=100)])
