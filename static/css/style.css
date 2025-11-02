@@ -868,3 +868,107 @@ footer {
 [data-theme="dark"] #photoViewTitle {
     color: var(--text-primary);
 }
+
+/* Seção Descritiva da Equipe */
+.team-about-section {
+    background: linear-gradient(135deg, rgba(230, 210, 183, 0.1) 0%, rgba(245, 240, 232, 0.2) 100%);
+    border-radius: 12px;
+    padding: 2rem;
+    border: 2px solid var(--border-color);
+}
+
+.team-about-section h4 {
+    font-family: 'Kelly Slab', cursive;
+    font-weight: 600;
+    border-bottom: 3px solid var(--archaeological-brown);
+    display: inline-block;
+    padding-bottom: 0.5rem;
+}
+
+.team-about-section .lead {
+    font-size: 1.1rem;
+    line-height: 1.8;
+    color: var(--text-secondary);
+}
+
+/* Lista de Core Values */
+.core-values-list {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 1rem;
+    margin: 1.5rem 0;
+}
+
+.core-value-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.75rem;
+    padding: 1rem;
+    background: white;
+    border-radius: 8px;
+    border-left: 4px solid var(--archaeological-brown);
+    box-shadow: 0 2px 8px var(--shadow-color);
+    transition: all 0.3s ease;
+}
+
+.core-value-item:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px var(--hover-shadow);
+}
+
+.cv-icon {
+    font-size: 1.5rem;
+    flex-shrink: 0;
+    line-height: 1;
+}
+
+.core-value-item span:last-child {
+    flex: 1;
+    font-size: 0.95rem;
+    line-height: 1.6;
+    color: var(--text-primary);
+}
+
+/* Conclusão da equipe */
+.team-about-section .text-archaeological.fw-bold {
+    font-family: 'Kelly Slab', cursive;
+    font-size: 1.15rem;
+    line-height: 1.8;
+    text-shadow: 1px 1px 2px rgba(0,0,0,0.05);
+}
+
+/* Tema escuro para seção descritiva */
+[data-theme="dark"] .team-about-section {
+    background: linear-gradient(135deg, rgba(95, 58, 31, 0.15) 0%, rgba(61, 37, 26, 0.2) 100%);
+    border-color: var(--archaeological-brown);
+}
+
+[data-theme="dark"] .core-value-item {
+    background: var(--bg-primary);
+    border-left-color: var(--archaeological-brown);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+}
+
+[data-theme="dark"] .core-value-item:hover {
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+}
+
+[data-theme="dark"] .team-about-section .lead,
+[data-theme="dark"] .core-value-item span:last-child {
+    color: var(--text-primary);
+}
+
+/* Responsividade para mobile */
+@media (max-width: 768px) {
+    .team-about-section {
+        padding: 1.5rem;
+    }
+    
+    .core-values-list {
+        grid-template-columns: 1fr;
+    }
+    
+    .team-about-section .lead {
+        font-size: 1rem;
+    }
+}
