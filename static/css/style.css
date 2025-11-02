@@ -698,3 +698,173 @@ footer {
         transition-duration: 0.01ms !important;
     }
 }
+
+/* Botão "Conheça nossa equipe" - Fixo no topo esquerdo */
+#teamGalleryBtn {
+    box-shadow: 0 2px 10px var(--shadow-color);
+    transition: all 0.3s ease;
+    font-weight: 500;
+}
+
+#teamGalleryBtn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 15px var(--hover-shadow);
+}
+
+/* Responsividade do botão da equipe */
+@media (max-width: 768px) {
+    #teamGalleryBtn span {
+        display: none;
+    }
+    
+    #teamGalleryBtn {
+        width: 45px;
+        height: 45px;
+        border-radius: 50% !important;
+        padding: 0 !important;
+        justify-content: center;
+    }
+    
+    #teamGalleryBtn i {
+        margin: 0 !important;
+    }
+}
+
+/* Estilos do Modal da Galeria */
+#teamGalleryModal .modal-content {
+    border: none;
+    border-radius: 12px;
+    overflow: hidden;
+}
+
+#teamGalleryModal .modal-header {
+    border-bottom: 2px solid rgba(255, 255, 255, 0.1);
+}
+
+#teamGalleryModal .modal-body {
+    max-height: 70vh;
+    overflow-y: auto;
+}
+
+/* Grid de fotos no modal */
+.gallery-item {
+    position: relative;
+    overflow: hidden;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.gallery-item:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 20px var(--hover-shadow);
+}
+
+.gallery-item img {
+    width: 100%;
+    height: 250px;
+    object-fit: cover;
+    transition: transform 0.3s ease;
+}
+
+.gallery-item:hover img {
+    transform: scale(1.05);
+}
+
+.gallery-item-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(to top, rgba(0,0,0,0.7) 0%, transparent 50%);
+    opacity: 0;
+    transition: opacity 0.3s ease;
+    display: flex;
+    align-items: flex-end;
+    padding: 1rem;
+}
+
+.gallery-item:hover .gallery-item-overlay {
+    opacity: 1;
+}
+
+.gallery-item-title {
+    color: white;
+    font-weight: bold;
+    font-size: 0.95rem;
+    margin: 0;
+}
+
+/* Modal de visualização de foto */
+#photoViewModal .modal-content {
+    background: rgba(0, 0, 0, 0.9);
+}
+
+#photoViewModal .modal-header {
+    padding: 0.5rem 1rem;
+    background: transparent;
+}
+
+#photoViewModal .modal-body {
+    padding: 1rem;
+}
+
+#photoViewInfo {
+    border-radius: 0 0 8px 8px;
+}
+
+/* Spinner personalizado */
+.spinner-border.text-archaeological {
+    border-color: var(--archaeological-brown);
+    border-right-color: transparent;
+}
+
+/* Animação de carregamento de imagens */
+.gallery-item img {
+    opacity: 0;
+    animation: galleryImageFadeIn 0.5s ease-in forwards;
+}
+
+@keyframes galleryImageFadeIn {
+    from {
+        opacity: 0;
+        transform: scale(0.95);
+    }
+    to {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+
+/* Badge de categoria nas fotos */
+.gallery-badge {
+    position: absolute;
+    top: 0.5rem;
+    left: 0.5rem;
+    background: rgba(95, 58, 31, 0.9);
+    color: white;
+    padding: 0.25rem 0.75rem;
+    border-radius: 20px;
+    font-size: 0.75rem;
+    font-weight: 500;
+    z-index: 10;
+}
+
+/* Tema escuro para o modal */
+[data-theme="dark"] #teamGalleryModal .modal-body {
+    background-color: var(--bg-secondary);
+}
+
+[data-theme="dark"] .gallery-item {
+    background-color: var(--bg-primary);
+}
+
+[data-theme="dark"] #photoViewInfo {
+    background-color: var(--bg-secondary) !important;
+    color: var(--text-primary);
+}
+
+[data-theme="dark"] #photoViewTitle {
+    color: var(--text-primary);
+}

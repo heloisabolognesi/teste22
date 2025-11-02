@@ -3,7 +3,20 @@
 {% block title %}L.A.A.R.I - {{ _('Bem-vindo') }}{% endblock %}
 
 {% block content %}
-<!-- Theme and Language Controls for Public Pages -->
+<!-- Botão "Conheça nossa equipe" - Lado Esquerdo -->
+<div class="position-absolute top-0 start-0 p-3" style="z-index: 1050;">
+    <button class="btn btn-archaeological d-flex align-items-center gap-2 px-3 py-2" 
+            type="button" 
+            id="teamGalleryBtn"
+            data-bs-toggle="modal" 
+            data-bs-target="#teamGalleryModal"
+            data-i18n-aria="btn_conheca_equipe">
+        <i class="fas fa-users"></i>
+        <span data-i18n="btn_conheca_equipe">Conheça nossa equipe</span>
+    </button>
+</div>
+
+<!-- Theme and Language Controls for Public Pages - Lado Direito -->
 <div class="position-absolute top-0 end-0 p-3 d-flex gap-2" style="z-index: 1050;">
     <button class="btn btn-archaeological rounded-circle d-flex align-items-center justify-content-center p-0" type="button" id="themeToggle" style="width: 45px; height: 45px; font-size: 1.3rem; line-height: 1;" data-i18n-aria="theme_toggle">
         <span id="themeIcon">🌙</span>
@@ -123,4 +136,223 @@
     </div>
 </div>
 </div>
+
+<!-- Modal da Galeria da Equipe -->
+<div class="modal fade" id="teamGalleryModal" tabindex="-1" aria-labelledby="teamGalleryModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-xl modal-dialog-centered modal-dialog-scrollable">
+        <div class="modal-content">
+            <!-- Cabeçalho do Modal -->
+            <div class="modal-header bg-archaeological text-white">
+                <div>
+                    <h5 class="modal-title" id="teamGalleryModalLabel" data-i18n="galeria_modal_title">Nossa Equipe - Tech Era</h5>
+                    <small class="d-block opacity-75" data-i18n="galeria_modal_desc">Conheça os membros da equipe Tech Era e nossos projetos</small>
+                </div>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            
+            <!-- Corpo do Modal -->
+            <div class="modal-body p-4">
+                <!-- Área de carregamento -->
+                <div id="galleryLoading" class="text-center py-5">
+                    <div class="spinner-border text-archaeological" role="status">
+                        <span class="visually-hidden">Carregando...</span>
+                    </div>
+                    <p class="text-muted mt-3">Carregando galeria...</p>
+                </div>
+                
+                <!-- Grid de fotos -->
+                <div id="galleryGrid" class="row g-3 d-none">
+                    <!-- As fotos serão carregadas dinamicamente via JavaScript -->
+                </div>
+                
+                <!-- Estado vazio -->
+                <div id="galleryEmpty" class="text-center py-5 d-none">
+                    <i class="fas fa-images fa-4x text-muted mb-3"></i>
+                    <h4 class="text-muted">Nenhuma foto disponível</h4>
+                    <p class="text-muted">A galeria está vazia no momento.</p>
+                </div>
+            </div>
+            
+            <!-- Rodapé do Modal -->
+            <div class="modal-footer border-0 bg-light">
+                <button type="button" class="btn btn-archaeological" data-bs-dismiss="modal">
+                    <i class="fas fa-times me-2"></i><span data-i18n="galeria_close">Fechar</span>
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal para visualização de foto individual -->
+<div class="modal fade" id="photoViewModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-xl modal-dialog-centered">
+        <div class="modal-content bg-transparent border-0">
+            <div class="modal-header border-0">
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body p-0 text-center">
+                <img id="photoViewImage" src="" class="img-fluid rounded" alt="" style="max-height: 85vh; object-fit: contain;">
+            </div>
+            <div id="photoViewInfo" class="modal-footer border-0 bg-white bg-opacity-90">
+                <div class="w-100">
+                    <h5 id="photoViewTitle" class="mb-2"></h5>
+                    <p id="photoViewDescription" class="text-muted mb-0"></p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+/**
+ * Script para carregar e exibir a galeria da equipe no modal
+ * Carrega fotos dinamicamente da API e permite visualização em tela cheia
+ */
+(function() {
+    'use strict';
+    
+    // Elementos do DOM
+    const teamGalleryModal = document.getElementById('teamGalleryModal');
+    const galleryLoading = document.getElementById('galleryLoading');
+    const galleryGrid = document.getElementById('galleryGrid');
+    const galleryEmpty = document.getElementById('galleryEmpty');
+    const photoViewModal = new bootstrap.Modal(document.getElementById('photoViewModal'));
+    const photoViewImage = document.getElementById('photoViewImage');
+    const photoViewTitle = document.getElementById('photoViewTitle');
+    const photoViewDescription = document.getElementById('photoViewDescription');
+    
+    // Variável para controlar se as fotos já foram carregadas
+    let photosLoaded = false;
+    
+    /**
+     * Carrega as fotos da galeria via API
+     */
+    function loadGalleryPhotos() {
+        // Se já carregou, não carrega novamente
+        if (photosLoaded) return;
+        
+        // Mostra loading
+        galleryLoading.classList.remove('d-none');
+        galleryGrid.classList.add('d-none');
+        galleryEmpty.classList.add('d-none');
+        
+        // Faz requisição para a API
+        fetch('{{ url_for("api_gallery_photos") }}')
+            .then(response => response.json())
+            .then(data => {
+                if (data.success && data.photos.length > 0) {
+                    renderGalleryPhotos(data.photos);
+                    photosLoaded = true;
+                } else {
+                    showEmptyState();
+                }
+            })
+            .catch(error => {
+                console.error('Erro ao carregar fotos da galeria:', error);
+                showEmptyState();
+            })
+            .finally(() => {
+                galleryLoading.classList.add('d-none');
+            });
+    }
+    
+    /**
+     * Renderiza as fotos no grid
+     * @param {Array} photos - Array de fotos da API
+     */
+    function renderGalleryPhotos(photos) {
+        galleryGrid.innerHTML = '';
+        
+        photos.forEach(photo => {
+            const photoElement = createPhotoElement(photo);
+            galleryGrid.appendChild(photoElement);
+        });
+        
+        galleryGrid.classList.remove('d-none');
+        
+        // Aplica traduções aos novos elementos
+        if (window.I18n) {
+            window.I18n.updatePageContent();
+        }
+    }
+    
+    /**
+     * Cria um elemento de foto para o grid
+     * @param {Object} photo - Dados da foto
+     * @returns {HTMLElement} - Elemento div da foto
+     */
+    function createPhotoElement(photo) {
+        const col = document.createElement('div');
+        col.className = 'col-lg-4 col-md-6';
+        
+        const imagePath = photo.image_path.startsWith('static/') 
+            ? '{{ url_for("static", filename="") }}' + photo.image_path.replace('static/', '')
+            : '{{ url_for("static", filename="") }}' + photo.image_path;
+        
+        col.innerHTML = `
+            <div class="gallery-item" data-photo-id="${photo.id}">
+                <img src="${imagePath}" alt="${photo.title}" loading="lazy">
+                <span class="gallery-badge">
+                    <i class="fas fa-users me-1"></i>Equipe
+                </span>
+                <div class="gallery-item-overlay">
+                    <p class="gallery-item-title">${photo.title}</p>
+                </div>
+            </div>
+        `;
+        
+        // Adiciona evento de clique para abrir foto em tela cheia
+        const galleryItem = col.querySelector('.gallery-item');
+        galleryItem.addEventListener('click', () => {
+            openPhotoViewer(photo, imagePath);
+        });
+        
+        return col;
+    }
+    
+    /**
+     * Abre o modal de visualização de foto
+     * @param {Object} photo - Dados da foto
+     * @param {String} imagePath - Caminho da imagem
+     */
+    function openPhotoViewer(photo, imagePath) {
+        photoViewImage.src = imagePath;
+        photoViewImage.alt = photo.title;
+        photoViewTitle.textContent = photo.title;
+        photoViewDescription.textContent = photo.description || '';
+        
+        // Esconde o info se não houver descrição
+        const photoViewInfo = document.getElementById('photoViewInfo');
+        if (!photo.description) {
+            photoViewInfo.classList.add('d-none');
+        } else {
+            photoViewInfo.classList.remove('d-none');
+        }
+        
+        photoViewModal.show();
+    }
+    
+    /**
+     * Mostra o estado vazio (sem fotos)
+     */
+    function showEmptyState() {
+        galleryGrid.classList.add('d-none');
+        galleryEmpty.classList.remove('d-none');
+    }
+    
+    /**
+     * Evento quando o modal é aberto
+     * Carrega as fotos na primeira vez
+     */
+    if (teamGalleryModal) {
+        teamGalleryModal.addEventListener('shown.bs.modal', function() {
+            loadGalleryPhotos();
+        });
+    }
+    
+    console.log('L.A.A.R.I: Sistema de galeria da equipe carregado com sucesso');
+})();
+</script>
 {% endblock %}

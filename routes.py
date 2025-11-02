@@ -408,6 +408,48 @@ def galeria():
     
     return render_template('galeria.html', photos=photos, current_category=category)
 
+@app.route('/api/galeria/photos')
+def api_gallery_photos():
+    """
+    API endpoint para retornar fotos da galeria em formato JSON
+    Retorna apenas fotos publicadas da categoria 'equipe' para usuários não autenticados
+    """
+    try:
+        # Se o usuário não estiver autenticado, retornar apenas fotos públicas da equipe
+        query = PhotoGallery.query.filter_by(is_published=True, category='equipe')
+        
+        # Buscar todas as fotos
+        photos = query.order_by(PhotoGallery.created_at.desc()).all()
+        
+        # Serializar as fotos para JSON
+        photos_data = []
+        for photo in photos:
+            photos_data.append({
+                'id': photo.id,
+                'title': photo.title,
+                'description': photo.description or '',
+                'image_path': photo.image_path,
+                'category': photo.category,
+                'event_name': photo.event_name or '',
+                'created_at': photo.created_at.strftime('%d/%m/%Y'),
+                'created_by': photo.created_by.username if photo.created_by else 'Desconhecido'
+            })
+        
+        return jsonify({
+            'success': True,
+            'photos': photos_data,
+            'total': len(photos_data)
+        })
+    except Exception as e:
+        # Log erro detalhado no servidor, mas retorna mensagem genérica para o cliente
+        app.logger.error(f'Erro ao buscar fotos da galeria: {str(e)}', exc_info=True)
+        return jsonify({
+            'success': False,
+            'error': 'Erro ao carregar fotos da galeria. Tente novamente mais tarde.',
+            'photos': [],
+            'total': 0
+        }), 500
+
 @app.route('/admin/galeria', methods=['GET', 'POST'])
 @login_required
 def admin_galeria():
