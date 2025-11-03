@@ -111,6 +111,7 @@ class ArtifactForm(FlaskForm):
 
 class ProfessionalForm(FlaskForm):
     name = StringField('Nome', validators=[DataRequired(), Length(max=100)])
+    email = StringField('Email para Contato', validators=[DataRequired(), Email()], render_kw={"placeholder": "email@exemplo.com"})
     age = IntegerField('Idade', validators=[Optional()])
     specialization = StringField('Especialização', validators=[Length(max=200)])
     description = TextAreaField('Descrição')

@@ -245,6 +245,7 @@ def adicionar_profissional():
     if form.validate_on_submit():
         professional = Professional(
             name=form.name.data,
+            email=form.email.data,
             age=form.age.data,
             specialization=form.specialization.data,
             description=form.description.data,
