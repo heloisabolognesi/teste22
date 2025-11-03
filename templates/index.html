@@ -3,8 +3,8 @@
 {% block title %}L.A.A.R.I - {{ _('Bem-vindo') }}{% endblock %}
 
 {% block content %}
-<!-- Botão "Conheça nossa equipe" - Lado Esquerdo -->
-<div class="position-absolute top-0 start-0 p-3" style="z-index: 1050;">
+<!-- Theme, Language and Team Button - Top Right -->
+<div class="position-absolute top-0 end-0 p-3 d-flex gap-2" style="z-index: 1050;">
     <button class="btn btn-archaeological d-flex align-items-center gap-2 px-3 py-2" 
             type="button" 
             id="teamGalleryBtn"
@@ -14,10 +14,6 @@
         <i class="fas fa-users"></i>
         <span data-i18n="btn_conheca_equipe">Conheça nossa equipe</span>
     </button>
-</div>
-
-<!-- Theme and Language Controls for Public Pages - Lado Direito -->
-<div class="position-absolute top-0 end-0 p-3 d-flex gap-2" style="z-index: 1050;">
     <button class="btn btn-archaeological rounded-circle d-flex align-items-center justify-content-center p-0" type="button" id="themeToggle" style="width: 45px; height: 45px; font-size: 1.3rem; line-height: 1;" data-i18n-aria="theme_toggle">
         <span id="themeIcon">🌙</span>
     </button>
@@ -166,33 +162,33 @@
                     
                     <div class="core-values-list">
                         <div class="core-value-item">
-                            <span class="cv-icon">✨</span>
+                            <span class="cv-icon"><i class="fas fa-lightbulb"></i></span>
                             <span data-i18n="team_cv_discovery">Descoberta: aprendemos algo novo a cada desafio.</span>
                         </div>
                         <div class="core-value-item">
-                            <span class="cv-icon">💡</span>
+                            <span class="cv-icon"><i class="fas fa-rocket"></i></span>
                             <span data-i18n="team_cv_innovation">Inovação: criamos soluções criativas e originais.</span>
                         </div>
                         <div class="core-value-item">
-                            <span class="cv-icon">🌍</span>
+                            <span class="cv-icon"><i class="fas fa-globe"></i></span>
                             <span data-i18n="team_cv_impact">Impacto: usamos o que sabemos para melhorar o mundo ao nosso redor.</span>
                         </div>
                         <div class="core-value-item">
-                            <span class="cv-icon">🤝</span>
+                            <span class="cv-icon"><i class="fas fa-hands-helping"></i></span>
                             <span data-i18n="team_cv_inclusion">Inclusão: valorizamos cada voz e respeitamos as diferenças.</span>
                         </div>
                         <div class="core-value-item">
-                            <span class="cv-icon">🧩</span>
+                            <span class="cv-icon"><i class="fas fa-users"></i></span>
                             <span data-i18n="team_cv_teamwork">Trabalho em equipe: colaboramos e crescemos juntos.</span>
                         </div>
                         <div class="core-value-item">
-                            <span class="cv-icon">🎉</span>
+                            <span class="cv-icon"><i class="fas fa-smile"></i></span>
                             <span data-i18n="team_cv_fun">Diversão: celebramos cada conquista com alegria e entusiasmo!</span>
                         </div>
                     </div>
                     
                     <p class="lead text-center mt-4 mb-0 text-archaeological fw-bold" data-i18n="team_conclusion">
-                        Acreditamos que a verdadeira tecnologia está nas pessoas — e é com união, curiosidade e propósito que a Tech Era constrói o futuro! 💜
+                        Acreditamos que a verdadeira tecnologia está nas pessoas — e é com união, curiosidade e propósito que a Tech Era constrói o futuro!
                     </p>
                     
                     <hr class="my-4">

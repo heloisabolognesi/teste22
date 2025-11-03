@@ -971,4 +971,22 @@ footer {
     .team-about-section .lead {
         font-size: 1rem;
     }
+    
+    /* Responsividade do botão "Conheça nossa equipe" no mobile */
+    #teamGalleryBtn span {
+        display: none;
+    }
+    
+    #teamGalleryBtn {
+        padding: 0.5rem !important;
+        width: 45px;
+        height: 45px;
+        border-radius: 50% !important;
+        justify-content: center !important;
+    }
+    
+    /* Ajuste do botão no dashboard para mobile */
+    .position-fixed.top-0.end-0 {
+        margin-top: 65px !important;
+    }
 }
