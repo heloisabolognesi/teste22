@@ -3,24 +3,24 @@
 {% block title %}Dashboard - L.A.A.R.I{% endblock %}
 
 {% block content %}
-<!-- Team Button - Top Right Below Header -->
-<div class="position-fixed top-0 end-0 p-3 d-flex gap-2" style="z-index: 1040; margin-top: 70px;">
-    <button class="btn btn-archaeological d-flex align-items-center gap-2 px-3 py-2 shadow-sm" 
-            type="button" 
-            id="teamGalleryBtn"
-            data-bs-toggle="modal" 
-            data-bs-target="#teamGalleryModal"
-            data-i18n-aria="btn_conheca_equipe">
-        <i class="fas fa-users"></i>
-        <span data-i18n="btn_conheca_equipe">Conheça nossa equipe</span>
-    </button>
-</div>
-
 <div class="dashboard-header mb-4">
-    <h1 class="display-6 fw-bold">
-        <i class="fas fa-home me-3"></i>{{ _('Dashboard') }} L.A.A.R.I
-    </h1>
-    <p class="lead text-muted">{{ _('Bem-vindo ao sistema de gestão arqueológica') }}, {{ current_user.username }}!</p>
+    <div class="d-flex justify-content-between align-items-center flex-wrap gap-3">
+        <div>
+            <h1 class="display-6 fw-bold">
+                <i class="fas fa-home me-3"></i>{{ _('Dashboard') }} L.A.A.R.I
+            </h1>
+            <p class="lead text-muted mb-0">{{ _('Bem-vindo ao sistema de gestão arqueológica') }}, {{ current_user.username }}!</p>
+        </div>
+        <button class="btn btn-archaeological d-flex align-items-center gap-2 px-3 py-2 shadow-sm" 
+                type="button" 
+                id="teamGalleryBtn"
+                data-bs-toggle="modal" 
+                data-bs-target="#teamGalleryModal"
+                data-i18n-aria="btn_conheca_equipe">
+            <i class="fas fa-users"></i>
+            <span data-i18n="btn_conheca_equipe">Conheça nossa equipe</span>
+        </button>
+    </div>
 </div>
 
 <!-- Statistics Cards -->

@@ -48,6 +48,31 @@
                     </div>
                     
                     <div class="mb-3">
+                        <label for="{{ form.category.id }}" class="form-label fw-bold">
+                            <i class="fas fa-tag me-2"></i>Categoria *
+                        </label>
+                        {{ form.category(class="form-control", id="categorySelect") }}
+                        <small class="form-text text-muted">Selecione onde a foto será exibida</small>
+                        {% if form.category.errors %}
+                            <div class="text-danger small">
+                                {% for error in form.category.errors %}{{ error }}{% endfor %}
+                            </div>
+                        {% endif %}
+                    </div>
+                    
+                    <div class="mb-3" id="eventNameDiv" style="display: none;">
+                        <label for="{{ form.event_name.id }}" class="form-label fw-bold">
+                            <i class="fas fa-calendar me-2"></i>Nome do Evento
+                        </label>
+                        {{ form.event_name(class="form-control", placeholder="Ex: Escavação 2024") }}
+                        {% if form.event_name.errors %}
+                            <div class="text-danger small">
+                                {% for error in form.event_name.errors %}{{ error }}{% endfor %}
+                            </div>
+                        {% endif %}
+                    </div>
+                    
+                    <div class="mb-3">
                         <label for="{{ form.image.id }}" class="form-label fw-bold">
                             <i class="fas fa-camera me-2"></i>Imagem *
                         </label>
@@ -93,6 +118,7 @@
                             <tr>
                                 <th width="80">Imagem</th>
                                 <th>Título</th>
+                                <th>Categoria</th>
                                 <th>Status</th>
                                 <th>Data</th>
                                 <th width="150">Ações</th>
@@ -111,6 +137,24 @@
                                     <div class="fw-bold">{{ photo.title }}</div>
                                     {% if photo.description %}
                                     <small class="text-muted">{{ photo.description[:50] }}{% if photo.description|length > 50 %}...{% endif %}</small>
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    {% if photo.category == 'equipe' %}
+                                        <span class="badge bg-info">
+                                            <i class="fas fa-users me-1"></i>Equipe
+                                        </span>
+                                    {% elif photo.category == 'evento' %}
+                                        <span class="badge bg-warning">
+                                            <i class="fas fa-calendar me-1"></i>Evento
+                                        </span>
+                                        {% if photo.event_name %}
+                                        <br><small class="text-muted">{{ photo.event_name }}</small>
+                                        {% endif %}
+                                    {% else %}
+                                        <span class="badge bg-secondary">
+                                            <i class="fas fa-image me-1"></i>Geral
+                                        </span>
                                     {% endif %}
                                 </td>
                                 <td>
@@ -158,4 +202,28 @@
         </div>
     </div>
 </div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const categorySelect = document.getElementById('categorySelect');
+    const eventNameDiv = document.getElementById('eventNameDiv');
+    
+    if (categorySelect) {
+        // Função para mostrar/ocultar o campo de nome do evento
+        function toggleEventName() {
+            if (categorySelect.value === 'evento') {
+                eventNameDiv.style.display = 'block';
+            } else {
+                eventNameDiv.style.display = 'none';
+            }
+        }
+        
+        // Verificar o valor inicial
+        toggleEventName();
+        
+        // Adicionar evento de mudança
+        categorySelect.addEventListener('change', toggleEventName);
+    }
+});
+</script>
 {% endblock %}
