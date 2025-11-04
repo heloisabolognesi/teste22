@@ -104,6 +104,18 @@ Preferred communication style: Simple, everyday language.
 ## Recent Changes
 
 **Date:** November 04, 2025
+- **Team Photo Gallery Management**: Enhanced "Meet Our Team" modal with admin photo upload functionality
+  - Removed "Gerenciar Galeria" from administrator dropdown menu
+  - Added photo upload form inside "Conheça Nossa Equipe" modal (admin-only access)
+  - Created `/api/team/upload_photo` endpoint with comprehensive security features:
+    - CSRF protection using Flask-WTF CSRFProtect
+    - File size validation (max 16MB) with empty file detection
+    - MIME type checking for image files (JPG, PNG, GIF)
+    - Detailed error logging for debugging and security monitoring
+    - Exception handling with database rollback on errors
+  - Client-side features include image preview, form validation, and AJAX submission
+  - Photos are stored in 'equipe' category and automatically published
+  - Enhanced security with CSRF token meta tag in base.html and token submission in AJAX requests
 - **Professional Directory Enhancement**: Added LinkedIn and Currículo Lattes fields to Professional model
   - New database columns: `linkedin` (VARCHAR 255) and `lattes_cv` (VARCHAR 255)
   - Updated ProfessionalForm with optional URL fields for LinkedIn and Lattes profiles
