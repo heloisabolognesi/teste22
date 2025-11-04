@@ -249,7 +249,9 @@ def adicionar_profissional():
             age=form.age.data,
             specialization=form.specialization.data,
             description=form.description.data,
-            experience=form.experience.data
+            experience=form.experience.data,
+            linkedin=form.linkedin.data,
+            lattes_cv=form.lattes_cv.data
         )
         
         # Handle profile photo upload

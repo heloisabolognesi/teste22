@@ -116,6 +116,8 @@ class ProfessionalForm(FlaskForm):
     specialization = StringField('Especialização', validators=[Length(max=200)])
     description = TextAreaField('Descrição')
     experience = TextAreaField('Experiência')
+    linkedin = StringField('LinkedIn', validators=[Optional(), Length(max=255)], render_kw={"placeholder": "https://linkedin.com/in/seu-perfil"})
+    lattes_cv = StringField('Currículo Lattes', validators=[Optional(), Length(max=255)], render_kw={"placeholder": "http://lattes.cnpq.br/seu-curriculo"})
     profile_photo = FileField('Foto de Perfil', validators=[FileAllowed(['jpg', 'jpeg', 'png'], 'Apenas imagens são permitidas!')])
 
 class TransportForm(FlaskForm):

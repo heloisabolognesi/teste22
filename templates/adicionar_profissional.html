@@ -116,6 +116,34 @@
                                 </div>
                             {% endif %}
                         </div>
+                        
+                        <!-- LinkedIn -->
+                        <div class="col-md-6">
+                            <label for="{{ form.linkedin.id }}" class="form-label fw-bold">
+                                <i class="fab fa-linkedin me-2"></i>LinkedIn
+                            </label>
+                            {{ form.linkedin(class="form-control", placeholder="https://linkedin.com/in/seu-perfil") }}
+                            <small class="form-text text-muted">URL completa do perfil no LinkedIn</small>
+                            {% if form.linkedin.errors %}
+                                <div class="invalid-feedback d-block">
+                                    {% for error in form.linkedin.errors %}{{ error }}{% endfor %}
+                                </div>
+                            {% endif %}
+                        </div>
+                        
+                        <!-- Currículo Lattes -->
+                        <div class="col-md-6">
+                            <label for="{{ form.lattes_cv.id }}" class="form-label fw-bold">
+                                <i class="fas fa-graduation-cap me-2"></i>Currículo Lattes
+                            </label>
+                            {{ form.lattes_cv(class="form-control", placeholder="http://lattes.cnpq.br/seu-curriculo") }}
+                            <small class="form-text text-muted">URL completa do Currículo Lattes</small>
+                            {% if form.lattes_cv.errors %}
+                                <div class="invalid-feedback d-block">
+                                    {% for error in form.lattes_cv.errors %}{{ error }}{% endfor %}
+                                </div>
+                            {% endif %}
+                        </div>
                     </div>
                     
                     <!-- Form Actions -->

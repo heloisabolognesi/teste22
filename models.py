@@ -36,6 +36,8 @@ class Professional(db.Model):
     description = db.Column(db.Text)
     experience = db.Column(db.Text)
     profile_photo = db.Column(db.String(255))
+    linkedin = db.Column(db.String(255))
+    lattes_cv = db.Column(db.String(255))
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
 
 class Artifact(db.Model):
