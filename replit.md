@@ -29,7 +29,7 @@ Preferred communication style: Simple, everyday language.
 ### Database Design
 - **User Model**: Authentication with role-based access (admin/regular users), account type selection (Professional/University/Student), and conditional academic information fields (university, course, entry year, institution type, location)
 - **Artifact Model**: Core entity with metadata, photos, 3D models, and QR codes
-- **Professional Model**: Directory of archaeological specialists
+- **Professional Model**: Directory of archaeological specialists with professional information including LinkedIn profile and Currículo Lattes links
 - **Transport Model**: Movement tracking for artifacts
 - **Scanner3D Model**: 3D digitization records (referenced in forms but not in models.py)
 - **Relationships**: User-to-Artifact cataloging relationship established
@@ -102,6 +102,15 @@ Preferred communication style: Simple, everyday language.
 - **Formatters**: Built-in number and date formatters respecting locale conventions
 
 ## Recent Changes
+
+**Date:** November 04, 2025
+- **Professional Directory Enhancement**: Added LinkedIn and Currículo Lattes fields to Professional model
+  - New database columns: `linkedin` (VARCHAR 255) and `lattes_cv` (VARCHAR 255)
+  - Updated ProfessionalForm with optional URL fields for LinkedIn and Lattes profiles
+  - Enhanced professional profile display to show clickable links to LinkedIn and Lattes
+  - Form template includes placeholder text and helper information for proper URL formatting
+  - Links open in new tab with secure `rel="noopener noreferrer"` attributes
+- **Administrator Account**: Created admin account for system management
 
 **Date:** October 31, 2025
 - **JavaScript Multilingual System**: Completely refactored multilingual system to use client-side JavaScript
