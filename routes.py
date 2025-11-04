@@ -519,6 +519,83 @@ def delete_photo(photo_id):
     flash(f'Foto "{photo.title}" foi removida da galeria.', 'success')
     return redirect(url_for('admin_galeria'))
 
+@app.route('/api/team/upload_photo', methods=['POST'])
+@login_required
+def upload_team_photo():
+    try:
+        if not current_user.is_admin:
+            current_app.logger.warning(f'User {current_user.username} (ID: {current_user.id}) tentou fazer upload de foto da equipe sem permissões de admin')
+            return jsonify({'success': False, 'error': 'Acesso negado. Apenas administradores podem adicionar fotos.'}), 403
+        
+        if 'image' not in request.files:
+            current_app.logger.error('Upload de foto da equipe falhou: nenhum arquivo enviado')
+            return jsonify({'success': False, 'error': 'Nenhuma imagem foi enviada.'}), 400
+        
+        image = request.files['image']
+        title = request.form.get('title', '').strip()
+        description = request.form.get('description', '').strip()
+        
+        if not title:
+            current_app.logger.error('Upload de foto da equipe falhou: título vazio')
+            return jsonify({'success': False, 'error': 'O título é obrigatório.'}), 400
+        
+        if not image or not image.filename:
+            current_app.logger.error('Upload de foto da equipe falhou: nenhuma imagem selecionada')
+            return jsonify({'success': False, 'error': 'Nenhuma imagem foi selecionada.'}), 400
+        
+        if not allowed_file(image.filename, {'jpg', 'jpeg', 'png', 'gif'}):
+            current_app.logger.error(f'Upload de foto da equipe falhou: formato inválido ({image.filename})')
+            return jsonify({'success': False, 'error': 'Formato de imagem inválido. Use JPG, PNG ou GIF.'}), 400
+        
+        image.seek(0, os.SEEK_END)
+        file_size = image.tell()
+        image.seek(0)
+        
+        max_size = 16 * 1024 * 1024
+        if file_size > max_size:
+            current_app.logger.error(f'Upload de foto da equipe falhou: arquivo muito grande ({file_size} bytes)')
+            return jsonify({'success': False, 'error': 'Arquivo muito grande. Tamanho máximo: 16MB'}), 400
+        
+        if file_size == 0:
+            current_app.logger.error('Upload de foto da equipe falhou: arquivo vazio')
+            return jsonify({'success': False, 'error': 'Arquivo vazio. Por favor, selecione uma imagem válida.'}), 400
+        
+        image_path = save_uploaded_file(image, 'uploads/gallery')
+        
+        if not image_path:
+            current_app.logger.error(f'Upload de foto da equipe falhou: erro ao salvar arquivo {image.filename}')
+            return jsonify({'success': False, 'error': 'Erro ao fazer upload da imagem. Tente novamente.'}), 500
+        
+        photo = PhotoGallery(
+            title=title,
+            description=description,
+            category='equipe',
+            is_published=True,
+            user_id=current_user.id,
+            image_path=image_path
+        )
+        
+        db.session.add(photo)
+        db.session.commit()
+        
+        current_app.logger.info(f'Foto da equipe "{title}" adicionada com sucesso por {current_user.username} (ID: {current_user.id})')
+        
+        return jsonify({
+            'success': True,
+            'message': 'Foto adicionada com sucesso!',
+            'photo': {
+                'id': photo.id,
+                'title': photo.title,
+                'description': photo.description or '',
+                'image_path': photo.image_path,
+                'created_at': photo.created_at.strftime('%d/%m/%Y')
+            }
+        })
+    except Exception as e:
+        db.session.rollback()
+        current_app.logger.error(f'Erro ao fazer upload de foto da equipe: {str(e)}', exc_info=True)
+        return jsonify({'success': False, 'error': 'Erro interno ao processar upload. Tente novamente.'}), 500
+
 # Error handlers
 @app.errorhandler(404)
 def not_found_error(error):

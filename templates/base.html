@@ -3,6 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>{% block title %}L.A.A.R.I - Laboratório e Acervo Arqueológico Remoto Integrado{% endblock %}</title>
     
     <!-- Bootstrap CSS -->
@@ -99,9 +100,6 @@
                             {% if current_user.is_admin %}
                             <li><a class="dropdown-item" href="{{ url_for('admin') }}">
                                 <i class="fas fa-cog me-1"></i><span data-i18n="nav_administracao">Administração</span>
-                            </a></li>
-                            <li><a class="dropdown-item" href="{{ url_for('admin_galeria') }}">
-                                <i class="fas fa-images me-1"></i><span data-i18n="nav_gerenciar_galeria">Gerenciar Galeria</span>
                             </a></li>
                             <li><hr class="dropdown-divider"></li>
                             {% endif %}

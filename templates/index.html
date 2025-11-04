@@ -222,10 +222,50 @@
             
             <!-- Rodapé do Modal -->
             <div class="modal-footer border-0 bg-light">
+                {% if current_user.is_authenticated and current_user.is_admin %}
+                <button type="button" class="btn btn-success me-auto" id="toggleUploadFormBtn">
+                    <i class="fas fa-plus me-2"></i><span>Adicionar Foto</span>
+                </button>
+                {% endif %}
                 <button type="button" class="btn btn-archaeological" data-bs-dismiss="modal">
                     <i class="fas fa-times me-2"></i><span data-i18n="galeria_close">Fechar</span>
                 </button>
             </div>
+            
+            <!-- Formulário de Upload (apenas para admins) -->
+            {% if current_user.is_authenticated and current_user.is_admin %}
+            <div id="uploadFormContainer" class="border-top bg-white p-4 d-none">
+                <h5 class="mb-3"><i class="fas fa-camera me-2"></i>Adicionar Nova Foto da Equipe</h5>
+                <form id="teamPhotoUploadForm" enctype="multipart/form-data">
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <label for="photoTitle" class="form-label">Título <span class="text-danger">*</span></label>
+                            <input type="text" class="form-control" id="photoTitle" name="title" required>
+                        </div>
+                        <div class="col-md-6">
+                            <label for="photoImage" class="form-label">Imagem <span class="text-danger">*</span></label>
+                            <input type="file" class="form-control" id="photoImage" name="image" accept="image/jpeg,image/png,image/gif" required>
+                        </div>
+                        <div class="col-12">
+                            <label for="photoDescription" class="form-label">Descrição (opcional)</label>
+                            <textarea class="form-control" id="photoDescription" name="description" rows="2"></textarea>
+                        </div>
+                        <div class="col-12" id="imagePreviewContainer" style="display: none;">
+                            <label class="form-label">Preview:</label>
+                            <img id="imagePreview" src="" alt="Preview" class="img-thumbnail" style="max-height: 200px;">
+                        </div>
+                        <div class="col-12">
+                            <button type="submit" class="btn btn-success">
+                                <i class="fas fa-upload me-2"></i>Enviar Foto
+                            </button>
+                            <button type="button" class="btn btn-secondary" id="cancelUploadBtn">
+                                <i class="fas fa-times me-2"></i>Cancelar
+                            </button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            {% endif %}
         </div>
     </div>
 </div>
@@ -401,5 +441,102 @@
     
     console.log('L.A.A.R.I: Sistema de galeria da equipe carregado com sucesso');
 })();
+
+{% if current_user.is_authenticated and current_user.is_admin %}
+(function() {
+    'use strict';
+    
+    const toggleUploadFormBtn = document.getElementById('toggleUploadFormBtn');
+    const uploadFormContainer = document.getElementById('uploadFormContainer');
+    const cancelUploadBtn = document.getElementById('cancelUploadBtn');
+    const teamPhotoUploadForm = document.getElementById('teamPhotoUploadForm');
+    const photoImageInput = document.getElementById('photoImage');
+    const imagePreview = document.getElementById('imagePreview');
+    const imagePreviewContainer = document.getElementById('imagePreviewContainer');
+    
+    toggleUploadFormBtn.addEventListener('click', function() {
+        uploadFormContainer.classList.toggle('d-none');
+        if (!uploadFormContainer.classList.contains('d-none')) {
+            document.getElementById('photoTitle').focus();
+        }
+    });
+    
+    cancelUploadBtn.addEventListener('click', function() {
+        uploadFormContainer.classList.add('d-none');
+        teamPhotoUploadForm.reset();
+        imagePreviewContainer.style.display = 'none';
+    });
+    
+    photoImageInput.addEventListener('change', function(e) {
+        const file = e.target.files[0];
+        if (file && file.type.startsWith('image/')) {
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                imagePreview.src = e.target.result;
+                imagePreviewContainer.style.display = 'block';
+            };
+            reader.readAsDataURL(file);
+        } else {
+            imagePreviewContainer.style.display = 'none';
+        }
+    });
+    
+    teamPhotoUploadForm.addEventListener('submit', function(e) {
+        e.preventDefault();
+        
+        const formData = new FormData(this);
+        const submitBtn = this.querySelector('button[type="submit"]');
+        const originalBtnText = submitBtn.innerHTML;
+        
+        const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content');
+        
+        submitBtn.disabled = true;
+        submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>Enviando...';
+        
+        fetch('{{ url_for("upload_team_photo") }}', {
+            method: 'POST',
+            headers: {
+                'X-CSRFToken': csrfToken
+            },
+            body: formData
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                if (window.LAARI && window.LAARI.showNotification) {
+                    window.LAARI.showNotification(data.message, 'success');
+                } else {
+                    alert(data.message);
+                }
+                
+                teamPhotoUploadForm.reset();
+                imagePreviewContainer.style.display = 'none';
+                uploadFormContainer.classList.add('d-none');
+                
+                photosLoaded = false;
+                loadGalleryPhotos();
+            } else {
+                if (window.LAARI && window.LAARI.showNotification) {
+                    window.LAARI.showNotification(data.error || 'Erro ao enviar foto.', 'error');
+                } else {
+                    alert(data.error || 'Erro ao enviar foto.');
+                }
+            }
+        })
+        .catch(error => {
+            console.error('Erro ao enviar foto:', error);
+            if (window.LAARI && window.LAARI.showNotification) {
+                window.LAARI.showNotification('Erro ao enviar foto. Tente novamente.', 'error');
+            } else {
+                alert('Erro ao enviar foto. Tente novamente.');
+            }
+        })
+        .finally(() => {
+            submitBtn.disabled = false;
+            submitBtn.innerHTML = originalBtnText;
+        });
+    });
+})();
+{% endif %}
 </script>
 {% endblock %}

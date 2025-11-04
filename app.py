@@ -4,6 +4,7 @@ from flask import Flask, request, session
 from flask_sqlalchemy import SQLAlchemy
 from flask_login import LoginManager
 from flask_babel import Babel, gettext, ngettext
+from flask_wtf.csrf import CSRFProtect
 from sqlalchemy.orm import DeclarativeBase
 from werkzeug.middleware.proxy_fix import ProxyFix
 
@@ -66,6 +67,10 @@ login_manager = LoginManager()
 login_manager.init_app(app)
 login_manager.login_view = 'login'
 login_manager.login_message = 'Por favor, faça login para acessar esta página.'
+
+# Initialize CSRF protection
+csrf = CSRFProtect()
+csrf.init_app(app)
 
 # Initialize Babel
 babel = Babel()
