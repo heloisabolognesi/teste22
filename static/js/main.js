@@ -67,7 +67,7 @@ function initializeFormValidation() {
                     firstInvalid.focus();
                 }
                 
-                showNotification('Por favor, corrija os erros no formulário.', 'warning');
+                showNotification(I18n.translate('notification_form_error'), 'warning');
             }
             
             form.classList.add('was-validated');
@@ -123,7 +123,7 @@ function handleFileUpload(input) {
     
     // Validate file size
     if (file.size > maxSize) {
-        showNotification('Arquivo muito grande. Limite máximo: 16MB', 'error');
+        showNotification(I18n.translate('notification_file_too_large'), 'error');
         input.value = '';
         return;
     }
@@ -444,7 +444,7 @@ function debounce(func, wait, immediate) {
 function copyToClipboard(text) {
     if (navigator.clipboard) {
         navigator.clipboard.writeText(text).then(function() {
-            showNotification('Texto copiado para a área de transferência!', 'success');
+            showNotification(I18n.translate('notification_copied'), 'success');
         }).catch(function() {
             fallbackCopyText(text);
         });
@@ -468,9 +468,9 @@ function fallbackCopyText(text) {
     
     try {
         document.execCommand('copy');
-        showNotification('Texto copiado para a área de transferência!', 'success');
+        showNotification(I18n.translate('notification_copied'), 'success');
     } catch (err) {
-        showNotification('Não foi possível copiar o texto.', 'error');
+        showNotification(I18n.translate('notification_copy_error'), 'error');
     }
     
     document.body.removeChild(textArea);
@@ -482,7 +482,7 @@ function fallbackCopyText(text) {
 function generateQRCode(text, element) {
     // This would integrate with a QR code library like qrcode.js
     console.log('Generate QR Code for:', text);
-    showNotification('Funcionalidade de QR Code será implementada em breve.', 'info');
+    showNotification(I18n.translate('qr_code_coming_soon', 'QR Code functionality will be implemented soon.'), 'info');
 }
 
 /**
