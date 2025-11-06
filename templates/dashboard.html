@@ -7,9 +7,9 @@
     <div class="d-flex justify-content-between align-items-center flex-wrap gap-3">
         <div>
             <h1 class="display-6 fw-bold">
-                <i class="fas fa-home me-3"></i>{{ _('Dashboard') }} L.A.A.R.I
+                <i class="fas fa-home me-3"></i><span data-i18n="dashboard_title">Dashboard</span> L.A.A.R.I
             </h1>
-            <p class="lead text-muted mb-0">{{ _('Bem-vindo ao sistema de gestão arqueológica') }}, {{ current_user.username }}!</p>
+            <p class="lead text-muted mb-0"><span data-i18n="dashboard_welcome">Bem-vindo ao sistema de gestão arqueológica</span>, {{ current_user.username }}!</p>
         </div>
         <button class="btn btn-archaeological d-flex align-items-center gap-2 px-3 py-2 shadow-sm" 
                 type="button" 
@@ -32,7 +32,7 @@
                     <i class="fas fa-archive fa-2x"></i>
                 </div>
                 <h3 class="h4 fw-bold">{{ stats.artifacts }}</h3>
-                <p class="text-muted mb-0">{{ _('Artefatos Catalogados') }}</p>
+                <p class="text-muted mb-0" data-i18n="stats_artifacts_cataloged">Artefatos Catalogados</p>
             </div>
         </div>
     </div>
@@ -44,7 +44,7 @@
                     <i class="fas fa-users fa-2x"></i>
                 </div>
                 <h3 class="h4 fw-bold">{{ stats.professionals }}</h3>
-                <p class="text-muted mb-0">{{ _('Profissionais Cadastrados') }}</p>
+                <p class="text-muted mb-0" data-i18n="stats_professionals_registered">Profissionais Cadastrados</p>
             </div>
         </div>
     </div>
@@ -56,7 +56,7 @@
                     <i class="fas fa-truck fa-2x"></i>
                 </div>
                 <h3 class="h4 fw-bold">{{ stats.pending_transports }}</h3>
-                <p class="text-muted mb-0">{{ _('Transportes Pendentes') }}</p>
+                <p class="text-muted mb-0" data-i18n="stats_pending_transports">Transportes Pendentes</p>
             </div>
         </div>
     </div>
@@ -64,7 +64,7 @@
 
 <!-- Main Modules -->
 <div class="modules-grid">
-    <h2 class="h3 mb-4">{{ _('Módulos Principais') }}</h2>
+    <h2 class="h3 mb-4" data-i18n="modules_main">Módulos Principais</h2>
     
     <div class="row g-4">
         <div class="col-lg-4 col-md-6">
@@ -73,10 +73,10 @@
                     <div class="module-icon bg-archaeological text-white rounded-circle mx-auto mb-3">
                         <i class="fas fa-archive fa-2x"></i>
                     </div>
-                    <h4 class="card-title">{{ _('Acervo') }}</h4>
-                    <p class="card-text text-muted">{{ _('Consulta organizada de todos os itens catalogados no sistema.') }}</p>
+                    <h4 class="card-title" data-i18n="module_collection">Acervo</h4>
+                    <p class="card-text text-muted" data-i18n="module_collection_desc">Consulta organizada de todos os itens catalogados no sistema.</p>
                     <a href="{{ url_for('acervo') }}" class="btn btn-archaeological">
-                        <i class="fas fa-arrow-right me-2"></i>{{ _('Acessar Acervo') }}
+                        <i class="fas fa-arrow-right me-2"></i><span data-i18n="module_collection_btn">Acessar Acervo</span>
                     </a>
                 </div>
             </div>
@@ -88,10 +88,10 @@
                     <div class="module-icon bg-archaeological text-white rounded-circle mx-auto mb-3">
                         <i class="fas fa-tags fa-2x"></i>
                     </div>
-                    <h4 class="card-title">{{ _('Catalogação') }}</h4>
-                    <p class="card-text text-muted">{{ _('Sistema completo de registro e catalogação de artefatos.') }}</p>
+                    <h4 class="card-title" data-i18n="module_cataloging">Catalogação</h4>
+                    <p class="card-text text-muted" data-i18n="module_cataloging_desc">Sistema completo de registro e catalogação de artefatos.</p>
                     <a href="{{ url_for('catalogacao') }}" class="btn btn-archaeological">
-                        <i class="fas fa-arrow-right me-2"></i>{{ _('Gerenciar Catalogação') }}
+                        <i class="fas fa-arrow-right me-2"></i><span data-i18n="module_cataloging_btn">Gerenciar Catalogação</span>
                     </a>
                 </div>
             </div>
@@ -103,10 +103,10 @@
                     <div class="module-icon bg-archaeological text-white rounded-circle mx-auto mb-3">
                         <i class="fas fa-cube fa-2x"></i>
                     </div>
-                    <h4 class="card-title">{{ _('Modelo 3D') }}</h4>
-                    <p class="card-text text-muted">{{ _('Integração com tecnologia de digitalização tridimensional.') }}</p>
+                    <h4 class="card-title" data-i18n="module_3d_model">Modelo 3D</h4>
+                    <p class="card-text text-muted" data-i18n="module_3d_model_desc">Integração com tecnologia de digitalização tridimensional.</p>
                     <a href="{{ url_for('scanner_3d') }}" class="btn btn-archaeological">
-                        <i class="fas fa-arrow-right me-2"></i>{{ _('Acessar Modelos') }}
+                        <i class="fas fa-arrow-right me-2"></i><span data-i18n="module_3d_model_btn">Acessar Modelos</span>
                     </a>
                 </div>
             </div>
@@ -118,10 +118,10 @@
                     <div class="module-icon bg-archaeological text-white rounded-circle mx-auto mb-3">
                         <i class="fas fa-users fa-2x"></i>
                     </div>
-                    <h4 class="card-title">{{ _('Profissionais da Região') }}</h4>
-                    <p class="card-text text-muted">{{ _('Diretório completo de arqueólogos e especialistas.') }}</p>
+                    <h4 class="card-title" data-i18n="module_professionals">Profissionais da Região</h4>
+                    <p class="card-text text-muted" data-i18n="module_professionals_desc">Diretório completo de arqueólogos e especialistas.</p>
                     <a href="{{ url_for('profissionais') }}" class="btn btn-archaeological">
-                        <i class="fas fa-arrow-right me-2"></i>{{ _('Ver Profissionais') }}
+                        <i class="fas fa-arrow-right me-2"></i><span data-i18n="module_professionals_btn">Ver Profissionais</span>
                     </a>
                 </div>
             </div>
@@ -133,10 +133,10 @@
                     <div class="module-icon bg-archaeological text-white rounded-circle mx-auto mb-3">
                         <i class="fas fa-clipboard-list fa-2x"></i>
                     </div>
-                    <h4 class="card-title">{{ _('Inventário') }}</h4>
-                    <p class="card-text text-muted">{{ _('Controle detalhado do inventário arqueológico.') }}</p>
+                    <h4 class="card-title" data-i18n="module_inventory">Inventário</h4>
+                    <p class="card-text text-muted" data-i18n="module_inventory_desc">Controle detalhado do inventário arqueológico.</p>
                     <a href="{{ url_for('inventario') }}" class="btn btn-archaeological">
-                        <i class="fas fa-arrow-right me-2"></i>{{ _('Gerenciar Inventário') }}
+                        <i class="fas fa-arrow-right me-2"></i><span data-i18n="module_inventory_btn">Gerenciar Inventário</span>
                     </a>
                 </div>
             </div>
@@ -148,10 +148,10 @@
                     <div class="module-icon bg-archaeological text-white rounded-circle mx-auto mb-3">
                         <i class="fas fa-truck fa-2x"></i>
                     </div>
-                    <h4 class="card-title">{{ _('Transporte de Artefatos') }}</h4>
-                    <p class="card-text text-muted">{{ _('Controle e rastreamento da movimentação de itens.') }}</p>
+                    <h4 class="card-title" data-i18n="module_transport">Transporte de Artefatos</h4>
+                    <p class="card-text text-muted" data-i18n="module_transport_desc">Controle e rastreamento da movimentação de itens.</p>
                     <a href="{{ url_for('transporte') }}" class="btn btn-archaeological">
-                        <i class="fas fa-arrow-right me-2"></i>{{ _('Controlar Transporte') }}
+                        <i class="fas fa-arrow-right me-2"></i><span data-i18n="module_transport_btn">Controlar Transporte</span>
                     </a>
                 </div>
             </div>
@@ -163,11 +163,11 @@
 <div class="admin-section mt-5">
     <div class="alert alert-info border-0">
         <h5 class="alert-heading">
-            <i class="fas fa-crown me-2"></i>{{ _('Painel Administrativo') }}
+            <i class="fas fa-crown me-2"></i><span data-i18n="admin_panel">Painel Administrativo</span>
         </h5>
-        <p class="mb-2">{{ _('Você possui privilégios de administrador neste sistema.') }}</p>
+        <p class="mb-2" data-i18n="admin_panel_desc">Você possui privilégios de administrador neste sistema.</p>
         <a href="{{ url_for('admin') }}" class="btn btn-sm btn-info">
-            <i class="fas fa-cog me-2"></i>{{ _('Acessar Administração') }}
+            <i class="fas fa-cog me-2"></i><span data-i18n="admin_panel_btn">Acessar Administração</span>
         </a>
     </div>
 </div>
@@ -232,15 +232,15 @@
                     </p>
                     
                     <hr class="my-4">
-                    <h5 class="text-center mb-4">Galeria de Fotos da Equipe</h5>
+                    <h5 class="text-center mb-4" data-i18n="gallery_photos_team">Galeria de Fotos da Equipe</h5>
                 </div>
                 
                 <!-- Área de carregamento -->
                 <div id="galleryLoading" class="text-center py-5">
                     <div class="spinner-border text-archaeological" role="status">
-                        <span class="visually-hidden">Carregando...</span>
+                        <span class="visually-hidden" data-i18n="gallery_loading">Carregando...</span>
                     </div>
-                    <p class="text-muted mt-3">Carregando galeria...</p>
+                    <p class="text-muted mt-3" data-i18n="gallery_loading_text">Carregando galeria...</p>
                 </div>
                 
                 <!-- Grid de fotos -->
@@ -251,8 +251,8 @@
                 <!-- Estado vazio -->
                 <div id="galleryEmpty" class="text-center py-5 d-none">
                     <i class="fas fa-images fa-4x text-muted mb-3"></i>
-                    <h4 class="text-muted">Nenhuma foto disponível</h4>
-                    <p class="text-muted">A galeria está vazia no momento.</p>
+                    <h4 class="text-muted" data-i18n="gallery_no_photos">Nenhuma foto disponível</h4>
+                    <p class="text-muted" data-i18n="gallery_empty_text">A galeria está vazia no momento.</p>
                 </div>
             </div>
             
@@ -260,7 +260,7 @@
             <div class="modal-footer border-0 bg-light">
                 {% if current_user.is_authenticated and current_user.is_admin %}
                 <button type="button" class="btn btn-success me-auto" id="toggleUploadFormBtn">
-                    <i class="fas fa-plus me-2"></i><span>Adicionar Foto</span>
+                    <i class="fas fa-plus me-2"></i><span data-i18n="upload_add_photo">Adicionar Foto</span>
                 </button>
                 {% endif %}
                 <button type="button" class="btn btn-archaeological" data-bs-dismiss="modal">
@@ -271,31 +271,31 @@
             <!-- Formulário de Upload (apenas para admins) -->
             {% if current_user.is_authenticated and current_user.is_admin %}
             <div id="uploadFormContainer" class="border-top bg-white p-4 d-none">
-                <h5 class="mb-3"><i class="fas fa-camera me-2"></i>Adicionar Nova Foto da Equipe</h5>
+                <h5 class="mb-3"><i class="fas fa-camera me-2"></i><span data-i18n="upload_new_team_photo">Adicionar Nova Foto da Equipe</span></h5>
                 <form id="teamPhotoUploadForm" enctype="multipart/form-data">
                     <div class="row g-3">
                         <div class="col-md-6">
-                            <label for="photoTitle" class="form-label">Título <span class="text-danger">*</span></label>
+                            <label for="photoTitle" class="form-label"><span data-i18n="upload_title_label">Título</span> <span class="text-danger" data-i18n="required_asterisk">*</span></label>
                             <input type="text" class="form-control" id="photoTitle" name="title" required>
                         </div>
                         <div class="col-md-6">
-                            <label for="photoImage" class="form-label">Imagem <span class="text-danger">*</span></label>
+                            <label for="photoImage" class="form-label"><span data-i18n="upload_image_label">Imagem</span> <span class="text-danger" data-i18n="required_asterisk">*</span></label>
                             <input type="file" class="form-control" id="photoImage" name="image" accept="image/jpeg,image/png,image/gif" required>
                         </div>
                         <div class="col-12">
-                            <label for="photoDescription" class="form-label">Descrição (opcional)</label>
+                            <label for="photoDescription" class="form-label" data-i18n="upload_description_label">Descrição (opcional)</label>
                             <textarea class="form-control" id="photoDescription" name="description" rows="2"></textarea>
                         </div>
                         <div class="col-12" id="imagePreviewContainer" style="display: none;">
-                            <label class="form-label">Preview:</label>
+                            <label class="form-label" data-i18n="upload_preview_label">Preview:</label>
                             <img id="imagePreview" src="" alt="Preview" class="img-thumbnail" style="max-height: 200px;">
                         </div>
                         <div class="col-12">
                             <button type="submit" class="btn btn-success">
-                                <i class="fas fa-upload me-2"></i>Enviar Foto
+                                <i class="fas fa-upload me-2"></i><span data-i18n="upload_submit_btn">Enviar Foto</span>
                             </button>
                             <button type="button" class="btn btn-secondary" id="cancelUploadBtn">
-                                <i class="fas fa-times me-2"></i>Cancelar
+                                <i class="fas fa-times me-2"></i><span data-i18n="upload_cancel_btn">Cancelar</span>
                             </button>
                         </div>
                     </div>
@@ -346,6 +346,13 @@
 /**
  * Script para carregar e exibir a galeria da equipe no modal
  * Carrega fotos dinamicamente da API e permite visualização em tela cheia
+ * 
+ * SISTEMA DE TRADUÇÃO:
+ * - Todos os textos estáticos do template usam atributos data-i18n
+ * - Elementos criados dinamicamente também recebem data-i18n
+ * - Após criar novos elementos, I18n.updatePageContent() é chamado
+ * - Traduções disponíveis: PT-BR, EN, ES, FR
+ * - Chaves de tradução: gallery_*, upload_*, team_*
  */
 (function() {
     'use strict';
@@ -432,7 +439,7 @@
             <div class="gallery-item" data-photo-id="${photo.id}">
                 <img src="${imagePath}" alt="${photo.title}" loading="lazy">
                 <span class="gallery-badge">
-                    <i class="fas fa-users me-1"></i>Equipe
+                    <i class="fas fa-users me-1"></i><span data-i18n="gallery_team_badge">Equipe</span>
                 </span>
                 <div class="gallery-item-overlay">
                     <p class="gallery-item-title">${photo.title}</p>
