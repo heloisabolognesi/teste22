@@ -1,0 +1,87 @@
+Atualize o sistema de autenticação e gerenciamento de usuários com as seguintes regras de validação e controle de acesso:
+
+🔹 1. Contas Profissionais (Arqueólogos)
+
+Quando o usuário cria uma conta Profissional, o currículo (CV) deve ser enviado obrigatoriamente e o status inicial deve ser “Em análise”.
+
+Enquanto o currículo estiver em análise, o usuário não terá acesso à catalogação nem às áreas restritas do sistema.
+
+Assim que o administrador aprovar o currículo:
+
+Atualize o campo statusCV para "Aprovado";
+
+Libere automaticamente o acesso completo à catalogação e aos módulos de artefatos;
+
+Exiba a mensagem:
+
+PT-BR: “Seu currículo foi aceito! Agora você tem acesso à catalogação.”
+
+EN: “Your CV has been approved! You now have access to cataloging.”
+
+ES: “¡Tu currículum ha sido aprobado! Ya tienes acceso a la catalogación.”
+
+FR: “Votre CV a été approuvé ! Vous avez maintenant accès à la catalogation.”
+
+Se o currículo for rejeitado:
+
+O acesso à conta deve ser removido imediatamente;
+
+A conta pode ser desativada ou bloqueada temporariamente;
+
+Exibir mensagem de aviso:
+
+PT-BR: “Seu currículo não foi aceito. Sua conta foi desativada.”
+
+EN: “Your CV was not accepted. Your account has been deactivated.”
+
+ES: “Tu currículum no fue aceptado. Tu cuenta ha sido desactivada.”
+
+FR: “Votre CV n’a pas été accepté. Votre compte a été désactivé.”
+
+🔹 2. Contas Universitárias (Instituições de Ensino)
+
+As contas universitárias também devem passar pelo processo de verificação antes de obter acesso total ao sistema.
+
+No momento do cadastro, a instituição deve preencher:
+
+Nome da instituição
+
+CNPJ ou código institucional
+
+País, Estado e Cidade
+
+Cursos oferecidos
+
+Nome e e-mail do responsável pelo cadastro
+
+Após o envio, o status da conta deve ser “Em análise” até que um administrador valide as informações.
+
+Somente após a aprovação o acesso completo à plataforma (incluindo catalogação e gerenciamento de artefatos) será liberado.
+
+Caso as informações sejam rejeitadas, a conta deve ser bloqueada automaticamente, com a seguinte mensagem:
+
+PT-BR: “Cadastro institucional não aprovado. Conta desativada.”
+
+EN: “Institutional registration not approved. Account deactivated.”
+
+ES: “Registro institucional no aprobado. Cuenta desactivada.”
+
+FR: “Enregistrement institutionnel non approuvé. Compte désactivé.”
+
+🔹 3. Contas Estudantes
+
+As contas de estudantes permanecem sem necessidade de verificação.
+
+Mantêm o acesso básico definido no sistema, sem permissão para catalogar artefatos.
+
+🔹 4. Banco de Dados e Status
+
+Adicione o campo statusVerificacao (ou statusCV no caso profissional) ao banco de dados com os valores:
+
+"Em análise"
+
+"Aprovado"
+
+"Rejeitado"
+
+A verificação de acesso ao sistema deve depender exclusivamente desse campo.
