@@ -61,6 +61,119 @@
     </div>
 </div>
 
+<!-- Pending Validations -->
+{% set pending_cvs = users|selectattr('account_type', 'equalto', 'profissional')|selectattr('cv_status', 'equalto', 'pending')|list %}
+{% set pending_institutions = users|selectattr('account_type', 'equalto', 'universitaria')|selectattr('institution_status', 'equalto', 'pending')|list %}
+
+{% if pending_cvs or pending_institutions %}
+<div class="pending-validations mb-5">
+    <div class="card border-0 shadow">
+        <div class="card-header bg-warning text-dark">
+            <h3 class="h5 mb-0">
+                <i class="fas fa-exclamation-triangle me-2"></i><span data-translate="admin_pending_validations">Validações Pendentes</span>
+            </h3>
+        </div>
+        <div class="card-body">
+            {% if pending_cvs %}
+            <div class="mb-4">
+                <h5><i class="fas fa-file-alt me-2"></i><span data-translate="admin_pending_cvs">Currículos Pendentes</span> ({{ pending_cvs|length }})</h5>
+                <div class="table-responsive">
+                    <table class="table table-hover">
+                        <thead>
+                            <tr>
+                                <th>Usuário</th>
+                                <th>Email</th>
+                                <th>Data de Cadastro</th>
+                                <th>Currículo</th>
+                                <th>Ações</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for user in pending_cvs %}
+                            <tr>
+                                <td><strong>{{ user.username }}</strong></td>
+                                <td>{{ user.email }}</td>
+                                <td>{{ user.created_at.strftime('%d/%m/%Y %H:%M') }}</td>
+                                <td>
+                                    {% if user.cv_file_path %}
+                                        <a href="{{ url_for('static', filename=user.cv_file_path) }}" target="_blank" class="btn btn-sm btn-outline-primary">
+                                            <i class="fas fa-eye me-1"></i><span data-translate="admin_view_cv">Ver CV</span>
+                                        </a>
+                                    {% else %}
+                                        <span class="text-muted">Não disponível</span>
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    <div class="btn-group btn-group-sm">
+                                        <a href="{{ url_for('validate_cv', user_id=user.id, action='approve') }}" 
+                                           class="btn btn-success"
+                                           onclick="return confirm('Aprovar o currículo de {{ user.username }}? O usuário terá acesso à catalogação.')">
+                                            <i class="fas fa-check me-1"></i><span data-translate="admin_btn_approve">Aprovar</span>
+                                        </a>
+                                        <a href="{{ url_for('validate_cv', user_id=user.id, action='reject') }}" 
+                                           class="btn btn-danger"
+                                           onclick="return confirm('Rejeitar o currículo de {{ user.username }}?')">
+                                            <i class="fas fa-times me-1"></i><span data-translate="admin_btn_reject">Rejeitar</span>
+                                        </a>
+                                    </div>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            {% endif %}
+            
+            {% if pending_institutions %}
+            <div>
+                <h5><i class="fas fa-university me-2"></i><span data-translate="admin_pending_institutions">Instituições Pendentes</span> ({{ pending_institutions|length }})</h5>
+                <div class="table-responsive">
+                    <table class="table table-hover">
+                        <thead>
+                            <tr>
+                                <th>Instituição</th>
+                                <th>CNPJ</th>
+                                <th>Responsável</th>
+                                <th>Email Contato</th>
+                                <th>Localização</th>
+                                <th>Ações</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for user in pending_institutions %}
+                            <tr>
+                                <td><strong>{{ user.institution_name }}</strong></td>
+                                <td>{{ user.institution_cnpj }}</td>
+                                <td>{{ user.institution_responsible_name }}</td>
+                                <td>{{ user.institution_contact_email }}</td>
+                                <td>{{ user.city }}, {{ user.state }}, {{ user.country }}</td>
+                                <td>
+                                    <div class="btn-group btn-group-sm">
+                                        <a href="{{ url_for('validate_institution', user_id=user.id, action='approve') }}" 
+                                           class="btn btn-success"
+                                           onclick="return confirm('Aprovar a instituição {{ user.institution_name }}? A conta terá acesso à catalogação.')">
+                                            <i class="fas fa-check me-1"></i><span data-translate="admin_btn_approve">Aprovar</span>
+                                        </a>
+                                        <a href="{{ url_for('validate_institution', user_id=user.id, action='reject') }}" 
+                                           class="btn btn-danger"
+                                           onclick="return confirm('Rejeitar a instituição {{ user.institution_name }}?')">
+                                            <i class="fas fa-times me-1"></i><span data-translate="admin_btn_reject">Rejeitar</span>
+                                        </a>
+                                    </div>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endif %}
+
 <!-- User Management -->
 <div class="user-management">
     <div class="d-flex justify-content-between align-items-center mb-4">
