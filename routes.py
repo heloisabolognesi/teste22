@@ -82,14 +82,40 @@ def register():
         elif existing_username:
             flash('Este nome de usuário já está em uso. Por favor, escolha outro.', 'error')
         else:
-            # Validate academic fields for student/university accounts
             account_type = form.account_type.data
-            if account_type in ['estudante', 'universitaria']:
-                # Check if required academic fields are filled
+            
+            # Validate professional account - CV upload required
+            if account_type == 'profissional':
+                if not form.cv_file.data:
+                    flash('Por favor, envie seu currículo (CV) para criar uma conta profissional.', 'error')
+                    return render_template('register.html', form=form)
+            
+            # Validate university account - institutional fields required
+            elif account_type == 'universitaria':
+                if not form.institution_name.data:
+                    flash('Por favor, preencha o nome da instituição.', 'error')
+                    return render_template('register.html', form=form)
+                if not form.institution_cnpj.data:
+                    flash('Por favor, preencha o CNPJ ou código institucional.', 'error')
+                    return render_template('register.html', form=form)
+                if not form.institution_courses.data:
+                    flash('Por favor, liste os cursos oferecidos.', 'error')
+                    return render_template('register.html', form=form)
+                if not form.institution_responsible_name.data:
+                    flash('Por favor, preencha o nome do responsável.', 'error')
+                    return render_template('register.html', form=form)
+                if not form.institution_contact_email.data:
+                    flash('Por favor, preencha o email institucional de contato.', 'error')
+                    return render_template('register.html', form=form)
+                if not form.city.data or not form.state.data or not form.country.data:
+                    flash('Por favor, preencha todos os campos de localização.', 'error')
+                    return render_template('register.html', form=form)
+            
+            # Validate student account - academic fields required
+            elif account_type == 'estudante':
                 if not form.university.data:
                     flash('Por favor, selecione a faculdade.', 'error')
                     return render_template('register.html', form=form)
-                # If custom university is selected, ensure the custom field is filled
                 if form.university.data == 'custom' and not form.university_custom.data:
                     flash('Por favor, digite o nome da faculdade.', 'error')
                     return render_template('register.html', form=form)
@@ -106,31 +132,60 @@ def register():
                     flash('Por favor, preencha todos os campos de localização.', 'error')
                     return render_template('register.html', form=form)
             
-            # Determine which university value to use
+            # Determine university value for students
             university_value = None
-            if account_type in ['estudante', 'universitaria']:
+            if account_type == 'estudante':
                 if form.university.data == 'custom':
                     university_value = None
                 else:
                     university_value = form.university.data
             
+            # Create user
             user = User(
                 username=form.username.data,
                 email=form.email.data,
                 password_hash=generate_password_hash(form.password.data),
                 account_type=account_type,
                 university=university_value,
-                university_custom=form.university_custom.data if form.university.data == 'custom' else None,
-                course=form.course.data if account_type in ['estudante', 'universitaria'] else None,
-                entry_year=form.entry_year.data if account_type in ['estudante', 'universitaria'] else None,
-                institution_type=form.institution_type.data if account_type in ['estudante', 'universitaria'] else None,
+                university_custom=form.university_custom.data if account_type == 'estudante' and form.university.data == 'custom' else None,
+                course=form.course.data if account_type == 'estudante' else None,
+                entry_year=form.entry_year.data if account_type == 'estudante' else None,
+                institution_type=form.institution_type.data if account_type == 'estudante' else None,
                 city=form.city.data if account_type in ['estudante', 'universitaria'] else None,
                 state=form.state.data if account_type in ['estudante', 'universitaria'] else None,
                 country=form.country.data if account_type in ['estudante', 'universitaria'] else None
             )
+            
+            # Handle CV upload for professional accounts
+            if account_type == 'profissional' and form.cv_file.data:
+                cv_path = save_uploaded_file(form.cv_file.data, 'uploads/cvs')
+                if cv_path:
+                    user.cv_file_path = cv_path
+                    user.cv_status = 'pending'
+                else:
+                    flash('Erro ao fazer upload do currículo. Tente novamente.', 'warning')
+                    return render_template('register.html', form=form)
+            
+            # Handle institutional data for university accounts
+            if account_type == 'universitaria':
+                user.institution_name = form.institution_name.data
+                user.institution_cnpj = form.institution_cnpj.data
+                user.institution_courses = form.institution_courses.data
+                user.institution_responsible_name = form.institution_responsible_name.data
+                user.institution_contact_email = form.institution_contact_email.data
+                user.institution_status = 'pending'
+            
             db.session.add(user)
             db.session.commit()
-            flash('Cadastro realizado com sucesso! Faça login.', 'success')
+            
+            # Custom success messages based on account type
+            if account_type == 'profissional':
+                flash('Cadastro realizado! Seu currículo está em análise. Você receberá um email quando for aprovado.', 'success')
+            elif account_type == 'universitaria':
+                flash('Cadastro institucional realizado! Aguarde a validação do administrador para ter acesso completo.', 'success')
+            else:
+                flash('Cadastro realizado com sucesso! Faça login.', 'success')
+            
             return redirect(url_for('login'))
     
     return render_template('register.html', form=form)
@@ -377,6 +432,69 @@ def toggle_admin_status(user_id):
         db.session.commit()
         status = "promovido a administrador" if user.is_admin else "removido da administração"
         flash(f'Usuário {user.username} foi {status}.', 'success')
+    
+    return redirect(url_for('admin'))
+
+# CV and Institution Validation Routes
+@app.route('/admin/validate_cv/<int:user_id>/<action>')
+@login_required
+def validate_cv(user_id, action):
+    if not current_user.is_admin:
+        flash('Acesso negado. Apenas administradores podem validar currículos.', 'error')
+        return redirect(url_for('dashboard'))
+    
+    user = User.query.get_or_404(user_id)
+    
+    if user.account_type != 'profissional':
+        flash('Este usuário não possui conta profissional.', 'error')
+        return redirect(url_for('admin'))
+    
+    if action == 'approve':
+        user.cv_status = 'approved'
+        user.cv_reviewed_at = datetime.utcnow()
+        user.cv_reviewed_by = current_user.id
+        user.cv_rejection_reason = None
+        db.session.commit()
+        flash(f'Currículo de {user.username} foi aprovado! O usuário agora tem acesso à catalogação.', 'success')
+    elif action == 'reject':
+        reason = request.args.get('reason', 'Currículo não atende aos requisitos.')
+        user.cv_status = 'rejected'
+        user.cv_reviewed_at = datetime.utcnow()
+        user.cv_reviewed_by = current_user.id
+        user.cv_rejection_reason = reason
+        db.session.commit()
+        flash(f'Currículo de {user.username} foi rejeitado.', 'warning')
+    
+    return redirect(url_for('admin'))
+
+@app.route('/admin/validate_institution/<int:user_id>/<action>')
+@login_required
+def validate_institution(user_id, action):
+    if not current_user.is_admin:
+        flash('Acesso negado. Apenas administradores podem validar instituições.', 'error')
+        return redirect(url_for('dashboard'))
+    
+    user = User.query.get_or_404(user_id)
+    
+    if user.account_type != 'universitaria':
+        flash('Este usuário não possui conta universitária.', 'error')
+        return redirect(url_for('admin'))
+    
+    if action == 'approve':
+        user.institution_status = 'approved'
+        user.institution_reviewed_at = datetime.utcnow()
+        user.institution_reviewed_by = current_user.id
+        user.institution_rejection_reason = None
+        db.session.commit()
+        flash(f'Instituição {user.institution_name} foi aprovada! A conta agora tem acesso à catalogação.', 'success')
+    elif action == 'reject':
+        reason = request.args.get('reason', 'Dados institucionais não foram verificados.')
+        user.institution_status = 'rejected'
+        user.institution_reviewed_at = datetime.utcnow()
+        user.institution_reviewed_by = current_user.id
+        user.institution_rejection_reason = reason
+        db.session.commit()
+        flash(f'Instituição {user.institution_name} foi rejeitada.', 'warning')
     
     return redirect(url_for('admin'))
 

@@ -20,6 +20,16 @@ class RegisterForm(FlaskForm):
         ('estudante', 'Conta Estudante')
     ], validators=[DataRequired()])
     
+    # CV upload (for professional accounts)
+    cv_file = FileField('Currículo (CV)', validators=[FileAllowed(['pdf', 'doc', 'docx'], 'Apenas PDF, DOC ou DOCX são permitidos!')])
+    
+    # Institutional fields (for university accounts)
+    institution_name = StringField('Nome da Instituição', validators=[Optional(), Length(max=200)])
+    institution_cnpj = StringField('CNPJ ou Código Institucional', validators=[Optional(), Length(max=50)])
+    institution_courses = TextAreaField('Cursos Oferecidos', validators=[Optional()])
+    institution_responsible_name = StringField('Nome do Responsável', validators=[Optional(), Length(max=200)])
+    institution_contact_email = StringField('Email Institucional', validators=[Optional(), Email()])
+    
     # Academic information (conditional - for students and university accounts)
     university = SelectField('Faculdade', choices=[
         ('', 'Selecione a faculdade'),

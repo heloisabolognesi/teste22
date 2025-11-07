@@ -1,0 +1,70 @@
+Atualize a página de criação de conta com as seguintes modificações e traduções multilíngues (Português BR, Inglês, Espanhol e Francês):
+
+🔹 1. Tipos de conta e comportamento dinâmico:
+
+Quando o usuário selecionar “Conta Profissional”, exiba um campo adicional para upload de currículo (Currículo Vitae - CV) em PDF, DOCX ou formato similar.
+
+Valide o arquivo antes do envio (tamanho e extensão).
+
+Após o envio, o currículo deve entrar em status de “pendente” até que seja revisado por um administrador.
+
+O administrador poderá aprovar ou rejeitar o currículo.
+
+Se aprovado, o usuário receberá uma mensagem automática confirmando a validação e terá acesso à catalogação de artefatos no sistema.
+
+Se rejeitado, o usuário receberá uma mensagem informando que o currículo não foi aceito e deverá reenviar.
+
+Quando o usuário selecionar “Conta Universitária”, configure o formulário para cadastro institucional de uma faculdade, e também conceda acesso à catalogação de artefatos.
+
+Campos necessários:
+
+Nome da instituição
+
+CNPJ ou código institucional
+
+País, Estado e Cidade
+
+Curso(s) oferecidos (campo de texto livre ou lista separada por vírgulas)
+
+Nome do responsável pelo cadastro e e-mail institucional de contato
+
+Essa conta representa a instituição e não uma pessoa física.
+
+Também deve passar por um processo de validação manual por administrador, com status “pendente”, “aprovado” ou “rejeitado”.
+
+Quando o usuário selecionar “Conta Estudante”, mantenha apenas os campos já existentes atualmente no sistema, sem necessidade de currículo.
+
+🔹 2. Tradução completa:
+Traduza toda a página de criação de conta, incluindo os novos campos, mensagens e instruções, para os quatro idiomas (PT-BR, EN, ES, FR), utilizando o sistema multilíngue com o objeto translations e o atributo data-translate.
+
+🔹 3. Interface:
+
+Mantenha o mesmo estilo visual e posicionamento dos campos.
+
+O campo de upload do currículo deve aparecer logo abaixo da seleção do tipo de conta.
+
+Exiba mensagens de status e confirmação após o envio do CV, por exemplo:
+
+PT-BR: “Seu currículo foi enviado e está em análise.”
+
+PT-BR (após aprovação): “Seu currículo foi validado com sucesso! Agora você tem acesso à catalogação.”
+
+EN: “Your CV has been successfully validated! You now have access to cataloging.”
+
+EN (pendente): “Your CV has been sent for review.”
+
+🔹 4. Acesso e permissões:
+
+Contas Profissionais: acesso completo à catalogação e aos módulos do sistema após aprovação do CV.
+
+Contas Universitárias: acesso institucional e também permissão para catalogar artefatos após validação da instituição.
+
+Contas Estudantes: acesso básico (sem necessidade de validação de CV).
+
+🔹 5. Sistema de validação:
+
+Adicione um painel administrativo para que os administradores possam visualizar os currículos enviados (com status “pendente”).
+
+Permitir que o administrador altere o status para “aprovado” ou “rejeitado”.
+
+Exibir notificações automáticas para o usuário conforme a decisão.
