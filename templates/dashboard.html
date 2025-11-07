@@ -290,8 +290,14 @@
                             <label class="form-label" data-i18n="upload_preview_label">Preview:</label>
                             <img id="imagePreview" src="" alt="Preview" class="img-thumbnail" style="max-height: 200px;">
                         </div>
+                        <div class="col-12" id="fileValidationMessage" style="display: none;">
+                            <div class="alert alert-danger mb-3" role="alert">
+                                <i class="fas fa-exclamation-triangle me-2"></i>
+                                <span id="fileValidationText"></span>
+                            </div>
+                        </div>
                         <div class="col-12">
-                            <button type="submit" class="btn btn-success">
+                            <button type="submit" class="btn btn-success" id="submitPhotoBtn" disabled>
                                 <i class="fas fa-upload me-2"></i><span data-i18n="upload_submit_btn">Enviar Foto</span>
                             </button>
                             <button type="button" class="btn btn-secondary" id="cancelUploadBtn">
@@ -522,6 +528,64 @@
     const photoImageInput = document.getElementById('photoImage');
     const imagePreview = document.getElementById('imagePreview');
     const imagePreviewContainer = document.getElementById('imagePreviewContainer');
+    const submitPhotoBtn = document.getElementById('submitPhotoBtn');
+    const fileValidationMessage = document.getElementById('fileValidationMessage');
+    const fileValidationText = document.getElementById('fileValidationText');
+    
+    // Mensagens de validação em múltiplos idiomas
+    const validationMessages = {
+        'pt-BR': {
+            invalidType: 'Formato de imagem inválido. Use JPG, JPEG, PNG ou GIF.',
+            tooLarge: 'Arquivo muito grande. Tamanho máximo: 5 MB.',
+            uploadSuccess: 'Foto enviada com sucesso!',
+            uploadError: 'Erro ao enviar foto. Tente novamente.'
+        },
+        'en': {
+            invalidType: 'Invalid image format. Use JPG, JPEG, PNG or GIF.',
+            tooLarge: 'File too large. Maximum size: 5 MB.',
+            uploadSuccess: 'Photo uploaded successfully!',
+            uploadError: 'Error uploading photo. Please try again.'
+        },
+        'es': {
+            invalidType: 'Formato de imagen inválido. Use JPG, JPEG, PNG o GIF.',
+            tooLarge: 'Archivo demasiado grande. Tamaño máximo: 5 MB.',
+            uploadSuccess: '¡Foto subida con éxito!',
+            uploadError: 'Error al subir la foto. Inténtelo de nuevo.'
+        },
+        'fr': {
+            invalidType: 'Format d\'image invalide. Utilisez JPG, JPEG, PNG ou GIF.',
+            tooLarge: 'Fichier trop volumineux. Taille maximale: 5 Mo.',
+            uploadSuccess: 'Photo téléchargée avec succès !',
+            uploadError: 'Erreur lors du téléchargement de la photo. Veuillez réessayer.'
+        }
+    };
+    
+    // Obtém o idioma atual
+    function getCurrentLanguage() {
+        return localStorage.getItem('selectedLanguage') || 'pt-BR';
+    }
+    
+    // Valida o arquivo selecionado
+    function validateFile(file) {
+        const validTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/gif'];
+        const maxSize = 5 * 1024 * 1024; // 5MB em bytes
+        const lang = getCurrentLanguage();
+        const messages = validationMessages[lang] || validationMessages['pt-BR'];
+        
+        if (!file) {
+            return { valid: false, message: '' };
+        }
+        
+        if (!validTypes.includes(file.type)) {
+            return { valid: false, message: messages.invalidType };
+        }
+        
+        if (file.size > maxSize) {
+            return { valid: false, message: messages.tooLarge };
+        }
+        
+        return { valid: true, message: '' };
+    }
     
     toggleUploadFormBtn.addEventListener('click', function() {
         uploadFormContainer.classList.toggle('d-none');
@@ -534,19 +598,38 @@
         uploadFormContainer.classList.add('d-none');
         teamPhotoUploadForm.reset();
         imagePreviewContainer.style.display = 'none';
+        fileValidationMessage.style.display = 'none';
+        submitPhotoBtn.disabled = true;
     });
     
     photoImageInput.addEventListener('change', function(e) {
         const file = e.target.files[0];
-        if (file && file.type.startsWith('image/')) {
+        const validation = validateFile(file);
+        
+        if (!file) {
+            imagePreviewContainer.style.display = 'none';
+            fileValidationMessage.style.display = 'none';
+            submitPhotoBtn.disabled = true;
+            return;
+        }
+        
+        if (validation.valid) {
+            // Arquivo válido - mostra preview e habilita botão
             const reader = new FileReader();
             reader.onload = function(e) {
                 imagePreview.src = e.target.result;
                 imagePreviewContainer.style.display = 'block';
             };
             reader.readAsDataURL(file);
+            
+            fileValidationMessage.style.display = 'none';
+            submitPhotoBtn.disabled = false;
         } else {
+            // Arquivo inválido - mostra erro e desabilita botão
             imagePreviewContainer.style.display = 'none';
+            fileValidationText.textContent = validation.message;
+            fileValidationMessage.style.display = 'block';
+            submitPhotoBtn.disabled = true;
         }
     });
     
@@ -556,6 +639,8 @@
         const formData = new FormData(this);
         const submitBtn = this.querySelector('button[type="submit"]');
         const originalBtnText = submitBtn.innerHTML;
+        const lang = getCurrentLanguage();
+        const messages = validationMessages[lang] || validationMessages['pt-BR'];
         
         const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content');
         if (csrfToken) {
@@ -572,36 +657,48 @@
         .then(response => response.json())
         .then(data => {
             if (data.success) {
+                const successMessage = messages.uploadSuccess;
                 if (window.LAARI && window.LAARI.showNotification) {
-                    window.LAARI.showNotification(data.message, 'success');
+                    window.LAARI.showNotification(successMessage, 'success');
                 } else {
-                    alert(data.message);
+                    alert(successMessage);
                 }
                 
                 teamPhotoUploadForm.reset();
                 imagePreviewContainer.style.display = 'none';
+                fileValidationMessage.style.display = 'none';
                 uploadFormContainer.classList.add('d-none');
+                
+                // Após sucesso, botão permanece desabilitado até novo arquivo válido
+                submitBtn.disabled = true;
+                submitBtn.innerHTML = originalBtnText;
                 
                 if (window.LAARI && window.LAARI.reloadGallery) {
                     window.LAARI.reloadGallery();
                 }
             } else {
+                const errorMessage = data.error || messages.uploadError;
                 if (window.LAARI && window.LAARI.showNotification) {
-                    window.LAARI.showNotification(data.error || 'Erro ao enviar foto.', 'error');
+                    window.LAARI.showNotification(errorMessage, 'error');
                 } else {
-                    alert(data.error || 'Erro ao enviar foto.');
+                    alert(errorMessage);
                 }
+                
+                // Em caso de erro, reabilita o botão para nova tentativa
+                submitBtn.disabled = false;
+                submitBtn.innerHTML = originalBtnText;
             }
         })
         .catch(error => {
             console.error('Erro ao enviar foto:', error);
+            const errorMessage = messages.uploadError;
             if (window.LAARI && window.LAARI.showNotification) {
-                window.LAARI.showNotification('Erro ao enviar foto. Tente novamente.', 'error');
+                window.LAARI.showNotification(errorMessage, 'error');
             } else {
-                alert('Erro ao enviar foto. Tente novamente.');
+                alert(errorMessage);
             }
-        })
-        .finally(() => {
+            
+            // Em caso de erro de rede, reabilita o botão para nova tentativa
             submitBtn.disabled = false;
             submitBtn.innerHTML = originalBtnText;
         });
