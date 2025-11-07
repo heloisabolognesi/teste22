@@ -188,17 +188,25 @@
                             <td>{{ scan.scan_date.strftime('%d/%m/%Y %H:%M') }}</td>
                             <td>
                                 <span class="badge bg-archaeological">
-                                    <span data-i18n-fallback="{{ scan.scanner_type or 'model_3d_not_specified' }}">{{ scan.scanner_type or 'Não especificado' }}</span>
+                                    {% if scan.scanner_type %}
+                                        {{ scan.scanner_type }}
+                                    {% else %}
+                                        <span data-i18n="model_3d_not_specified">Não especificado</span>
+                                    {% endif %}
                                 </span>
                             </td>
                             <td>
-                                <small class="text-muted">{{ scan.resolution or '-' }}</small>
+                                {% if scan.resolution %}
+                                    <small class="text-muted">{{ scan.resolution }}</small>
+                                {% else %}
+                                    <small class="text-muted" data-i18n="model_3d_empty_field">-</small>
+                                {% endif %}
                             </td>
                             <td>
                                 {% if scan.file_size %}
                                     <small class="text-muted">{{ "%.2f"|format(scan.file_size / 1024 / 1024) }} MB</small>
                                 {% else %}
-                                    <small class="text-muted">-</small>
+                                    <small class="text-muted" data-i18n="model_3d_empty_field">-</small>
                                 {% endif %}
                             </td>
                             <td>
@@ -215,14 +223,14 @@
                             <td>
                                 <div class="btn-group btn-group-sm">
                                     {% if scan.file_path %}
-                                    <button type="button" class="btn btn-outline-archaeological" data-i18n-aria="model_3d_btn_view" title="Visualizar" onclick="viewScan3D({{ scan.id }})">
+                                    <button type="button" class="btn btn-outline-archaeological" data-i18n-aria="model_3d_btn_view" onclick="viewScan3D({{ scan.id }})">
                                         <i class="fas fa-eye"></i>
                                     </button>
-                                    <button type="button" class="btn btn-outline-success" data-i18n-aria="model_3d_btn_download" title="Download" onclick="downloadScan({{ scan.id }})">
+                                    <button type="button" class="btn btn-outline-success" data-i18n-aria="model_3d_btn_download" onclick="downloadScan({{ scan.id }})">
                                         <i class="fas fa-download"></i>
                                     </button>
                                     {% endif %}
-                                    <button type="button" class="btn btn-outline-info" data-i18n-aria="model_3d_btn_details" title="Detalhes" onclick="showScanDetails({{ scan.id }})">
+                                    <button type="button" class="btn btn-outline-info" data-i18n-aria="model_3d_btn_details" onclick="showScanDetails({{ scan.id }})">
                                         <i class="fas fa-info"></i>
                                     </button>
                                 </div>

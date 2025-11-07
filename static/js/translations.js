@@ -335,7 +335,8 @@ const translations = {
         "model_3d_alert_download": "Download do scan {id} será implementado em breve.",
         "model_3d_alert_details": "Detalhes do scan {id} serão exibidos em modal.",
         "model_3d_alert_file_selected": "Arquivo selecionado: {name} ({size} MB)",
-        "model_3d_alert_file_too_large": "Arquivo muito grande! O limite é 16MB."
+        "model_3d_alert_file_too_large": "Arquivo muito grande! O limite é 16MB.",
+        "model_3d_empty_field": "-"
     },
     
     "en": {
@@ -666,7 +667,8 @@ const translations = {
         "model_3d_alert_download": "Download of scan {id} will be implemented soon.",
         "model_3d_alert_details": "Details of scan {id} will be displayed in modal.",
         "model_3d_alert_file_selected": "File selected: {name} ({size} MB)",
-        "model_3d_alert_file_too_large": "File too large! The limit is 16MB."
+        "model_3d_alert_file_too_large": "File too large! The limit is 16MB.",
+        "model_3d_empty_field": "-"
     },
     
     "es": {
@@ -997,7 +999,8 @@ const translations = {
         "model_3d_alert_download": "La descarga del escaneo {id} se implementará pronto.",
         "model_3d_alert_details": "Los detalles del escaneo {id} se mostrarán en modal.",
         "model_3d_alert_file_selected": "Archivo seleccionado: {name} ({size} MB)",
-        "model_3d_alert_file_too_large": "¡Archivo demasiado grande! El límite es 16MB."
+        "model_3d_alert_file_too_large": "¡Archivo demasiado grande! El límite es 16MB.",
+        "model_3d_empty_field": "-"
     },
     
     "fr": {
@@ -1328,6 +1331,7 @@ const translations = {
         "model_3d_alert_download": "Le téléchargement du scan {id} sera implémenté bientôt.",
         "model_3d_alert_details": "Les détails du scan {id} seront affichés dans une fenêtre modale.",
         "model_3d_alert_file_selected": "Fichier sélectionné: {name} ({size} MB)",
-        "model_3d_alert_file_too_large": "Fichier trop volumineux! La limite est de 16MB."
+        "model_3d_alert_file_too_large": "Fichier trop volumineux! La limite est de 16MB.",
+        "model_3d_empty_field": "-"
     }
 };
