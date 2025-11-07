@@ -254,6 +254,48 @@
                     <h4 class="text-muted" data-i18n="gallery_no_photos">Nenhuma foto disponível</h4>
                     <p class="text-muted" data-i18n="gallery_empty_text">A galeria está vazia no momento.</p>
                 </div>
+                
+                <!-- Formulário de Upload (apenas para admins) - MOVIDO PARA DENTRO DO MODAL-BODY -->
+                {% if current_user.is_authenticated and current_user.is_admin %}
+                <div id="uploadFormContainer" class="border-top bg-light p-4 mt-4 mb-4 d-none" style="border-radius: 8px;">
+                    <h5 class="mb-3"><i class="fas fa-camera me-2"></i><span data-i18n="upload_new_team_photo">Adicionar Nova Foto da Equipe</span></h5>
+                    <form id="teamPhotoUploadForm" enctype="multipart/form-data">
+                        <div class="row g-3">
+                            <div class="col-md-6">
+                                <label for="photoTitle" class="form-label"><span data-i18n="upload_title_label">Título</span> <span class="text-danger" data-i18n="required_asterisk">*</span></label>
+                                <input type="text" class="form-control" id="photoTitle" name="title" required>
+                            </div>
+                            <div class="col-md-6">
+                                <label for="photoImage" class="form-label"><span data-i18n="upload_image_label">Imagem</span> <span class="text-danger" data-i18n="required_asterisk">*</span></label>
+                                <input type="file" class="form-control" id="photoImage" name="image" accept="image/jpeg,image/png,image/gif" required>
+                            </div>
+                            <div class="col-12">
+                                <label for="photoDescription" class="form-label" data-i18n="upload_description_label">Descrição (opcional)</label>
+                                <textarea class="form-control" id="photoDescription" name="description" rows="2"></textarea>
+                            </div>
+                            <div class="col-12" id="imagePreviewContainer" style="display: none;">
+                                <label class="form-label" data-i18n="upload_preview_label">Preview:</label>
+                                <img id="imagePreview" src="" alt="Preview" class="img-thumbnail" style="max-height: 200px;">
+                            </div>
+                            <div class="col-12" id="fileValidationMessage" style="display: none;">
+                                <div class="alert alert-danger mb-3" role="alert">
+                                    <i class="fas fa-exclamation-triangle me-2"></i>
+                                    <span id="fileValidationText"></span>
+                                </div>
+                            </div>
+                            <div class="col-12">
+                                <button type="submit" class="btn btn-success" id="submitPhotoBtn" disabled>
+                                    <i class="fas fa-upload me-2"></i><span data-i18n="upload_submit_btn">Enviar Foto</span>
+                                </button>
+                                <button type="button" class="btn btn-secondary" id="cancelUploadBtn">
+                                    <i class="fas fa-times me-2"></i><span data-i18n="upload_cancel_btn">Cancelar</span>
+                                </button>
+                                <div id="scrollSentinel" style="height: 1px;"></div>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+                {% endif %}
             </div>
             
             <!-- Rodapé do Modal -->
@@ -267,47 +309,6 @@
                     <i class="fas fa-times me-2"></i><span data-i18n="galeria_close">Fechar</span>
                 </button>
             </div>
-            
-            <!-- Formulário de Upload (apenas para admins) -->
-            {% if current_user.is_authenticated and current_user.is_admin %}
-            <div id="uploadFormContainer" class="border-top bg-white p-4 d-none">
-                <h5 class="mb-3"><i class="fas fa-camera me-2"></i><span data-i18n="upload_new_team_photo">Adicionar Nova Foto da Equipe</span></h5>
-                <form id="teamPhotoUploadForm" enctype="multipart/form-data">
-                    <div class="row g-3">
-                        <div class="col-md-6">
-                            <label for="photoTitle" class="form-label"><span data-i18n="upload_title_label">Título</span> <span class="text-danger" data-i18n="required_asterisk">*</span></label>
-                            <input type="text" class="form-control" id="photoTitle" name="title" required>
-                        </div>
-                        <div class="col-md-6">
-                            <label for="photoImage" class="form-label"><span data-i18n="upload_image_label">Imagem</span> <span class="text-danger" data-i18n="required_asterisk">*</span></label>
-                            <input type="file" class="form-control" id="photoImage" name="image" accept="image/jpeg,image/png,image/gif" required>
-                        </div>
-                        <div class="col-12">
-                            <label for="photoDescription" class="form-label" data-i18n="upload_description_label">Descrição (opcional)</label>
-                            <textarea class="form-control" id="photoDescription" name="description" rows="2"></textarea>
-                        </div>
-                        <div class="col-12" id="imagePreviewContainer" style="display: none;">
-                            <label class="form-label" data-i18n="upload_preview_label">Preview:</label>
-                            <img id="imagePreview" src="" alt="Preview" class="img-thumbnail" style="max-height: 200px;">
-                        </div>
-                        <div class="col-12" id="fileValidationMessage" style="display: none;">
-                            <div class="alert alert-danger mb-3" role="alert">
-                                <i class="fas fa-exclamation-triangle me-2"></i>
-                                <span id="fileValidationText"></span>
-                            </div>
-                        </div>
-                        <div class="col-12">
-                            <button type="submit" class="btn btn-success" id="submitPhotoBtn" disabled>
-                                <i class="fas fa-upload me-2"></i><span data-i18n="upload_submit_btn">Enviar Foto</span>
-                            </button>
-                            <button type="button" class="btn btn-secondary" id="cancelUploadBtn">
-                                <i class="fas fa-times me-2"></i><span data-i18n="upload_cancel_btn">Cancelar</span>
-                            </button>
-                        </div>
-                    </div>
-                </form>
-            </div>
-            {% endif %}
         </div>
     </div>
 </div>
@@ -590,7 +591,21 @@
     toggleUploadFormBtn.addEventListener('click', function() {
         uploadFormContainer.classList.toggle('d-none');
         if (!uploadFormContainer.classList.contains('d-none')) {
-            document.getElementById('photoTitle').focus();
+            // Aguarda um momento para o DOM atualizar
+            setTimeout(function() {
+                // Rola até o elemento sentinela (após os botões) para garantir visibilidade do botão "Enviar Foto"
+                const scrollTarget = document.getElementById('scrollSentinel');
+                if (scrollTarget) {
+                    scrollTarget.scrollIntoView({ 
+                        behavior: 'smooth', 
+                        block: 'end'
+                    });
+                }
+                // Foca no primeiro campo após o scroll
+                setTimeout(function() {
+                    document.getElementById('photoTitle').focus();
+                }, 400);
+            }, 100);
         }
     });
     
