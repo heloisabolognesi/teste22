@@ -372,10 +372,16 @@
     
     /**
      * Carrega as fotos da galeria via API
+     * @param {boolean} forceReload - Se true, força o recarregamento mesmo se já carregou antes
      */
-    function loadGalleryPhotos() {
-        // Se já carregou, não carrega novamente
-        if (photosLoaded) return;
+    function loadGalleryPhotos(forceReload = false) {
+        // Se já carregou e não está forçando reload, não carrega novamente
+        if (photosLoaded && !forceReload) return;
+        
+        // Reseta o estado
+        if (forceReload) {
+            photosLoaded = false;
+        }
         
         // Mostra loading
         galleryLoading.classList.remove('d-none');
@@ -496,6 +502,12 @@
         });
     }
     
+    // Expõe a função de reload para uso externo (ex: após upload de nova foto)
+    window.LAARI = window.LAARI || {};
+    window.LAARI.reloadGallery = function() {
+        loadGalleryPhotos(true);
+    };
+    
     console.log('L.A.A.R.I Dashboard: Sistema de galeria da equipe carregado');
 })();
 
@@ -570,8 +582,9 @@
                 imagePreviewContainer.style.display = 'none';
                 uploadFormContainer.classList.add('d-none');
                 
-                photosLoaded = false;
-                loadGalleryPhotos();
+                if (window.LAARI && window.LAARI.reloadGallery) {
+                    window.LAARI.reloadGallery();
+                }
             } else {
                 if (window.LAARI && window.LAARI.showNotification) {
                     window.LAARI.showNotification(data.error || 'Erro ao enviar foto.', 'error');

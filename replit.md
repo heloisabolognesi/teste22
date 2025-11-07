@@ -54,3 +54,20 @@ Preferred communication style: Simple, everyday language.
 
 ### Database
 -   **PostgreSQL**: Replit-managed database.
+
+## Recent Changes
+
+### 2025-11-07: Fixed Team Photo Upload System
+**Issue**: The team photo upload form in the dashboard would show a preview when an image was selected, but the gallery would not reload after a successful upload due to JavaScript scope issues.
+
+**Solution**: 
+- Modified `templates/dashboard.html` to expose the `loadGalleryPhotos` function globally via `window.LAARI.reloadGallery()`
+- Added a `forceReload` parameter to allow forcing a gallery refresh
+- Updated the upload form submission handler to call the global reload function instead of local scoped variables
+- This ensures the gallery automatically refreshes after uploading a new team photo without requiring a page reload
+
+**Files Modified**:
+- `templates/dashboard.html` - Fixed JavaScript scope issues in the gallery and upload form handlers
+
+**Testing**:
+- Created admin user (admin@laari.com / admin123) for testing upload functionality
