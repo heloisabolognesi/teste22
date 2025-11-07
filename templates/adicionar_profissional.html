@@ -5,9 +5,9 @@
 {% block content %}
 <div class="page-header mb-4">
     <h1 class="display-6 fw-bold">
-        <i class="fas fa-user-plus me-3"></i>Adicionar Profissional
+        <i class="fas fa-user-plus me-3"></i><span data-i18n="prof_add_title">Adicionar Profissional</span>
     </h1>
-    <p class="lead text-muted">Cadastre um novo profissional no diretório L.A.A.R.I</p>
+    <p class="lead text-muted" data-i18n="prof_add_subtitle">Cadastre um novo profissional no diretório L.A.A.R.I</p>
 </div>
 
 <div class="row justify-content-center">
@@ -15,7 +15,7 @@
         <div class="card border-0 shadow">
             <div class="card-header bg-archaeological text-white">
                 <h4 class="mb-0">
-                    <i class="fas fa-user me-2"></i>Informações do Profissional
+                    <i class="fas fa-user me-2"></i><span data-i18n="prof_add_info_header">Informações do Profissional</span>
                 </h4>
             </div>
             
@@ -27,7 +27,7 @@
                         <!-- Nome -->
                         <div class="col-12">
                             <label for="{{ form.name.id }}" class="form-label fw-bold">
-                                <i class="fas fa-signature me-2"></i>Nome Completo *
+                                <i class="fas fa-signature me-2"></i><span data-i18n="prof_add_name_label">Nome Completo *</span>
                             </label>
                             {{ form.name(class="form-control form-control-lg", placeholder="Digite o nome completo do profissional") }}
                             {% if form.name.errors %}
@@ -40,7 +40,7 @@
                         <!-- Email para Contato -->
                         <div class="col-12">
                             <label for="{{ form.email.id }}" class="form-label fw-bold">
-                                <i class="fas fa-envelope me-2"></i>Email para Contato *
+                                <i class="fas fa-envelope me-2"></i><span data-i18n="prof_add_email_label">Email para Contato *</span>
                             </label>
                             {{ form.email(class="form-control form-control-lg", placeholder="email@exemplo.com") }}
                             <small class="form-text text-muted">Este email será usado para contato pelos visitantes do perfil</small>
@@ -54,7 +54,7 @@
                         <!-- Idade e Especialização -->
                         <div class="col-md-4">
                             <label for="{{ form.age.id }}" class="form-label fw-bold">
-                                <i class="fas fa-birthday-cake me-2"></i>Idade
+                                <i class="fas fa-birthday-cake me-2"></i><span data-i18n="prof_add_age_label">Idade</span>
                             </label>
                             {{ form.age(class="form-control", placeholder="Ex: 35") }}
                             {% if form.age.errors %}
@@ -66,7 +66,7 @@
                         
                         <div class="col-md-8">
                             <label for="{{ form.specialization.id }}" class="form-label fw-bold">
-                                <i class="fas fa-star me-2"></i>Especialização
+                                <i class="fas fa-star me-2"></i><span data-i18n="prof_add_spec_label">Especialização</span>
                             </label>
                             {{ form.specialization(class="form-control", placeholder="Ex: Arqueologia Pré-Histórica, Conservação, etc.") }}
                             {% if form.specialization.errors %}
@@ -79,7 +79,7 @@
                         <!-- Foto de Perfil -->
                         <div class="col-12">
                             <label for="{{ form.profile_photo.id }}" class="form-label fw-bold">
-                                <i class="fas fa-camera me-2"></i>Foto de Perfil
+                                <i class="fas fa-camera me-2"></i><span data-i18n="prof_add_photo_label">Foto de Perfil</span>
                             </label>
                             {{ form.profile_photo(class="form-control", accept=".jpg,.jpeg,.png") }}
                             <small class="form-text text-muted">Formatos aceitos: JPG, JPEG, PNG (Recomendado: foto quadrada)</small>
@@ -93,7 +93,7 @@
                         <!-- Descrição -->
                         <div class="col-12">
                             <label for="{{ form.description.id }}" class="form-label fw-bold">
-                                <i class="fas fa-info-circle me-2"></i>Descrição Profissional
+                                <i class="fas fa-info-circle me-2"></i><span data-i18n="prof_add_desc_label">Descrição Profissional</span>
                             </label>
                             {{ form.description(class="form-control", rows="4", placeholder="Breve descrição sobre o profissional, sua área de atuação, interesses de pesquisa, etc.") }}
                             {% if form.description.errors %}
@@ -106,7 +106,7 @@
                         <!-- Experiência -->
                         <div class="col-12">
                             <label for="{{ form.experience.id }}" class="form-label fw-bold">
-                                <i class="fas fa-medal me-2"></i>Experiência Profissional
+                                <i class="fas fa-medal me-2"></i><span data-i18n="prof_add_exp_label">Experiência Profissional</span>
                             </label>
                             {{ form.experience(class="form-control", rows="6", placeholder="Descreva a experiência profissional, projetos realizados, instituições onde trabalhou, títulos acadêmicos, publicações relevantes, etc.") }}
                             <small class="form-text text-muted">Você pode usar quebras de linha para organizar melhor as informações</small>
@@ -120,7 +120,7 @@
                         <!-- LinkedIn -->
                         <div class="col-md-6">
                             <label for="{{ form.linkedin.id }}" class="form-label fw-bold">
-                                <i class="fab fa-linkedin me-2"></i>LinkedIn
+                                <i class="fab fa-linkedin me-2"></i><span data-i18n="prof_add_linkedin_label">LinkedIn</span>
                             </label>
                             {{ form.linkedin(class="form-control", placeholder="https://linkedin.com/in/seu-perfil") }}
                             <small class="form-text text-muted">URL completa do perfil no LinkedIn</small>
@@ -134,7 +134,7 @@
                         <!-- Currículo Lattes -->
                         <div class="col-md-6">
                             <label for="{{ form.lattes_cv.id }}" class="form-label fw-bold">
-                                <i class="fas fa-graduation-cap me-2"></i>Currículo Lattes
+                                <i class="fas fa-graduation-cap me-2"></i><span data-i18n="prof_add_lattes_label">Currículo Lattes</span>
                             </label>
                             {{ form.lattes_cv(class="form-control", placeholder="http://lattes.cnpq.br/seu-curriculo") }}
                             <small class="form-text text-muted">URL completa do Currículo Lattes</small>
@@ -149,11 +149,11 @@
                     <!-- Form Actions -->
                     <div class="d-flex justify-content-between mt-4">
                         <a href="{{ url_for('profissionais') }}" class="btn btn-secondary btn-lg">
-                            <i class="fas fa-arrow-left me-2"></i>Voltar
+                            <i class="fas fa-arrow-left me-2"></i><span data-i18n="btn_back">Voltar</span>
                         </a>
                         
                         <button type="submit" class="btn btn-archaeological btn-lg">
-                            <i class="fas fa-save me-2"></i>Cadastrar Profissional
+                            <i class="fas fa-save me-2"></i><span data-i18n="prof_btn_register">Cadastrar Profissional</span>
                         </button>
                     </div>
                 </form>
@@ -163,7 +163,7 @@
         <!-- Guidelines Card -->
         <div class="mt-4 p-4 bg-light rounded">
             <h6 class="fw-bold mb-3">
-                <i class="fas fa-lightbulb me-2"></i>Diretrizes para Cadastro
+                <i class="fas fa-lightbulb me-2"></i><span data-i18n="prof_guidelines_title">Diretrizes para Cadastro</span>
             </h6>
             <div class="row g-3">
                 <div class="col-md-6">

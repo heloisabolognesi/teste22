@@ -7,12 +7,12 @@
     <div class="d-flex justify-content-between align-items-center">
         <div>
             <h1 class="display-6 fw-bold">
-                <i class="fas fa-users me-3"></i>Profissionais da Região
+                <i class="fas fa-users me-3"></i><span data-i18n="prof_page_title">Profissionais da Região</span>
             </h1>
-            <p class="lead text-muted">Diretório completo de arqueólogos e especialistas</p>
+            <p class="lead text-muted" data-i18n="prof_page_subtitle">Diretório completo de arqueólogos e especialistas</p>
         </div>
         <a href="{{ url_for('adicionar_profissional') }}" class="btn btn-archaeological btn-lg">
-            <i class="fas fa-user-plus me-2"></i>Adicionar Profissional
+            <i class="fas fa-user-plus me-2"></i><span data-i18n="prof_btn_add">Adicionar Profissional</span>
         </a>
     </div>
 </div>
@@ -43,7 +43,7 @@
                     
                     {% if professional.age %}
                     <p class="text-muted mb-2">
-                        <i class="fas fa-birthday-cake me-2"></i>{{ professional.age }} anos
+                        <i class="fas fa-birthday-cake me-2"></i>{{ professional.age }} <span data-i18n="prof_years_old">anos</span>
                     </p>
                     {% endif %}
                     
@@ -61,14 +61,14 @@
                     
                     <!-- Action Button -->
                     <a href="{{ url_for('perfil_profissional', id=professional.id) }}" class="btn btn-outline-archaeological">
-                        <i class="fas fa-eye me-2"></i>Ver Mais
+                        <i class="fas fa-eye me-2"></i><span data-i18n="prof_btn_view_more">Ver Mais</span>
                     </a>
                 </div>
                 
                 <div class="card-footer bg-transparent border-0 text-center">
                     <small class="text-muted">
                         <i class="fas fa-calendar me-1"></i>
-                        Cadastrado em {{ professional.created_at.strftime('%d/%m/%Y') }}
+                        <span data-i18n="prof_registered_on">Cadastrado em</span> {{ professional.created_at.strftime('%d/%m/%Y') }}
                     </small>
                 </div>
             </div>
@@ -79,7 +79,7 @@
 
 <!-- Specializations Summary -->
 <div class="specializations-summary mt-5">
-    <h3 class="h4 mb-4">Especializações Disponíveis</h3>
+    <h3 class="h4 mb-4" data-i18n="prof_specializations_title">Especializações Disponíveis</h3>
     <div class="card border-0 shadow">
         <div class="card-body">
             {% set specializations = professionals|groupby('specialization') %}
@@ -88,10 +88,10 @@
                 <div class="col-md-4">
                     <div class="specialization-item p-3 rounded border">
                         <div class="d-flex justify-content-between align-items-center">
-                            <h6 class="mb-0">{{ specialization or 'Não Especificado' }}</h6>
+                            <h6 class="mb-0">{% if specialization %}{{ specialization }}{% else %}<span data-i18n="prof_not_specified">Não Especificado</span>{% endif %}</h6>
                             <span class="badge bg-archaeological">{{ profs|list|length }}</span>
                         </div>
-                        <small class="text-muted">profissional{{ 's' if profs|list|length > 1 else '' }}</small>
+                        <small class="text-muted">{% if profs|list|length > 1 %}<span data-i18n="prof_professional_plural">profissionais</span>{% else %}<span data-i18n="prof_professional_singular">profissional</span>{% endif %}</small>
                     </div>
                 </div>
                 {% endfor %}
@@ -102,10 +102,10 @@
 {% else %}
 <div class="empty-state text-center py-5">
     <i class="fas fa-users fa-4x text-muted mb-4"></i>
-    <h3 class="text-muted">Nenhum Profissional Cadastrado</h3>
-    <p class="lead text-muted mb-4">Comece adicionando profissionais ao diretório do L.A.A.R.I</p>
+    <h3 class="text-muted" data-i18n="prof_empty_title">Nenhum Profissional Cadastrado</h3>
+    <p class="lead text-muted mb-4" data-i18n="prof_empty_description">Comece adicionando profissionais ao diretório do L.A.A.R.I</p>
     <a href="{{ url_for('adicionar_profissional') }}" class="btn btn-archaeological btn-lg">
-        <i class="fas fa-user-plus me-2"></i>Adicionar Primeiro Profissional
+        <i class="fas fa-user-plus me-2"></i><span data-i18n="prof_btn_add_first">Adicionar Primeiro Profissional</span>
     </a>
 </div>
 {% endif %}
@@ -115,18 +115,18 @@
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title">Buscar Profissionais</h5>
+                <h5 class="modal-title" data-i18n="prof_search_modal_title">Buscar Profissionais</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
             </div>
             <div class="modal-body">
                 <div class="mb-3">
-                    <label for="searchName" class="form-label">Nome</label>
-                    <input type="text" class="form-control" id="searchName" placeholder="Digite o nome...">
+                    <label for="searchName" class="form-label" data-i18n="prof_search_name_label">Nome</label>
+                    <input type="text" class="form-control" id="searchName" data-i18n="placeholder" data-i18n-attr="placeholder:prof_search_name_placeholder" placeholder="Digite o nome...">
                 </div>
                 <div class="mb-3">
-                    <label for="searchSpecialization" class="form-label">Especialização</label>
+                    <label for="searchSpecialization" class="form-label" data-i18n="prof_search_spec_label">Especialização</label>
                     <select class="form-select" id="searchSpecialization">
-                        <option value="">Todas as especializações</option>
+                        <option value="" data-i18n="prof_search_all_specs">Todas as especializações</option>
                         {% for professional in professionals %}
                             {% if professional.specialization %}
                                 <option value="{{ professional.specialization }}">{{ professional.specialization }}</option>
@@ -136,8 +136,8 @@
                 </div>
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fechar</button>
-                <button type="button" class="btn btn-archaeological" onclick="filterProfessionals()">Buscar</button>
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" data-i18n="btn_close">Fechar</button>
+                <button type="button" class="btn btn-archaeological" onclick="filterProfessionals()" data-i18n="prof_btn_search">Buscar</button>
             </div>
         </div>
     </div>

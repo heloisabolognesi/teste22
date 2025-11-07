@@ -7,12 +7,12 @@
     <div class="d-flex justify-content-between align-items-center">
         <div>
             <h1 class="display-6 fw-bold">
-                <i class="fas fa-user me-3"></i>Perfil Profissional
+                <i class="fas fa-user me-3"></i><span data-i18n="prof_profile_title">Perfil Profissional</span>
             </h1>
-            <p class="lead text-muted">Detalhes completos do profissional</p>
+            <p class="lead text-muted" data-i18n="prof_profile_subtitle">Detalhes completos do profissional</p>
         </div>
         <a href="{{ url_for('profissionais') }}" class="btn btn-outline-archaeological">
-            <i class="fas fa-arrow-left me-2"></i>Voltar à Lista
+            <i class="fas fa-arrow-left me-2"></i><span data-i18n="prof_btn_back_list">Voltar à Lista</span>
         </a>
     </div>
 </div>
@@ -46,13 +46,13 @@
                 
                 {% if professional.age %}
                 <p class="text-muted mb-3">
-                    <i class="fas fa-birthday-cake me-2"></i>{{ professional.age }} anos
+                    <i class="fas fa-birthday-cake me-2"></i>{{ professional.age }} <span data-i18n="prof_years_old">anos</span>
                 </p>
                 {% endif %}
                 
                 <!-- Contact/Social section -->
                 <div class="contact-info mt-4 pt-3 border-top">
-                    <h6 class="fw-bold mb-3">Informações de Contato</h6>
+                    <h6 class="fw-bold mb-3" data-i18n="prof_contact_info_title">Informações de Contato</h6>
                     {% if professional.email %}
                     <div class="mb-2">
                         <i class="fas fa-envelope me-2 text-archaeological"></i>
@@ -62,14 +62,14 @@
                     </div>
                     {% else %}
                     <div class="text-muted">
-                        <i class="fas fa-envelope me-2"></i>Email não disponível
+                        <i class="fas fa-envelope me-2"></i><span data-i18n="prof_email_unavailable">Email não disponível</span>
                     </div>
                     {% endif %}
                     
                     {% if professional.linkedin %}
                     <div class="mb-2">
                         <i class="fab fa-linkedin me-2 text-primary"></i>
-                        <a href="{{ professional.linkedin }}" target="_blank" rel="noopener noreferrer" class="text-decoration-none">
+                        <a href="{{ professional.linkedin }}" target="_blank" rel="noopener noreferrer" class="text-decoration-none" data-i18n="prof_linkedin">
                             LinkedIn
                         </a>
                     </div>
@@ -78,7 +78,7 @@
                     {% if professional.lattes_cv %}
                     <div class="mb-2">
                         <i class="fas fa-graduation-cap me-2 text-success"></i>
-                        <a href="{{ professional.lattes_cv }}" target="_blank" rel="noopener noreferrer" class="text-decoration-none">
+                        <a href="{{ professional.lattes_cv }}" target="_blank" rel="noopener noreferrer" class="text-decoration-none" data-i18n="prof_lattes">
                             Currículo Lattes
                         </a>
                     </div>
@@ -89,7 +89,7 @@
             <div class="card-footer bg-transparent border-0 text-center">
                 <small class="text-muted">
                     <i class="fas fa-calendar-plus me-1"></i>
-                    Cadastrado em {{ professional.created_at.strftime('%d/%m/%Y às %H:%M') }}
+                    <span data-i18n="prof_registered_at">Cadastrado em</span> {{ professional.created_at.strftime('%d/%m/%Y às %H:%M') }}
                 </small>
             </div>
         </div>
@@ -103,7 +103,7 @@
             <div class="card border-0 shadow mb-4">
                 <div class="card-header bg-archaeological text-white">
                     <h4 class="mb-0">
-                        <i class="fas fa-info-circle me-2"></i>Descrição Profissional
+                        <i class="fas fa-info-circle me-2"></i><span data-i18n="prof_description_title">Descrição Profissional</span>
                     </h4>
                 </div>
                 <div class="card-body p-4">
@@ -117,7 +117,7 @@
             <div class="card border-0 shadow mb-4">
                 <div class="card-header bg-archaeological text-white">
                     <h4 class="mb-0">
-                        <i class="fas fa-medal me-2"></i>Experiência Profissional
+                        <i class="fas fa-medal me-2"></i><span data-i18n="prof_experience_title">Experiência Profissional</span>
                     </h4>
                 </div>
                 <div class="card-body p-4">
@@ -132,7 +132,7 @@
             <div class="card border-0 shadow mb-4">
                 <div class="card-header bg-light">
                     <h5 class="mb-0">
-                        <i class="fas fa-chart-line me-2"></i>Resumo Profissional
+                        <i class="fas fa-chart-line me-2"></i><span data-i18n="prof_summary_title">Resumo Profissional</span>
                     </h5>
                 </div>
                 <div class="card-body p-4">
@@ -140,18 +140,18 @@
                         <div class="col-md-6">
                             <div class="stat-item text-center p-3 rounded border">
                                 <i class="fas fa-calendar-alt fa-2x text-archaeological mb-2"></i>
-                                <h6 class="fw-bold">Tempo no Sistema</h6>
+                                <h6 class="fw-bold" data-i18n="prof_time_in_system">Tempo no Sistema</h6>
                                 <p class="text-muted mb-0">
-                                    {{ (moment().utcnow() - professional.created_at).days if moment else 'N/A' }} dias
+                                    {{ (moment().utcnow() - professional.created_at).days if moment else 'N/A' }} <span data-i18n="prof_days">dias</span>
                                 </p>
                             </div>
                         </div>
                         <div class="col-md-6">
                             <div class="stat-item text-center p-3 rounded border">
                                 <i class="fas fa-star fa-2x text-archaeological mb-2"></i>
-                                <h6 class="fw-bold">Especialização</h6>
+                                <h6 class="fw-bold" data-i18n="prof_specialization_label">Especialização</h6>
                                 <p class="text-muted mb-0">
-                                    {{ professional.specialization or 'Não especificado' }}
+                                    {% if professional.specialization %}{{ professional.specialization }}{% else %}<span data-i18n="prof_not_specified">Não especificado</span>{% endif %}
                                 </p>
                             </div>
                         </div>
@@ -163,14 +163,14 @@
             <div class="card border-0 shadow">
                 <div class="card-header bg-light">
                     <h5 class="mb-0">
-                        <i class="fas fa-archive me-2"></i>Artefatos Relacionados
+                        <i class="fas fa-archive me-2"></i><span data-i18n="prof_artifacts_related_title">Artefatos Relacionados</span>
                     </h5>
                 </div>
                 <div class="card-body p-4">
                     <div class="text-center text-muted py-4">
                         <i class="fas fa-box-open fa-3x mb-3"></i>
-                        <p class="mb-0">Funcionalidade de vinculação de artefatos será implementada em breve.</p>
-                        <small>Aqui serão exibidos artefatos descobertos ou estudados por este profissional.</small>
+                        <p class="mb-0" data-i18n="prof_artifacts_coming_soon">Funcionalidade de vinculação de artefatos será implementada em breve.</p>
+                        <small data-i18n="prof_artifacts_description">Aqui serão exibidos artefatos descobertos ou estudados por este profissional.</small>
                     </div>
                 </div>
             </div>
@@ -182,7 +182,7 @@
 <div class="action-buttons mt-4">
     <div class="card border-0 shadow-sm">
         <div class="card-body text-center p-4">
-            <h6 class="mb-3">Ações Disponíveis</h6>
+            <h6 class="mb-3" data-i18n="prof_actions_title">Ações Disponíveis</h6>
             <div class="btn-group-vertical btn-group-lg">
                 {% if professional.email %}
                 <a href="mailto:{{ professional.email }}" class="btn btn-outline-archaeological mb-2">
