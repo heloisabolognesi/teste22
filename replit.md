@@ -103,6 +103,18 @@ Preferred communication style: Simple, everyday language.
 
 ## Recent Changes
 
+**Date:** November 07, 2025
+- **Acervo & Catalogar Translation Implementation**: Complete multilingual implementation for Collection and Cataloging sections
+  - Created modular translation file `translations_acervo_catalog.py` with 74 translation keys for PT/EN/ES/FR
+  - Integrated translations via automatic merge in `app.py` using update() function
+  - Fully translated `acervo.html` template: headers, filters, table columns, buttons, modals, and JavaScript messages
+  - Fully translated `catalogar_novo.html` template: form labels, placeholders, helper text, validation messages
+  - Implemented conditional translation mappings for database-stored values (artifact types, conservation states)
+  - Translated page titles for proper browser tab localization
+  - Translated example placeholders (Ex: ST001, Ex: 1.5m, etc.) in all supported languages
+  - All user-facing text now properly localizes across 4 languages without hardcoded strings
+  - Translation architecture ensures database values stored in Portuguese display correctly in user's selected language
+
 **Date:** November 04, 2025
 - **Team Photo Gallery Management**: Enhanced "Meet Our Team" modal with admin photo upload functionality
   - Removed "Gerenciar Galeria" from administrator dropdown menu
