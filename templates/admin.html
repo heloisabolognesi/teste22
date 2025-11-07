@@ -105,16 +105,20 @@
                                 </td>
                                 <td>
                                     <div class="btn-group btn-group-sm">
-                                        <a href="{{ url_for('validate_cv', user_id=user.id, action='approve') }}" 
-                                           class="btn btn-success"
-                                           onclick="return confirm('Aprovar o currículo de {{ user.username }}? O usuário terá acesso à catalogação.')">
-                                            <i class="fas fa-check me-1"></i><span data-translate="admin_btn_approve">Aprovar</span>
-                                        </a>
-                                        <a href="{{ url_for('validate_cv', user_id=user.id, action='reject') }}" 
-                                           class="btn btn-danger"
-                                           onclick="return confirm('Rejeitar o currículo de {{ user.username }}?')">
-                                            <i class="fas fa-times me-1"></i><span data-translate="admin_btn_reject">Rejeitar</span>
-                                        </a>
+                                        <form method="POST" action="{{ url_for('validate_cv', user_id=user.id, action='approve') }}" style="display:inline;">
+                                            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+                                            <button type="submit" class="btn btn-success" 
+                                                    onclick="return confirm('Aprovar o currículo de {{ user.username }}? O usuário terá acesso à catalogação.')">
+                                                <i class="fas fa-check me-1"></i><span data-translate="admin_btn_approve">Aprovar</span>
+                                            </button>
+                                        </form>
+                                        <form method="POST" action="{{ url_for('validate_cv', user_id=user.id, action='reject') }}" style="display:inline;">
+                                            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+                                            <button type="submit" class="btn btn-danger" 
+                                                    onclick="return confirm('Rejeitar o currículo de {{ user.username }}?')">
+                                                <i class="fas fa-times me-1"></i><span data-translate="admin_btn_reject">Rejeitar</span>
+                                            </button>
+                                        </form>
                                     </div>
                                 </td>
                             </tr>
@@ -150,16 +154,20 @@
                                 <td>{{ user.city }}, {{ user.state }}, {{ user.country }}</td>
                                 <td>
                                     <div class="btn-group btn-group-sm">
-                                        <a href="{{ url_for('validate_institution', user_id=user.id, action='approve') }}" 
-                                           class="btn btn-success"
-                                           onclick="return confirm('Aprovar a instituição {{ user.institution_name }}? A conta terá acesso à catalogação.')">
-                                            <i class="fas fa-check me-1"></i><span data-translate="admin_btn_approve">Aprovar</span>
-                                        </a>
-                                        <a href="{{ url_for('validate_institution', user_id=user.id, action='reject') }}" 
-                                           class="btn btn-danger"
-                                           onclick="return confirm('Rejeitar a instituição {{ user.institution_name }}?')">
-                                            <i class="fas fa-times me-1"></i><span data-translate="admin_btn_reject">Rejeitar</span>
-                                        </a>
+                                        <form method="POST" action="{{ url_for('validate_institution', user_id=user.id, action='approve') }}" style="display:inline;">
+                                            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+                                            <button type="submit" class="btn btn-success" 
+                                                    onclick="return confirm('Aprovar a instituição {{ user.institution_name }}? A conta terá acesso à catalogação.')">
+                                                <i class="fas fa-check me-1"></i><span data-translate="admin_btn_approve">Aprovar</span>
+                                            </button>
+                                        </form>
+                                        <form method="POST" action="{{ url_for('validate_institution', user_id=user.id, action='reject') }}" style="display:inline;">
+                                            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+                                            <button type="submit" class="btn btn-danger" 
+                                                    onclick="return confirm('Rejeitar a instituição {{ user.institution_name }}?')">
+                                                <i class="fas fa-times me-1"></i><span data-translate="admin_btn_reject">Rejeitar</span>
+                                            </button>
+                                        </form>
                                     </div>
                                 </td>
                             </tr>

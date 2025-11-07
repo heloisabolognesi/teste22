@@ -86,7 +86,7 @@ def register():
             
             # Validate professional account - CV upload required
             if account_type == 'profissional':
-                if not form.cv_file.data:
+                if not form.cv_file.data or not form.cv_file.data.filename:
                     flash('Por favor, envie seu currículo (CV) para criar uma conta profissional.', 'error')
                     return render_template('register.html', form=form)
             
@@ -436,7 +436,7 @@ def toggle_admin_status(user_id):
     return redirect(url_for('admin'))
 
 # CV and Institution Validation Routes
-@app.route('/admin/validate_cv/<int:user_id>/<action>')
+@app.route('/admin/validate_cv/<int:user_id>/<action>', methods=['POST'])
 @login_required
 def validate_cv(user_id, action):
     if not current_user.is_admin:
@@ -467,7 +467,7 @@ def validate_cv(user_id, action):
     
     return redirect(url_for('admin'))
 
-@app.route('/admin/validate_institution/<int:user_id>/<action>')
+@app.route('/admin/validate_institution/<int:user_id>/<action>', methods=['POST'])
 @login_required
 def validate_institution(user_id, action):
     if not current_user.is_admin:
