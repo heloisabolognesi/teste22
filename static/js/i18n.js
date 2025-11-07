@@ -132,6 +132,14 @@ const I18n = {
             }
         });
         
+        // Atualiza elementos com placeholder separado
+        const placeholderElements = document.querySelectorAll('[data-i18n-placeholder]');
+        placeholderElements.forEach(element => {
+            const key = element.getAttribute('data-i18n-placeholder');
+            const translatedText = this.translate(key);
+            element.placeholder = translatedText;
+        });
+        
         const titleElement = document.querySelector('title[data-i18n]');
         if (titleElement) {
             const key = titleElement.getAttribute('data-i18n');
