@@ -1,180 +1,56 @@
 # L.A.A.R.I - Laboratório e Acervo Arqueológico Remoto Integrado
 
 ## Overview
-
-L.A.A.R.I is a comprehensive archaeological management system built with Flask that centralizes documentation, cataloging, collection management, and inventory control. The application facilitates communication between field teams and laboratory staff by providing digital tools for artifact management, professional networking, transportation tracking, and 3D scanning integration. The system uses a web-based interface with Bootstrap styling and includes features for user authentication, artifact cataloging with photo/3D model uploads, professional directory management, and administrative controls.
+L.A.A.R.I (Integrated Remote Archaeological Laboratory and Collection) is a Flask-based archaeological management system. Its primary purpose is to centralize and streamline documentation, cataloging, collection management, and inventory control for archaeological findings. The system aims to facilitate communication between field and laboratory teams through digital tools for artifact management, professional networking, transportation tracking, and 3D scanning integration. This web-based application provides a comprehensive solution for managing archaeological data, enhancing collaboration, and preserving cultural heritage digitally.
 
 ## User Preferences
-
 Preferred communication style: Simple, everyday language.
 
 ## System Architecture
 
-### Frontend Architecture
-- **Template Engine**: Jinja2 templating with Flask
-- **UI Framework**: Bootstrap 5.3.0 for responsive design
-- **Custom Styling**: Archaeological-themed CSS with custom color palette (#E6D2B7 beige, #5F3A1F brown)
-- **Typography**: Kelly Slab font for archaeological aesthetic
-- **Icons**: Font Awesome 6.4.0 for consistent iconography
-- **JavaScript**: Vanilla JavaScript for interactive features (tooltips, modals, form validation, file uploads)
+### UI/UX Decisions
+-   **Template Engine**: Jinja2 with Flask
+-   **UI Framework**: Bootstrap 5.3.0 for responsive design
+-   **Custom Styling**: Archaeological-themed CSS with a custom color palette (#E6D2B7 beige, #5F3A1F brown)
+-   **Typography**: Kelly Slab font for an archaeological aesthetic
+-   **Icons**: Font Awesome 6.4.0 for consistent iconography
+-   **Internationalization (i18n)**: Client-side JavaScript-based system supporting Portuguese (pt-BR), English (en), Spanish (es), and French (fr), with dynamic DOM updates and language persistence.
 
-### Backend Architecture
-- **Web Framework**: Flask with SQLAlchemy ORM
-- **Database Layer**: SQLAlchemy with DeclarativeBase for model definitions
-- **Authentication**: Flask-Login for session management
-- **Form Handling**: FlaskWTF for form validation and CSRF protection
-- **File Uploads**: Werkzeug secure filename handling with UUID generation
-- **Middleware**: ProxyFix for deployment behind reverse proxies
+### Technical Implementations
+-   **Web Framework**: Flask with SQLAlchemy ORM
+-   **Database Layer**: SQLAlchemy with DeclarativeBase for model definitions
+-   **Authentication**: Flask-Login for session management and role-based access (admin/regular users).
+-   **Form Handling**: FlaskWTF for form validation and CSRF protection.
+-   **File Uploads**: Secure handling with Werkzeug, UUID-based filenames, and support for images (jpg, jpeg, png, gif) and 3D models (obj, ply, stl, fbx) up to 16MB.
+-   **Conditional Fields**: Dynamic display of academic information fields based on user account type (Professional, University, Student).
+-   **Middleware**: ProxyFix for deployment behind reverse proxies.
 
-### Database Design
-- **User Model**: Authentication with role-based access (admin/regular users), account type selection (Professional/University/Student), and conditional academic information fields (university, course, entry year, institution type, location)
-- **Artifact Model**: Core entity with metadata, photos, 3D models, and QR codes
-- **Professional Model**: Directory of archaeological specialists with professional information including LinkedIn profile and Currículo Lattes links
-- **Transport Model**: Movement tracking for artifacts
-- **Scanner3D Model**: 3D digitization records (referenced in forms but not in models.py)
-- **Relationships**: User-to-Artifact cataloging relationship established
+### Feature Specifications
+-   **User Management**: Registration with distinct account types (Professional, University, Student) and conditional academic information capture.
+-   **Artifact Management**: Cataloging with support for metadata, photo, and 3D model uploads, and QR code generation.
+-   **Professional Directory**: Management of archaeological specialists with contact information, including LinkedIn and Currículo Lattes profiles.
+-   **Transportation Tracking**: System for tracking the movement of artifacts.
+-   **3D Digitization Records**: Integration for 3D scanner data (referenced in forms).
 
-### Authentication & Authorization
-- **Login System**: Email/password authentication with Flask-Login
-- **User Registration**: New user account creation with three account types:
-  - **Professional Account**: For professional archaeologists and researchers
-  - **University Account**: For university students with mandatory academic information
-  - **Student Account**: For students with mandatory academic information
-- **Academic Information**: Conditional form fields displayed only for University and Student accounts including:
-  - University selection from comprehensive list (Brazil, USA, UK, Canada, Spain, France, Mexico) with custom entry option
-  - Course/Study area
-  - Entry year
-  - Institution type (Public/Private)
-  - Location (City, State, Country)
-- **Role Management**: Admin users with elevated privileges
-- **Session Management**: Secure session handling with configurable secret keys
-- **Access Control**: Login-required decorators for protected routes
-- **Form Validation**: JavaScript-powered conditional field display and server-side validation ensuring all academic fields are mandatory for student/university accounts
-
-### File Management System
-- **Upload Handling**: Secure file uploads with extension validation
-- **Storage Structure**: Organized upload directory with UUID-based filenames
-- **File Types**: Support for images (jpg, jpeg, png, gif) and 3D models (obj, ply, stl, fbx)
-- **Size Limits**: 16MB maximum file size configuration
+### System Design Choices
+-   **Database**: PostgreSQL, configured via `DATABASE_URL` environment variable, with connection pooling.
+-   **Security**: CSRF protection, secure file handling, and role-based access control.
+-   **Deployment**: Environment variable-driven configuration for session secrets and database, with proxy support.
 
 ## External Dependencies
 
-### Core Dependencies
-- **Flask**: Web application framework
-- **SQLAlchemy**: Database ORM and connection management
-- **Flask-Login**: User session and authentication management
-- **Flask-WTF**: Form handling and CSRF protection
-- **WTForms**: Form validation and rendering
-- **Werkzeug**: WSGI utilities and security functions
+### Core Libraries
+-   **Flask**: Web application framework.
+-   **SQLAlchemy**: ORM for database interaction.
+-   **Flask-Login**: User authentication and session management.
+-   **Flask-WTF**: Form handling, validation, and CSRF protection.
+-   **WTForms**: Form validation and rendering.
+-   **Werkzeug**: WSGI utilities and security functions.
 
-### Frontend Dependencies
-- **Bootstrap 5.3.0**: CSS framework via CDN
-- **Font Awesome 6.4.0**: Icon library via CDN
-- **Google Fonts**: Kelly Slab typography via CDN
+### Frontend Libraries (via CDN)
+-   **Bootstrap 5.3.0**: CSS framework.
+-   **Font Awesome 6.4.0**: Icon library.
+-   **Google Fonts**: Kelly Slab typography.
 
-### Database Configuration
-- **Database**: PostgreSQL (Replit-managed)
-- **Configuration**: Via DATABASE_URL environment variable
-- **Connection Pooling**: Configured with pool_recycle and pool_pre_ping options
-- **Schema**: User table includes account_type, university, university_custom, course, entry_year, institution_type, city, state, and country columns
-
-### Deployment Considerations
-- **Environment Variables**: SESSION_SECRET and DATABASE_URL for configuration
-- **Proxy Support**: ProxyFix middleware for reverse proxy deployments
-- **Debug Mode**: Configurable debug settings for development
-- **Host Binding**: 0.0.0.0 binding for container deployments
-
-### Internationalization (i18n)
-- **Supported Languages**: Portuguese (pt-BR), English (en), Spanish (es), French (fr)
-- **Language Selector**: Dropdown menu with flag emojis (🇧🇷 🇬🇧 🇪🇸 🇫🇷) in navigation and public pages
-- **Translation System**: Client-side JavaScript-based i18n system with dynamic translation
-- **Architecture**:
-  - `static/js/translations.js`: Complete translation dictionary for all 4 languages
-  - `static/js/i18n.js`: i18n engine with automatic detection, localStorage persistence, and dynamic DOM updates
-  - HTML elements use `data-i18n` attributes for automatic translation
-- **Language Detection**: Automatic browser language detection on first visit
-- **Persistence**: User language preference saved in localStorage
-- **Translation Coverage**: All interface elements including menus, buttons, forms, labels, messages, and content
-- **Dynamic Updates**: Language changes apply instantly without page reload
-- **Translation Examples**: 
-  - "Laboratório e Acervo Arqueológico Remoto Integrado" → "Integrated Remote Archaeological Laboratory and Collection" (EN)
-  - Dashboard, Cataloging, Collection, Scanner 3D, Professionals, Inventory, Transport modules fully translated
-- **Formatters**: Built-in number and date formatters respecting locale conventions
-
-## Recent Changes
-
-**Date:** November 07, 2025
-- **Inventory Section Translation Implementation**: Complete multilingual implementation for Inventory section
-  - Added 28 translation keys to `static/js/translations.js` for PT-BR/EN/ES/FR covering all Inventory module UI elements
-  - Updated `inventario.html` template with data-i18n attributes for all text elements:
-    - Page headers, subtitles, and section titles
-    - Summary cards (Total Items, Good Condition, Needs Attention, Visual Documentation)
-    - Inventory by artifact type section with dynamic classification labels
-    - Conservation status overview with translated badges (Excellent, Good, Regular, Poor, Very Poor, Not Defined)
-    - Recent additions table with column headers (Artifact, Type, Catalog Date, Cataloged By, State)
-    - Quick actions buttons (Catalog New Item, Search Collection, Export Inventory, Generate Report)
-    - Empty state messages and CTAs
-    - JavaScript alert messages for export and report functions
-  - Translation keys follow naming convention: inventory_* (e.g., inventory_title, inventory_total_items, inventory_conservation_status)
-  - All UI text properly translates across 4 languages including conservation state badges, artifact types, and dynamic labels
-  - Percentage indicators and statistics maintain proper localization context
-  - Language switching functional for entire Inventory module with instant updates
-
-- **Professionals Section Translation Implementation**: Complete multilingual implementation for Professionals section
-  - Added 60+ translation keys to `static/js/translations.js` for PT-BR/EN/ES/FR covering all Professionals module UI elements
-  - Updated `profissionais.html` template with data-i18n attributes for page title, subtitle, buttons, search modal, specialization groups
-  - Updated `perfil_profissional.html` template with data-i18n attributes for profile sections, contact info, experience, statistics, action buttons
-  - Updated `adicionar_profissional.html` template with data-i18n attributes for form headers, labels (name, email, age, specialization, photo, description, experience, LinkedIn, Currículo Lattes), guidelines
-  - Fixed incorrect server-side I18n.translate() usage, replaced with client-side data-i18n attributes for consistency
-  - All main UI elements (titles, labels, buttons, tooltips, messages) now properly translate across 4 languages
-  - Language switching functional for entire Professionals directory, profile view, and add professional form
-  - Translation keys follow naming convention: prof_* (e.g., prof_page_title, prof_btn_add, prof_contact_info_title)
-  
-- **Acervo & Catalogar Translation Implementation**: Complete multilingual implementation for Collection and Cataloging sections
-  - Created modular translation file `translations_acervo_catalog.py` with 74 translation keys for PT/EN/ES/FR
-  - Integrated translations via automatic merge in `app.py` using update() function
-  - Fully translated `acervo.html` template: headers, filters, table columns, buttons, modals, and JavaScript messages
-  - Fully translated `catalogar_novo.html` template: form labels, placeholders, helper text, validation messages
-  - Implemented conditional translation mappings for database-stored values (artifact types, conservation states)
-  - Translated page titles for proper browser tab localization
-  - Translated example placeholders (Ex: ST001, Ex: 1.5m, etc.) in all supported languages
-  - All user-facing text now properly localizes across 4 languages without hardcoded strings
-  - Translation architecture ensures database values stored in Portuguese display correctly in user's selected language
-
-**Date:** November 04, 2025
-- **Team Photo Gallery Management**: Enhanced "Meet Our Team" modal with admin photo upload functionality
-  - Removed "Gerenciar Galeria" from administrator dropdown menu
-  - Added photo upload form inside "Conheça Nossa Equipe" modal (admin-only access)
-  - Created `/api/team/upload_photo` endpoint with comprehensive security features:
-    - CSRF protection using Flask-WTF CSRFProtect
-    - File size validation (max 16MB) with empty file detection
-    - MIME type checking for image files (JPG, PNG, GIF)
-    - Detailed error logging for debugging and security monitoring
-    - Exception handling with database rollback on errors
-  - Client-side features include image preview, form validation, and AJAX submission
-  - Photos are stored in 'equipe' category and automatically published
-  - Enhanced security with CSRF token meta tag in base.html and token submission in AJAX requests
-- **Professional Directory Enhancement**: Added LinkedIn and Currículo Lattes fields to Professional model
-  - New database columns: `linkedin` (VARCHAR 255) and `lattes_cv` (VARCHAR 255)
-  - Updated ProfessionalForm with optional URL fields for LinkedIn and Lattes profiles
-  - Enhanced professional profile display to show clickable links to LinkedIn and Lattes
-  - Form template includes placeholder text and helper information for proper URL formatting
-  - Links open in new tab with secure `rel="noopener noreferrer"` attributes
-- **Administrator Account**: Created admin account for system management
-
-**Date:** October 31, 2025
-- **JavaScript Multilingual System**: Completely refactored multilingual system to use client-side JavaScript
-  - Created `static/js/translations.js` with comprehensive translation dictionary for 4 languages (PT-BR, EN, ES, FR)
-  - Implemented `static/js/i18n.js` with automatic language detection, localStorage persistence, and dynamic DOM updates
-  - Added `data-i18n` attributes throughout templates for automatic translation
-  - Language changes now apply instantly without page reload
-  - User language preference persists across sessions via localStorage
-  - Removed Flask-Babel dependency in favor of pure JavaScript solution
-- **Documentation**: Created comprehensive guides
-  - `MULTILINGUAL_GUIDE.md`: Technical documentation for developers
-  - `COMO_USAR_MULTILINGUE.md`: Quick user guide in Portuguese
-- **Template Updates**: Updated `base.html` and `index.html` with data-i18n attributes for dynamic translation
-
-**Date:** October 24, 2025
-- **Admin Account**: Created administrator account (roboticos415f2@gmail.com)
-- **Form Improvements**: Added autocomplete attributes to login/register forms for better UX
+### Database
+-   **PostgreSQL**: Replit-managed database.
