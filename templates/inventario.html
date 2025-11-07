@@ -5,9 +5,9 @@
 {% block content %}
 <div class="page-header mb-4">
     <h1 class="display-6 fw-bold">
-        <i class="fas fa-clipboard-list me-3"></i>Inventário Geral
+        <i class="fas fa-clipboard-list me-3"></i><span data-i18n="inventory_title">Inventário Geral</span>
     </h1>
-    <p class="lead text-muted">Controle detalhado do inventário arqueológico</p>
+    <p class="lead text-muted" data-i18n="inventory_subtitle">Controle detalhado do inventário arqueológico</p>
 </div>
 
 <!-- Inventory Summary Cards -->
@@ -19,7 +19,7 @@
                     <i class="fas fa-boxes fa-2x"></i>
                 </div>
                 <h3 class="h4 fw-bold">{{ artifacts|length }}</h3>
-                <p class="text-muted mb-0">Total de Itens</p>
+                <p class="text-muted mb-0" data-i18n="inventory_total_items">Total de Itens</p>
             </div>
         </div>
     </div>
@@ -31,7 +31,7 @@
                     <i class="fas fa-check-circle fa-2x"></i>
                 </div>
                 <h3 class="h4 fw-bold">{{ artifacts|selectattr('conservation_state', 'in', ['excelente', 'bom'])|list|length }}</h3>
-                <p class="text-muted mb-0">Bom Estado</p>
+                <p class="text-muted mb-0" data-i18n="inventory_good_condition">Bom Estado</p>
             </div>
         </div>
     </div>
@@ -43,7 +43,7 @@
                     <i class="fas fa-exclamation-triangle fa-2x"></i>
                 </div>
                 <h3 class="h4 fw-bold">{{ artifacts|selectattr('conservation_state', 'in', ['regular', 'ruim', 'pessimo'])|list|length }}</h3>
-                <p class="text-muted mb-0">Necessita Atenção</p>
+                <p class="text-muted mb-0" data-i18n="inventory_needs_attention">Necessita Atenção</p>
             </div>
         </div>
     </div>
@@ -55,7 +55,7 @@
                     <i class="fas fa-camera fa-2x"></i>
                 </div>
                 <h3 class="h4 fw-bold">{{ artifacts|selectattr('photo_path')|list|length }}</h3>
-                <p class="text-muted mb-0">Com Documentação Visual</p>
+                <p class="text-muted mb-0" data-i18n="inventory_visual_documentation">Com Documentação Visual</p>
             </div>
         </div>
     </div>
@@ -64,7 +64,7 @@
 {% if artifacts %}
 <!-- Inventory by Type -->
 <div class="mb-5">
-    <h3 class="h4 mb-3">Inventário por Tipo de Artefato</h3>
+    <h3 class="h4 mb-3" data-i18n="inventory_by_type">Inventário por Tipo de Artefato</h3>
     <div class="card border-0 shadow">
         <div class="card-body">
             <div class="row g-4">
@@ -73,13 +73,13 @@
                 <div class="col-md-4">
                     <div class="type-summary p-3 rounded border">
                         <div class="d-flex justify-content-between align-items-center mb-2">
-                            <h5 class="mb-0">{{ type|title if type else 'Não Classificado' }}</h5>
+                            <h5 class="mb-0">{% if type %}{{ type|title }}{% else %}<span data-i18n="inventory_unclassified">Não Classificado</span>{% endif %}</h5>
                             <span class="badge bg-archaeological fs-6">{{ items|list|length }}</span>
                         </div>
                         <div class="progress mb-2" style="height: 6px;">
                             <div class="progress-bar bg-archaeological" style="width: {{ (items|list|length / artifacts|length * 100)|round(1) }}%"></div>
                         </div>
-                        <small class="text-muted">{{ (items|list|length / artifacts|length * 100)|round(1) }}% do acervo</small>
+                        <small class="text-muted">{{ (items|list|length / artifacts|length * 100)|round(1) }}% <span data-i18n="inventory_of_collection">do acervo</span></small>
                     </div>
                 </div>
                 {% endfor %}
@@ -90,7 +90,7 @@
 
 <!-- Conservation Status Overview -->
 <div class="mb-5">
-    <h3 class="h4 mb-3">Estado de Conservação</h3>
+    <h3 class="h4 mb-3" data-i18n="inventory_conservation_status">Estado de Conservação</h3>
     <div class="card border-0 shadow">
         <div class="card-body">
             <div class="row g-4">
@@ -101,17 +101,17 @@
                         <div class="d-flex justify-content-between align-items-center mb-2">
                             <h6 class="mb-0 d-flex align-items-center">
                                 {% if state == 'excelente' %}
-                                    <span class="badge bg-success me-2">Excelente</span>
+                                    <span class="badge bg-success me-2" data-i18n="conservation_excellent">Excelente</span>
                                 {% elif state == 'bom' %}
-                                    <span class="badge bg-info me-2">Bom</span>
+                                    <span class="badge bg-info me-2" data-i18n="conservation_good">Bom</span>
                                 {% elif state == 'regular' %}
-                                    <span class="badge bg-warning me-2">Regular</span>
+                                    <span class="badge bg-warning me-2" data-i18n="conservation_regular">Regular</span>
                                 {% elif state == 'ruim' %}
-                                    <span class="badge bg-danger me-2">Ruim</span>
+                                    <span class="badge bg-danger me-2" data-i18n="conservation_poor">Ruim</span>
                                 {% elif state == 'pessimo' %}
-                                    <span class="badge bg-dark me-2">Péssimo</span>
+                                    <span class="badge bg-dark me-2" data-i18n="conservation_very_poor">Péssimo</span>
                                 {% else %}
-                                    <span class="badge bg-secondary me-2">Não Definido</span>
+                                    <span class="badge bg-secondary me-2" data-i18n="inventory_not_defined">Não Definido</span>
                                 {% endif %}
                             </h6>
                             <span class="fw-bold">{{ items|list|length }}</span>
@@ -125,7 +125,7 @@
                                 <div class="progress-bar bg-danger" style="width: {{ (items|list|length / artifacts|length * 100)|round(1) }}%"></div>
                             {% endif %}
                         </div>
-                        <small class="text-muted mt-1 d-block">{{ (items|list|length / artifacts|length * 100)|round(1) }}% do total</small>
+                        <small class="text-muted mt-1 d-block">{{ (items|list|length / artifacts|length * 100)|round(1) }}% <span data-i18n="inventory_of_total">do total</span></small>
                     </div>
                 </div>
                 {% endfor %}
@@ -136,18 +136,18 @@
 
 <!-- Recent Additions -->
 <div class="mb-5">
-    <h3 class="h4 mb-3">Adições Recentes</h3>
+    <h3 class="h4 mb-3" data-i18n="inventory_recent_additions">Adições Recentes</h3>
     <div class="card border-0 shadow">
         <div class="card-body">
             <div class="table-responsive">
                 <table class="table table-hover mb-0">
                     <thead class="table-light">
                         <tr>
-                            <th>Artefato</th>
-                            <th>Tipo</th>
-                            <th>Data de Catalogação</th>
-                            <th>Catalogado Por</th>
-                            <th>Estado</th>
+                            <th data-i18n="inventory_artifact">Artefato</th>
+                            <th data-i18n="inventory_type">Tipo</th>
+                            <th data-i18n="inventory_catalog_date">Data de Catalogação</th>
+                            <th data-i18n="inventory_cataloged_by">Catalogado Por</th>
+                            <th data-i18n="inventory_state">Estado</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -179,13 +179,13 @@
                             <td>{{ artifact.cataloged_by.username }}</td>
                             <td>
                                 {% if artifact.conservation_state == 'excelente' %}
-                                    <span class="badge bg-success">Excelente</span>
+                                    <span class="badge bg-success" data-i18n="conservation_excellent">Excelente</span>
                                 {% elif artifact.conservation_state == 'bom' %}
-                                    <span class="badge bg-info">Bom</span>
+                                    <span class="badge bg-info" data-i18n="conservation_good">Bom</span>
                                 {% elif artifact.conservation_state == 'regular' %}
-                                    <span class="badge bg-warning">Regular</span>
+                                    <span class="badge bg-warning" data-i18n="conservation_regular">Regular</span>
                                 {% elif artifact.conservation_state == 'ruim' %}
-                                    <span class="badge bg-danger">Ruim</span>
+                                    <span class="badge bg-danger" data-i18n="conservation_poor">Ruim</span>
                                 {% else %}
                                     <span class="badge bg-secondary">{{ artifact.conservation_state|title if artifact.conservation_state else 'N/A' }}</span>
                                 {% endif %}
@@ -201,30 +201,30 @@
 
 <!-- Quick Actions -->
 <div class="quick-actions">
-    <h3 class="h4 mb-3">Ações Rápidas</h3>
+    <h3 class="h4 mb-3" data-i18n="inventory_quick_actions">Ações Rápidas</h3>
     <div class="row g-3">
         <div class="col-md-3">
             <a href="{{ url_for('catalogar_novo') }}" class="btn btn-archaeological w-100 p-3">
                 <i class="fas fa-plus fa-2x mb-2 d-block"></i>
-                Catalogar Novo Item
+                <span data-i18n="inventory_catalog_new">Catalogar Novo Item</span>
             </a>
         </div>
         <div class="col-md-3">
             <a href="{{ url_for('acervo') }}" class="btn btn-outline-archaeological w-100 p-3">
                 <i class="fas fa-search fa-2x mb-2 d-block"></i>
-                Buscar no Acervo
+                <span data-i18n="inventory_search_collection">Buscar no Acervo</span>
             </a>
         </div>
         <div class="col-md-3">
             <button type="button" class="btn btn-outline-success w-100 p-3" onclick="exportInventory()">
                 <i class="fas fa-download fa-2x mb-2 d-block"></i>
-                Exportar Inventário
+                <span data-i18n="inventory_export">Exportar Inventário</span>
             </button>
         </div>
         <div class="col-md-3">
             <button type="button" class="btn btn-outline-info w-100 p-3" onclick="generateReport()">
                 <i class="fas fa-chart-bar fa-2x mb-2 d-block"></i>
-                Gerar Relatório
+                <span data-i18n="inventory_generate_report">Gerar Relatório</span>
             </button>
         </div>
     </div>
@@ -232,10 +232,10 @@
 {% else %}
 <div class="empty-state text-center py-5">
     <i class="fas fa-clipboard-list fa-4x text-muted mb-4"></i>
-    <h3 class="text-muted">Inventário Vazio</h3>
-    <p class="lead text-muted mb-4">Não há itens catalogados para exibir no inventário.</p>
+    <h3 class="text-muted" data-i18n="inventory_empty_title">Inventário Vazio</h3>
+    <p class="lead text-muted mb-4" data-i18n="inventory_empty_description">Não há itens catalogados para exibir no inventário.</p>
     <a href="{{ url_for('catalogar_novo') }}" class="btn btn-archaeological btn-lg">
-        <i class="fas fa-plus me-2"></i>Catalogar Primeiro Item
+        <i class="fas fa-plus me-2"></i><span data-i18n="inventory_catalog_first">Catalogar Primeiro Item</span>
     </a>
 </div>
 {% endif %}
@@ -244,11 +244,13 @@
 {% block scripts %}
 <script>
     function exportInventory() {
-        alert('Funcionalidade de exportação será implementada em breve.');
+        const message = window.I18n ? window.I18n.translate('inventory_export_soon') : 'Funcionalidade de exportação será implementada em breve.';
+        alert(message);
     }
     
     function generateReport() {
-        alert('Funcionalidade de relatórios será implementada em breve.');
+        const message = window.I18n ? window.I18n.translate('inventory_report_soon') : 'Funcionalidade de relatórios será implementada em breve.';
+        alert(message);
     }
     
     // Add some visual feedback to cards
