@@ -38,7 +38,7 @@
             </div>
             
             <div class="card-body p-4">
-                <form method="POST" class="needs-validation" novalidate id="registerForm">
+                <form method="POST" enctype="multipart/form-data" class="needs-validation" novalidate id="registerForm">
                     {{ form.hidden_tag() }}
                     
                     <div class="mb-3">
@@ -86,7 +86,7 @@
                     
                     <div class="mb-4">
                         <label for="{{ form.account_type.id }}" class="form-label">
-                            <i class="fas fa-briefcase me-2"></i>Tipo de Conta <span class="text-danger">*</span>
+                            <i class="fas fa-briefcase me-2"></i><span data-translate="form_account_type">Tipo de Conta</span> <span class="text-danger">*</span>
                         </label>
                         {{ form.account_type(class="form-select form-select-lg", id="accountType") }}
                         {% if form.account_type.errors %}
@@ -96,6 +96,106 @@
                                 {% endfor %}
                             </div>
                         {% endif %}
+                    </div>
+                    
+                    <div id="professionalFields" style="display: none;">
+                        <hr class="my-4">
+                        <h5 class="mb-3">
+                            <i class="fas fa-file-alt me-2"></i><span data-translate="form_cv_upload">Enviar Currículo</span>
+                        </h5>
+                        <div class="alert alert-info">
+                            <i class="fas fa-info-circle me-2"></i>
+                            <span data-translate="form_cv_upload_desc">Envie seu currículo em PDF, DOC ou DOCX (máx. 16MB)</span>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="{{ form.cv_file.id }}" class="form-label">
+                                <span data-translate="form_cv_file">Currículo (CV)</span> <span class="text-danger">*</span>
+                            </label>
+                            {{ form.cv_file(class="form-control", accept=".pdf,.doc,.docx") }}
+                            {% if form.cv_file.errors %}
+                                <div class="invalid-feedback d-block">
+                                    {% for error in form.cv_file.errors %}
+                                        {{ error }}
+                                    {% endfor %}
+                                </div>
+                            {% endif %}
+                            <small class="form-text text-muted">
+                                <span data-translate="form_cv_status_pending">Seu currículo será analisado por um administrador antes de ter acesso à catalogação</span>
+                            </small>
+                        </div>
+                    </div>
+                    
+                    <div id="institutionalFields" style="display: none;">
+                        <hr class="my-4">
+                        <h5 class="mb-3">
+                            <i class="fas fa-university me-2"></i><span data-translate="admin_institution_details">Dados Institucionais</span>
+                        </h5>
+                        <div class="alert alert-info">
+                            <i class="fas fa-info-circle me-2"></i>
+                            <span data-translate="form_institution_status_pending">Cadastro institucional será validado por um administrador</span>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="{{ form.institution_name.id }}" class="form-label">
+                                <span data-translate="form_institution_name">Nome da Instituição</span> <span class="text-danger">*</span>
+                            </label>
+                            {{ form.institution_name(class="form-control") }}
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="{{ form.institution_cnpj.id }}" class="form-label">
+                                <span data-translate="form_institution_cnpj">CNPJ ou Código Institucional</span> <span class="text-danger">*</span>
+                            </label>
+                            {{ form.institution_cnpj(class="form-control") }}
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="{{ form.institution_courses.id }}" class="form-label">
+                                <span data-translate="form_institution_courses">Cursos Oferecidos</span> <span class="text-danger">*</span>
+                            </label>
+                            {{ form.institution_courses(class="form-control", rows="3") }}
+                            <small class="form-text text-muted">
+                                <span data-translate="form_institution_courses_placeholder">Liste os cursos oferecidos separados por vírgula</span>
+                            </small>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="{{ form.institution_responsible_name.id }}" class="form-label">
+                                <span data-translate="form_institution_responsible_name">Nome do Responsável</span> <span class="text-danger">*</span>
+                            </label>
+                            {{ form.institution_responsible_name(class="form-control") }}
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="{{ form.institution_contact_email.id }}" class="form-label">
+                                <span data-translate="form_institution_contact_email">Email Institucional de Contato</span> <span class="text-danger">*</span>
+                            </label>
+                            {{ form.institution_contact_email(class="form-control", type="email") }}
+                        </div>
+                        
+                        <div class="row">
+                            <div class="col-md-4 mb-3">
+                                <label for="{{ form.city.id }}" class="form-label">
+                                    <span data-translate="form_city">Cidade</span> <span class="text-danger">*</span>
+                                </label>
+                                {{ form.city(class="form-control") }}
+                            </div>
+                            
+                            <div class="col-md-4 mb-3">
+                                <label for="{{ form.state.id }}" class="form-label">
+                                    <span data-translate="form_state">Estado</span> <span class="text-danger">*</span>
+                                </label>
+                                {{ form.state(class="form-control") }}
+                            </div>
+                            
+                            <div class="col-md-4 mb-3">
+                                <label for="{{ form.country.id }}" class="form-label">
+                                    <span data-translate="form_country">País</span> <span class="text-danger">*</span>
+                                </label>
+                                {{ form.country(class="form-control") }}
+                            </div>
+                        </div>
                     </div>
                     
                     <div id="academicFields" style="display: none;">
@@ -197,34 +297,44 @@
 document.addEventListener('DOMContentLoaded', function() {
     const accountTypeSelect = document.getElementById('accountType');
     const academicFields = document.getElementById('academicFields');
+    const professionalFields = document.getElementById('professionalFields');
+    const institutionalFields = document.getElementById('institutionalFields');
     const universitySelect = document.getElementById('universitySelect');
     const customUniversityField = document.getElementById('customUniversityField');
     
-    accountTypeSelect.addEventListener('change', function() {
-        const selectedType = this.value;
+    function updateFieldsVisibility() {
+        const selectedType = accountTypeSelect.value;
         
-        if (selectedType === 'estudante' || selectedType === 'universitaria') {
+        professionalFields.style.display = 'none';
+        academicFields.style.display = 'none';
+        institutionalFields.style.display = 'none';
+        
+        if (selectedType === 'profissional') {
+            professionalFields.style.display = 'block';
+        } else if (selectedType === 'estudante') {
             academicFields.style.display = 'block';
-        } else {
-            academicFields.style.display = 'none';
+        } else if (selectedType === 'universitaria') {
+            institutionalFields.style.display = 'block';
         }
-    });
+    }
     
-    universitySelect.addEventListener('change', function() {
-        if (this.value === 'custom') {
+    accountTypeSelect.addEventListener('change', updateFieldsVisibility);
+    
+    if (universitySelect) {
+        universitySelect.addEventListener('change', function() {
+            if (this.value === 'custom') {
+                customUniversityField.style.display = 'block';
+            } else {
+                customUniversityField.style.display = 'none';
+            }
+        });
+        
+        if (universitySelect.value === 'custom') {
             customUniversityField.style.display = 'block';
-        } else {
-            customUniversityField.style.display = 'none';
         }
-    });
-    
-    if (accountTypeSelect.value === 'estudante' || accountTypeSelect.value === 'universitaria') {
-        academicFields.style.display = 'block';
     }
     
-    if (universitySelect.value === 'custom') {
-        customUniversityField.style.display = 'block';
-    }
+    updateFieldsVisibility();
 });
 </script>
 {% endblock %}
