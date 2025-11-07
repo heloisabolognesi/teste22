@@ -16,7 +16,7 @@ class User(UserMixin, db.Model):
     
     # CV upload and validation (for professional accounts)
     cv_file_path = db.Column(db.String(255))  # Path to CV file
-    cv_status = db.Column(db.String(50), default='pending')  # pending, approved, rejected
+    cv_status = db.Column(db.String(50), default='Em análise')  # Em análise, Aprovado, Rejeitado
     cv_rejection_reason = db.Column(db.Text)  # Reason for rejection if applicable
     cv_reviewed_at = db.Column(db.DateTime)  # When CV was reviewed
     cv_reviewed_by = db.Column(db.Integer, db.ForeignKey('user.id'))  # Admin who reviewed
@@ -27,7 +27,7 @@ class User(UserMixin, db.Model):
     institution_courses = db.Column(db.Text)  # Courses offered (comma-separated)
     institution_responsible_name = db.Column(db.String(200))  # Name of person registering
     institution_contact_email = db.Column(db.String(200))  # Institutional contact email
-    institution_status = db.Column(db.String(50), default='pending')  # pending, approved, rejected
+    institution_status = db.Column(db.String(50), default='Em análise')  # Em análise, Aprovado, Rejeitado
     institution_rejection_reason = db.Column(db.Text)
     institution_reviewed_at = db.Column(db.DateTime)
     institution_reviewed_by = db.Column(db.Integer, db.ForeignKey('user.id'))
@@ -48,11 +48,11 @@ class User(UserMixin, db.Model):
     def can_catalog_artifacts(self):
         """Check if user has permission to catalog artifacts"""
         if self.account_type == 'estudante':
-            return True  # Students have basic access
+            return False  # Students do NOT have cataloging access
         elif self.account_type == 'profissional':
-            return self.cv_status == 'approved'  # Professionals need approved CV
+            return self.cv_status == 'Aprovado'  # Professionals need approved CV
         elif self.account_type == 'universitaria':
-            return self.institution_status == 'approved'  # Institutions need approval
+            return self.institution_status == 'Aprovado'  # Institutions need approval
         return False
 
 class Professional(db.Model):

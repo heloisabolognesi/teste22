@@ -161,7 +161,7 @@ def register():
                 cv_path = save_uploaded_file(form.cv_file.data, 'uploads/cvs')
                 if cv_path:
                     user.cv_file_path = cv_path
-                    user.cv_status = 'pending'
+                    user.cv_status = 'Em análise'
                 else:
                     flash('Erro ao fazer upload do currículo. Tente novamente.', 'warning')
                     return render_template('register.html', form=form)
@@ -173,7 +173,7 @@ def register():
                 user.institution_courses = form.institution_courses.data
                 user.institution_responsible_name = form.institution_responsible_name.data
                 user.institution_contact_email = form.institution_contact_email.data
-                user.institution_status = 'pending'
+                user.institution_status = 'Em análise'
             
             db.session.add(user)
             db.session.commit()
@@ -215,12 +215,64 @@ def dashboard():
 @app.route('/catalogacao')
 @login_required
 def catalogacao():
+    # Check if user has permission to access cataloging
+    if not current_user.can_catalog_artifacts():
+        lang = session.get('language', 'pt')
+        messages = {
+            'pt': 'Você não tem permissão para acessar a catalogação. ',
+            'en': 'You do not have permission to access cataloging. ',
+            'es': 'No tienes permiso para acceder a la catalogación. ',
+            'fr': 'Vous n\'avez pas la permission d\'accéder au catalogage. '
+        }
+        
+        # Add specific reason based on account type
+        if current_user.account_type == 'profissional' and current_user.cv_status == 'Em análise':
+            reasons = {
+                'pt': 'Seu currículo ainda está em análise.',
+                'en': 'Your CV is still under review.',
+                'es': 'Tu currículum todavía está en revisión.',
+                'fr': 'Votre CV est toujours en cours d\'examen.'
+            }
+            flash(messages.get(lang, messages['pt']) + reasons.get(lang, reasons['pt']), 'warning')
+        elif current_user.account_type == 'universitaria' and current_user.institution_status == 'Em análise':
+            reasons = {
+                'pt': 'Seu cadastro institucional ainda está em análise.',
+                'en': 'Your institutional registration is still under review.',
+                'es': 'Tu registro institucional todavía está en revisión.',
+                'fr': 'Votre enregistrement institutionnel est toujours en cours d\'examen.'
+            }
+            flash(messages.get(lang, messages['pt']) + reasons.get(lang, reasons['pt']), 'warning')
+        elif current_user.account_type == 'estudante':
+            reasons = {
+                'pt': 'Contas de estudantes não têm permissão para catalogar artefatos.',
+                'en': 'Student accounts do not have permission to catalog artifacts.',
+                'es': 'Las cuentas de estudiantes no tienen permiso para catalogar artefactos.',
+                'fr': 'Les comptes étudiants n\'ont pas la permission de cataloguer des artefacts.'
+            }
+            flash(messages.get(lang, messages['pt']) + reasons.get(lang, reasons['pt']), 'warning')
+        else:
+            flash(messages.get(lang, messages['pt']), 'error')
+        
+        return redirect(url_for('dashboard'))
+    
     artifacts = Artifact.query.order_by(Artifact.created_at.desc()).all()
     return render_template('catalogacao.html', artifacts=artifacts)
 
 @app.route('/catalogar_novo', methods=['GET', 'POST'])
 @login_required
 def catalogar_novo():
+    # Check if user has permission to catalog artifacts
+    if not current_user.can_catalog_artifacts():
+        lang = session.get('language', 'pt')
+        messages = {
+            'pt': 'Você não tem permissão para catalogar artefatos.',
+            'en': 'You do not have permission to catalog artifacts.',
+            'es': 'No tienes permiso para catalogar artefactos.',
+            'fr': 'Vous n\'avez pas la permission de cataloguer des artefacts.'
+        }
+        flash(messages.get(lang, messages['pt']), 'error')
+        return redirect(url_for('dashboard'))
+    
     form = ArtifactForm()
     if form.validate_on_submit():
         artifact = Artifact(
@@ -450,20 +502,40 @@ def validate_cv(user_id, action):
         return redirect(url_for('admin'))
     
     if action == 'approve':
-        user.cv_status = 'approved'
+        user.cv_status = 'Aprovado'
         user.cv_reviewed_at = datetime.utcnow()
         user.cv_reviewed_by = current_user.id
         user.cv_rejection_reason = None
         db.session.commit()
-        flash(f'Currículo de {user.username} foi aprovado! O usuário agora tem acesso à catalogação.', 'success')
+        
+        # Get current language for multilingual messages
+        lang = session.get('language', 'pt')
+        messages = {
+            'pt': f'Currículo de {user.username} foi aprovado! O usuário agora tem acesso à catalogação.',
+            'en': f'CV of {user.username} has been approved! The user now has access to cataloging.',
+            'es': f'Currículum de {user.username} ha sido aprobado! El usuario ya tiene acceso a la catalogación.',
+            'fr': f'CV de {user.username} a été approuvé! L\'utilisateur a maintenant accès au catalogage.'
+        }
+        flash(messages.get(lang, messages['pt']), 'success')
+        
     elif action == 'reject':
-        reason = request.args.get('reason', 'Currículo não atende aos requisitos.')
-        user.cv_status = 'rejected'
+        reason = request.form.get('reason', request.args.get('reason', 'Currículo não atende aos requisitos.'))
+        user.cv_status = 'Rejeitado'
         user.cv_reviewed_at = datetime.utcnow()
         user.cv_reviewed_by = current_user.id
         user.cv_rejection_reason = reason
+        user.is_active_user = False  # Deactivate account when CV is rejected
         db.session.commit()
-        flash(f'Currículo de {user.username} foi rejeitado.', 'warning')
+        
+        # Get current language for multilingual messages
+        lang = session.get('language', 'pt')
+        messages = {
+            'pt': f'Currículo de {user.username} foi rejeitado. A conta foi desativada.',
+            'en': f'CV of {user.username} was rejected. The account has been deactivated.',
+            'es': f'Currículum de {user.username} fue rechazado. La cuenta ha sido desactivada.',
+            'fr': f'CV de {user.username} a été rejeté. Le compte a été désactivé.'
+        }
+        flash(messages.get(lang, messages['pt']), 'warning')
     
     return redirect(url_for('admin'))
 
@@ -481,20 +553,40 @@ def validate_institution(user_id, action):
         return redirect(url_for('admin'))
     
     if action == 'approve':
-        user.institution_status = 'approved'
+        user.institution_status = 'Aprovado'
         user.institution_reviewed_at = datetime.utcnow()
         user.institution_reviewed_by = current_user.id
         user.institution_rejection_reason = None
         db.session.commit()
-        flash(f'Instituição {user.institution_name} foi aprovada! A conta agora tem acesso à catalogação.', 'success')
+        
+        # Get current language for multilingual messages
+        lang = session.get('language', 'pt')
+        messages = {
+            'pt': f'Instituição {user.institution_name} foi aprovada! A conta agora tem acesso à catalogação.',
+            'en': f'Institution {user.institution_name} has been approved! The account now has access to cataloging.',
+            'es': f'Institución {user.institution_name} ha sido aprobada! La cuenta ya tiene acceso a la catalogación.',
+            'fr': f'Institution {user.institution_name} a été approuvée! Le compte a maintenant accès au catalogage.'
+        }
+        flash(messages.get(lang, messages['pt']), 'success')
+        
     elif action == 'reject':
-        reason = request.args.get('reason', 'Dados institucionais não foram verificados.')
-        user.institution_status = 'rejected'
+        reason = request.form.get('reason', request.args.get('reason', 'Dados institucionais não foram verificados.'))
+        user.institution_status = 'Rejeitado'
         user.institution_reviewed_at = datetime.utcnow()
         user.institution_reviewed_by = current_user.id
         user.institution_rejection_reason = reason
+        user.is_active_user = False  # Deactivate account when institution is rejected
         db.session.commit()
-        flash(f'Instituição {user.institution_name} foi rejeitada.', 'warning')
+        
+        # Get current language for multilingual messages
+        lang = session.get('language', 'pt')
+        messages = {
+            'pt': f'Instituição {user.institution_name} foi rejeitada. A conta foi desativada.',
+            'en': f'Institution {user.institution_name} was rejected. The account has been deactivated.',
+            'es': f'Institución {user.institution_name} fue rechazada. La cuenta ha sido desactivada.',
+            'fr': f'Institution {user.institution_name} a été rejetée. Le compte a été désactivé.'
+        }
+        flash(messages.get(lang, messages['pt']), 'warning')
     
     return redirect(url_for('admin'))
 

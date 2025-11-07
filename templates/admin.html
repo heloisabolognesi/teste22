@@ -62,8 +62,8 @@
 </div>
 
 <!-- Pending Validations -->
-{% set pending_cvs = users|selectattr('account_type', 'equalto', 'profissional')|selectattr('cv_status', 'equalto', 'pending')|list %}
-{% set pending_institutions = users|selectattr('account_type', 'equalto', 'universitaria')|selectattr('institution_status', 'equalto', 'pending')|list %}
+{% set pending_cvs = users|selectattr('account_type', 'equalto', 'profissional')|selectattr('cv_status', 'equalto', 'Em análise')|list %}
+{% set pending_institutions = users|selectattr('account_type', 'equalto', 'universitaria')|selectattr('institution_status', 'equalto', 'Em análise')|list %}
 
 {% if pending_cvs or pending_institutions %}
 <div class="pending-validations mb-5">
@@ -253,11 +253,52 @@
                                         <i class="fas fa-times me-1"></i>Desativado
                                     </span>
                                 {% endif %}
+                                {% if user.account_type == 'profissional' %}
+                                    {% if user.cv_status == 'Em análise' %}
+                                        <span class="badge bg-warning text-dark ms-1">
+                                            <i class="fas fa-clock me-1"></i>CV em Análise
+                                        </span>
+                                    {% elif user.cv_status == 'Aprovado' %}
+                                        <span class="badge bg-success ms-1">
+                                            <i class="fas fa-check-circle me-1"></i>CV Aprovado
+                                        </span>
+                                    {% elif user.cv_status == 'Rejeitado' %}
+                                        <span class="badge bg-danger ms-1">
+                                            <i class="fas fa-times-circle me-1"></i>CV Rejeitado
+                                        </span>
+                                    {% endif %}
+                                {% elif user.account_type == 'universitaria' %}
+                                    {% if user.institution_status == 'Em análise' %}
+                                        <span class="badge bg-warning text-dark ms-1">
+                                            <i class="fas fa-clock me-1"></i>Instituição em Análise
+                                        </span>
+                                    {% elif user.institution_status == 'Aprovado' %}
+                                        <span class="badge bg-success ms-1">
+                                            <i class="fas fa-check-circle me-1"></i>Instituição Aprovada
+                                        </span>
+                                    {% elif user.institution_status == 'Rejeitado' %}
+                                        <span class="badge bg-danger ms-1">
+                                            <i class="fas fa-times-circle me-1"></i>Instituição Rejeitada
+                                        </span>
+                                    {% endif %}
+                                {% endif %}
                             </td>
                             <td>
                                 {% if user.is_admin %}
                                     <span class="badge bg-info">
                                         <i class="fas fa-crown me-1"></i>Admin
+                                    </span>
+                                {% elif user.account_type == 'profissional' %}
+                                    <span class="badge bg-primary">
+                                        <i class="fas fa-user-tie me-1"></i>Profissional
+                                    </span>
+                                {% elif user.account_type == 'universitaria' %}
+                                    <span class="badge bg-info">
+                                        <i class="fas fa-university me-1"></i>Universitária
+                                    </span>
+                                {% elif user.account_type == 'estudante' %}
+                                    <span class="badge bg-secondary">
+                                        <i class="fas fa-graduation-cap me-1"></i>Estudante
                                     </span>
                                 {% else %}
                                     <span class="badge bg-secondary">
