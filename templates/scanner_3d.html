@@ -3,20 +3,22 @@
 {% block title %}Modelo 3D - L.A.A.R.I{% endblock %}
 
 {% block content %}
+<!-- Cabeçalho da Página do Modelo 3D -->
 <div class="page-header mb-4">
     <h1 class="display-6 fw-bold">
-        <i class="fas fa-cube me-3"></i>Modelo 3D
+        <i class="fas fa-cube me-3"></i><span data-i18n="model_3d_page_title">Modelo 3D</span>
     </h1>
-    <p class="lead text-muted">Integração com tecnologia de digitalização tridimensional</p>
+    <p class="lead text-muted" data-i18n="model_3d_page_subtitle">Integração com tecnologia de digitalização tridimensional</p>
 </div>
 
 <!-- Modelo 3D Form -->
 <div class="row">
     <div class="col-lg-8">
+        <!-- Formulário de Registro do Modelo 3D -->
         <div class="card border-0 shadow">
             <div class="card-header bg-archaeological text-white">
                 <h4 class="mb-0">
-                    <i class="fas fa-plus-circle me-2"></i>Registrar Novo Modelo 3D
+                    <i class="fas fa-plus-circle me-2"></i><span data-i18n="model_3d_register_title">Registrar Novo Modelo 3D</span>
                 </h4>
             </div>
             
@@ -28,7 +30,7 @@
                         <!-- Artifact Selection -->
                         <div class="col-12">
                             <label for="{{ form.artifact_id.id }}" class="form-label fw-bold">
-                                <i class="fas fa-archive me-2"></i>Artefato *
+                                <i class="fas fa-archive me-2"></i><span data-i18n="form_artifact">Artefato</span> *
                             </label>
                             {{ form.artifact_id(class="form-select form-select-lg") }}
                             {% if form.artifact_id.errors %}
@@ -41,9 +43,9 @@
                         <!-- Scanner Type -->
                         <div class="col-md-6">
                             <label for="{{ form.scanner_type.id }}" class="form-label fw-bold">
-                                <i class="fas fa-scanner me-2"></i>Tipo de Scanner
+                                <i class="fas fa-scanner me-2"></i><span data-i18n="form_scanner_type">Tipo de Scanner</span>
                             </label>
-                            {{ form.scanner_type(class="form-control", placeholder="Ex: Artec Eva, NextEngine, etc.") }}
+                            <input type="text" name="scanner_type" id="{{ form.scanner_type.id }}" class="form-control" data-i18n="model_3d_placeholder_scanner" placeholder="Ex: Artec Eva, NextEngine, etc." value="{{ form.scanner_type.data or '' }}">
                             {% if form.scanner_type.errors %}
                                 <div class="invalid-feedback d-block">
                                     {% for error in form.scanner_type.errors %}{{ error }}{% endfor %}
@@ -54,9 +56,9 @@
                         <!-- Resolution -->
                         <div class="col-md-6">
                             <label for="{{ form.resolution.id }}" class="form-label fw-bold">
-                                <i class="fas fa-expand-arrows-alt me-2"></i>Resolução
+                                <i class="fas fa-expand-arrows-alt me-2"></i><span data-i18n="form_resolution">Resolução</span>
                             </label>
-                            {{ form.resolution(class="form-control", placeholder="Ex: 0.1mm, 0.5mm, etc.") }}
+                            <input type="text" name="resolution" id="{{ form.resolution.id }}" class="form-control" data-i18n="model_3d_placeholder_resolution" placeholder="Ex: 0.1mm, 0.5mm, etc." value="{{ form.resolution.data or '' }}">
                             {% if form.resolution.errors %}
                                 <div class="invalid-feedback d-block">
                                     {% for error in form.resolution.errors %}{{ error }}{% endfor %}
@@ -67,10 +69,10 @@
                         <!-- Scan File Upload -->
                         <div class="col-12">
                             <label for="{{ form.scan_file.id }}" class="form-label fw-bold">
-                                <i class="fas fa-file-upload me-2"></i>Arquivo do Modelo 3D
+                                <i class="fas fa-file-upload me-2"></i><span data-i18n="form_model_3d">Arquivo do Modelo 3D</span>
                             </label>
                             {{ form.scan_file(class="form-control", accept=".obj,.ply,.stl,.fbx") }}
-                            <small class="form-text text-muted">Formatos aceitos: OBJ, PLY, STL, FBX (Máx. 16MB)</small>
+                            <small class="form-text text-muted" data-i18n="model_3d_file_formats">Formatos aceitos: OBJ, PLY, STL, FBX (Máx. 16MB)</small>
                             {% if form.scan_file.errors %}
                                 <div class="invalid-feedback d-block">
                                     {% for error in form.scan_file.errors %}{{ error }}{% endfor %}
@@ -81,9 +83,9 @@
                         <!-- Notes -->
                         <div class="col-12">
                             <label for="{{ form.notes.id }}" class="form-label fw-bold">
-                                <i class="fas fa-sticky-note me-2"></i>Observações
+                                <i class="fas fa-sticky-note me-2"></i><span data-i18n="model_3d_notes_label">Observações</span>
                             </label>
-                            {{ form.notes(class="form-control", rows="4", placeholder="Adicione observações sobre o processo de digitalização, qualidade do scan, etc.") }}
+                            <textarea name="notes" id="{{ form.notes.id }}" class="form-control" rows="4" data-i18n="model_3d_placeholder_notes" placeholder="Adicione observações sobre o processo de digitalização, qualidade do scan, etc.">{{ form.notes.data or '' }}</textarea>
                             {% if form.notes.errors %}
                                 <div class="invalid-feedback d-block">
                                     {% for error in form.notes.errors %}{{ error }}{% endfor %}
@@ -95,11 +97,11 @@
                     <!-- Form Actions -->
                     <div class="d-flex justify-content-between mt-4">
                         <a href="{{ url_for('dashboard') }}" class="btn btn-secondary btn-lg">
-                            <i class="fas fa-arrow-left me-2"></i>Voltar
+                            <i class="fas fa-arrow-left me-2"></i><span data-i18n="btn_back">Voltar</span>
                         </a>
                         
                         <button type="submit" class="btn btn-archaeological btn-lg">
-                            <i class="fas fa-save me-2"></i>Registrar Modelo
+                            <i class="fas fa-save me-2"></i><span data-i18n="model_3d_btn_register">Registrar Modelo</span>
                         </button>
                     </div>
                 </form>
@@ -107,59 +109,59 @@
         </div>
     </div>
     
-    <!-- Modelo 3D Info Sidebar -->
+    <!-- Modelo 3D Info Sidebar - Barra Lateral com Informações -->
     <div class="col-lg-4">
         <div class="card border-0 shadow mb-4">
             <div class="card-header bg-info text-white">
                 <h5 class="mb-0">
-                    <i class="fas fa-info-circle me-2"></i>Sobre Modelo 3D
+                    <i class="fas fa-info-circle me-2"></i><span data-i18n="model_3d_about_title">Sobre Modelo 3D</span>
                 </h5>
             </div>
             <div class="card-body">
-                <p class="mb-3">A digitalização 3D é uma tecnologia fundamental na arqueologia moderna, permitindo:</p>
+                <p class="mb-3" data-i18n="model_3d_about_desc">A digitalização 3D é uma tecnologia fundamental na arqueologia moderna, permitindo:</p>
                 <ul class="list-unstyled">
-                    <li class="mb-2"><i class="fas fa-check text-success me-2"></i>Preservação digital permanente</li>
-                    <li class="mb-2"><i class="fas fa-check text-success me-2"></i>Análise detalhada sem manuseio</li>
-                    <li class="mb-2"><i class="fas fa-check text-success me-2"></i>Compartilhamento de dados</li>
-                    <li class="mb-2"><i class="fas fa-check text-success me-2"></i>Reconstrução virtual</li>
-                    <li class="mb-2"><i class="fas fa-check text-success me-2"></i>Documentação científica</li>
+                    <li class="mb-2"><i class="fas fa-check text-success me-2"></i><span data-i18n="model_3d_about_item1">Preservação digital permanente</span></li>
+                    <li class="mb-2"><i class="fas fa-check text-success me-2"></i><span data-i18n="model_3d_about_item2">Análise detalhada sem manuseio</span></li>
+                    <li class="mb-2"><i class="fas fa-check text-success me-2"></i><span data-i18n="model_3d_about_item3">Compartilhamento de dados</span></li>
+                    <li class="mb-2"><i class="fas fa-check text-success me-2"></i><span data-i18n="model_3d_about_item4">Reconstrução virtual</span></li>
+                    <li class="mb-2"><i class="fas fa-check text-success me-2"></i><span data-i18n="model_3d_about_item5">Documentação científica</span></li>
                 </ul>
             </div>
         </div>
         
-        <!-- Quick Tips -->
+        <!-- Quick Tips - Dicas Rápidas -->
         <div class="card border-0 shadow">
             <div class="card-header bg-warning text-white">
                 <h5 class="mb-0">
-                    <i class="fas fa-lightbulb me-2"></i>Dicas de Digitalização
+                    <i class="fas fa-lightbulb me-2"></i><span data-i18n="model_3d_tips_title">Dicas de Digitalização</span>
                 </h5>
             </div>
             <div class="card-body">
                 <div class="tip-item mb-3">
-                    <h6 class="fw-bold">Preparação</h6>
-                    <small class="text-muted">Limpe cuidadosamente o artefato antes da digitalização</small>
+                    <h6 class="fw-bold" data-i18n="model_3d_tip_prep_title">Preparação</h6>
+                    <small class="text-muted" data-i18n="model_3d_tip_prep_desc">Limpe cuidadosamente o artefato antes da digitalização</small>
                 </div>
                 <div class="tip-item mb-3">
-                    <h6 class="fw-bold">Iluminação</h6>
-                    <small class="text-muted">Use iluminação uniforme e difusa</small>
+                    <h6 class="fw-bold" data-i18n="model_3d_tip_light_title">Iluminação</h6>
+                    <small class="text-muted" data-i18n="model_3d_tip_light_desc">Use iluminação uniforme e difusa</small>
                 </div>
                 <div class="tip-item mb-3">
-                    <h6 class="fw-bold">Múltiplos Ângulos</h6>
-                    <small class="text-muted">Capture todas as superfícies visíveis</small>
+                    <h6 class="fw-bold" data-i18n="model_3d_tip_angles_title">Múltiplos Ângulos</h6>
+                    <small class="text-muted" data-i18n="model_3d_tip_angles_desc">Capture todas as superfícies visíveis</small>
                 </div>
                 <div class="tip-item">
-                    <h6 class="fw-bold">Validação</h6>
-                    <small class="text-muted">Sempre verifique a qualidade do modelo final</small>
+                    <h6 class="fw-bold" data-i18n="model_3d_tip_validation_title">Validação</h6>
+                    <small class="text-muted" data-i18n="model_3d_tip_validation_desc">Sempre verifique a qualidade do modelo final</small>
                 </div>
             </div>
         </div>
     </div>
 </div>
 
-<!-- Existing Models -->
+<!-- Existing Models - Modelos Registrados -->
 {% if scans %}
 <div class="mt-5">
-    <h3 class="h4 mb-4">Modelos 3D Registrados</h3>
+    <h3 class="h4 mb-4" data-i18n="model_3d_registered_title">Modelos 3D Registrados</h3>
     
     <div class="card border-0 shadow">
         <div class="card-body p-0">
@@ -167,13 +169,13 @@
                 <table class="table table-hover mb-0">
                     <thead class="table-light">
                         <tr>
-                            <th>Artefato</th>
-                            <th>Data do Modelo</th>
-                            <th>Equipamento</th>
-                            <th>Resolução</th>
-                            <th>Tamanho</th>
-                            <th>Arquivo</th>
-                            <th>Ações</th>
+                            <th data-i18n="model_3d_table_artifact">Artefato</th>
+                            <th data-i18n="model_3d_table_model_date">Data do Modelo</th>
+                            <th data-i18n="model_3d_table_equipment">Equipamento</th>
+                            <th data-i18n="model_3d_table_resolution">Resolução</th>
+                            <th data-i18n="model_3d_table_size">Tamanho</th>
+                            <th data-i18n="model_3d_table_file">Arquivo</th>
+                            <th data-i18n="model_3d_table_actions">Ações</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -186,7 +188,7 @@
                             <td>{{ scan.scan_date.strftime('%d/%m/%Y %H:%M') }}</td>
                             <td>
                                 <span class="badge bg-archaeological">
-                                    {{ scan.scanner_type or 'Não especificado' }}
+                                    <span data-i18n-fallback="{{ scan.scanner_type or 'model_3d_not_specified' }}">{{ scan.scanner_type or 'Não especificado' }}</span>
                                 </span>
                             </td>
                             <td>
@@ -202,25 +204,25 @@
                             <td>
                                 {% if scan.file_path %}
                                     <span class="badge bg-success">
-                                        <i class="fas fa-file-alt me-1"></i>Disponível
+                                        <i class="fas fa-file-alt me-1"></i><span data-i18n="model_3d_file_available">Disponível</span>
                                     </span>
                                 {% else %}
                                     <span class="badge bg-secondary">
-                                        <i class="fas fa-file-times me-1"></i>Sem arquivo
+                                        <i class="fas fa-file-times me-1"></i><span data-i18n="model_3d_file_unavailable">Sem arquivo</span>
                                     </span>
                                 {% endif %}
                             </td>
                             <td>
                                 <div class="btn-group btn-group-sm">
                                     {% if scan.file_path %}
-                                    <button type="button" class="btn btn-outline-archaeological" title="Visualizar" onclick="viewScan3D({{ scan.id }})">
+                                    <button type="button" class="btn btn-outline-archaeological" data-i18n-aria="model_3d_btn_view" title="Visualizar" onclick="viewScan3D({{ scan.id }})">
                                         <i class="fas fa-eye"></i>
                                     </button>
-                                    <button type="button" class="btn btn-outline-success" title="Download" onclick="downloadScan({{ scan.id }})">
+                                    <button type="button" class="btn btn-outline-success" data-i18n-aria="model_3d_btn_download" title="Download" onclick="downloadScan({{ scan.id }})">
                                         <i class="fas fa-download"></i>
                                     </button>
                                     {% endif %}
-                                    <button type="button" class="btn btn-outline-info" title="Detalhes" onclick="showScanDetails({{ scan.id }})">
+                                    <button type="button" class="btn btn-outline-info" data-i18n-aria="model_3d_btn_details" title="Detalhes" onclick="showScanDetails({{ scan.id }})">
                                         <i class="fas fa-info"></i>
                                     </button>
                                 </div>
@@ -238,30 +240,60 @@
 
 {% block scripts %}
 <script>
+    // Funções do Modelo 3D com suporte a tradução multilíngue
+    
+    /**
+     * Visualiza o modelo 3D (placeholder para implementação futura)
+     * @param {number} scanId - ID do scan a ser visualizado
+     */
     function viewScan3D(scanId) {
-        alert(`Visualização 3D do scan ${scanId} será implementada em breve com WebGL.`);
+        const message = window.I18n.translate('model_3d_alert_view').replace('{id}', scanId);
+        alert(message);
     }
     
+    /**
+     * Faz download do modelo 3D (placeholder para implementação futura)
+     * @param {number} scanId - ID do scan para download
+     */
     function downloadScan(scanId) {
-        alert(`Download do scan ${scanId} será implementado em breve.`);
+        const message = window.I18n.translate('model_3d_alert_download').replace('{id}', scanId);
+        alert(message);
     }
     
+    /**
+     * Exibe detalhes do modelo 3D (placeholder para implementação futura)
+     * @param {number} scanId - ID do scan para exibir detalhes
+     */
     function showScanDetails(scanId) {
-        alert(`Detalhes do scan ${scanId} serão exibidos em modal.`);
+        const message = window.I18n.translate('model_3d_alert_details').replace('{id}', scanId);
+        alert(message);
     }
     
-    // File upload feedback
-    document.getElementById('scan_file').addEventListener('change', function(e) {
-        const file = e.target.files[0];
-        if (file) {
-            const fileSize = (file.size / 1024 / 1024).toFixed(2);
-            console.log(`Arquivo selecionado: ${file.name} (${fileSize} MB)`);
-            
-            // Check file size limit (16MB)
-            if (file.size > 16 * 1024 * 1024) {
-                alert('Arquivo muito grande! O limite é 16MB.');
-                this.value = '';
-            }
+    // Feedback de upload de arquivo com validação de tamanho
+    document.addEventListener('DOMContentLoaded', function() {
+        const fileInput = document.getElementById('scan_file');
+        
+        if (fileInput) {
+            fileInput.addEventListener('change', function(e) {
+                const file = e.target.files[0];
+                
+                if (file) {
+                    const fileSize = (file.size / 1024 / 1024).toFixed(2);
+                    
+                    // Log do arquivo selecionado
+                    const message = window.I18n.translate('model_3d_alert_file_selected')
+                        .replace('{name}', file.name)
+                        .replace('{size}', fileSize);
+                    console.log(message);
+                    
+                    // Verifica limite de tamanho (16MB)
+                    if (file.size > 16 * 1024 * 1024) {
+                        const errorMessage = window.I18n.translate('model_3d_alert_file_too_large');
+                        alert(errorMessage);
+                        this.value = '';
+                    }
+                }
+            });
         }
     });
 </script>
