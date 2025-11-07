@@ -1,13 +1,13 @@
 {% extends "base.html" %}
 
-{% block title %}Acervo - L.A.A.R.I{% endblock %}
+{% block title %}{{ _('Acervo') }} - L.A.A.R.I{% endblock %}
 
 {% block content %}
 <div class="page-header mb-4">
     <h1 class="display-6 fw-bold">
-        <i class="fas fa-archive me-3"></i>Acervo Digital
+        <i class="fas fa-archive me-3"></i>{{ _('Acervo Digital') }}
     </h1>
-    <p class="lead text-muted">Consulte todos os artefatos catalogados no sistema L.A.A.R.I</p>
+    <p class="lead text-muted">{{ _('Consulte todos os artefatos catalogados no sistema L.A.A.R.I') }}</p>
 </div>
 
 {% if artifacts %}
@@ -17,34 +17,34 @@
         <div class="card-body p-3">
             <div class="row g-3">
                 <div class="col-md-4">
-                    <input type="text" class="form-control" id="searchInput" placeholder="Buscar por nome do artefato...">
+                    <input type="text" class="form-control" id="searchInput" placeholder="{{ _('Buscar por nome do artefato...') }}">
                 </div>
                 <div class="col-md-3">
                     <select class="form-select" id="typeFilter">
-                        <option value="">Todos os tipos</option>
-                        <option value="ceramica">Cerâmica</option>
-                        <option value="litico">Lítico</option>
-                        <option value="metal">Metal</option>
-                        <option value="osso">Osso</option>
-                        <option value="madeira">Madeira</option>
-                        <option value="textil">Têxtil</option>
-                        <option value="vidro">Vidro</option>
-                        <option value="outro">Outro</option>
+                        <option value="">{{ _('Todos os tipos') }}</option>
+                        <option value="ceramica">{{ _('Cerâmica') }}</option>
+                        <option value="litico">{{ _('Lítico') }}</option>
+                        <option value="metal">{{ _('Metal') }}</option>
+                        <option value="osso">{{ _('Osso') }}</option>
+                        <option value="madeira">{{ _('Madeira') }}</option>
+                        <option value="textil">{{ _('Têxtil') }}</option>
+                        <option value="vidro">{{ _('Vidro') }}</option>
+                        <option value="outro">{{ _('Outro') }}</option>
                     </select>
                 </div>
                 <div class="col-md-3">
                     <select class="form-select" id="conservationFilter">
-                        <option value="">Todas as condições</option>
-                        <option value="excelente">Excelente</option>
-                        <option value="bom">Bom</option>
-                        <option value="regular">Regular</option>
-                        <option value="ruim">Ruim</option>
-                        <option value="pessimo">Péssimo</option>
+                        <option value="">{{ _('Todas as condições') }}</option>
+                        <option value="excelente">{{ _('Excelente') }}</option>
+                        <option value="bom">{{ _('Bom') }}</option>
+                        <option value="regular">{{ _('Regular') }}</option>
+                        <option value="ruim">{{ _('Ruim') }}</option>
+                        <option value="pessimo">{{ _('Péssimo') }}</option>
                     </select>
                 </div>
                 <div class="col-md-2">
                     <button type="button" class="btn btn-outline-archaeological w-100" onclick="clearFilters()">
-                        <i class="fas fa-refresh me-1"></i>Limpar
+                        <i class="fas fa-refresh me-1"></i>{{ _('Limpar') }}
                     </button>
                 </div>
             </div>
@@ -56,7 +56,7 @@
 <div class="card border-0 shadow">
     <div class="card-header bg-archaeological text-white">
         <h4 class="mb-0">
-            <i class="fas fa-list me-2"></i>Lista do Acervo ({{ artifacts|length }} itens)
+            <i class="fas fa-list me-2"></i>{{ _('Lista do Acervo') }} ({{ artifacts|length }} {{ _('itens') }})
         </h4>
     </div>
     
@@ -65,16 +65,16 @@
             <table class="table table-hover mb-0" id="acervoTable">
                 <thead class="table-light">
                     <tr>
-                        <th width="50">Foto</th>
-                        <th>Nome do Artefato</th>
-                        <th>Código</th>
-                        <th>Código QR</th>
-                        <th>Tipo</th>
-                        <th>Local de Origem</th>
-                        <th>Data de Descoberta</th>
-                        <th>Conservação</th>
-                        <th>Recursos</th>
-                        <th width="100">Ações</th>
+                        <th width="50">{{ _('Foto') }}</th>
+                        <th>{{ _('Nome do Artefato') }}</th>
+                        <th>{{ _('Código') }}</th>
+                        <th>{{ _('Código QR') }}</th>
+                        <th>{{ _('Tipo') }}</th>
+                        <th>{{ _('Local de Origem') }}</th>
+                        <th>{{ _('Data de Descoberta') }}</th>
+                        <th>{{ _('Conservação') }}</th>
+                        <th>{{ _('Recursos') }}</th>
+                        <th width="100">{{ _('Ações') }}</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -112,7 +112,25 @@
                         </td>
                         <td>
                             {% if artifact.artifact_type %}
-                                <span class="badge bg-archaeological">{{ artifact.artifact_type|title }}</span>
+                                {% if artifact.artifact_type == 'ceramica' %}
+                                    <span class="badge bg-archaeological">{{ _('Cerâmica') }}</span>
+                                {% elif artifact.artifact_type == 'litico' %}
+                                    <span class="badge bg-archaeological">{{ _('Lítico') }}</span>
+                                {% elif artifact.artifact_type == 'metal' %}
+                                    <span class="badge bg-archaeological">{{ _('Metal') }}</span>
+                                {% elif artifact.artifact_type == 'osso' %}
+                                    <span class="badge bg-archaeological">{{ _('Osso') }}</span>
+                                {% elif artifact.artifact_type == 'madeira' %}
+                                    <span class="badge bg-archaeological">{{ _('Madeira') }}</span>
+                                {% elif artifact.artifact_type == 'textil' %}
+                                    <span class="badge bg-archaeological">{{ _('Têxtil') }}</span>
+                                {% elif artifact.artifact_type == 'vidro' %}
+                                    <span class="badge bg-archaeological">{{ _('Vidro') }}</span>
+                                {% elif artifact.artifact_type == 'outro' %}
+                                    <span class="badge bg-archaeological">{{ _('Outro') }}</span>
+                                {% else %}
+                                    <span class="badge bg-archaeological">{{ artifact.artifact_type|title }}</span>
+                                {% endif %}
                             {% else %}
                                 <span class="text-muted">-</span>
                             {% endif %}
@@ -135,15 +153,15 @@
                         </td>
                         <td>
                             {% if artifact.conservation_state == 'excelente' %}
-                                <span class="badge bg-success">Excelente</span>
+                                <span class="badge bg-success">{{ _('Excelente') }}</span>
                             {% elif artifact.conservation_state == 'bom' %}
-                                <span class="badge bg-info">Bom</span>
+                                <span class="badge bg-info">{{ _('Bom') }}</span>
                             {% elif artifact.conservation_state == 'regular' %}
-                                <span class="badge bg-warning">Regular</span>
+                                <span class="badge bg-warning">{{ _('Regular') }}</span>
                             {% elif artifact.conservation_state == 'ruim' %}
-                                <span class="badge bg-danger">Ruim</span>
+                                <span class="badge bg-danger">{{ _('Ruim') }}</span>
                             {% elif artifact.conservation_state == 'pessimo' %}
-                                <span class="badge bg-dark">Péssimo</span>
+                                <span class="badge bg-dark">{{ _('Péssimo') }}</span>
                             {% else %}
                                 <span class="text-muted">-</span>
                             {% endif %}
@@ -151,27 +169,27 @@
                         <td>
                             <div class="d-flex gap-1">
                                 {% if artifact.photo_path %}
-                                <span class="badge bg-success" title="Possui foto">
+                                <span class="badge bg-success" title="{{ _('Possui foto') }}">
                                     <i class="fas fa-camera"></i>
                                 </span>
                                 {% endif %}
                                 {% if artifact.model_3d_path %}
-                                <span class="badge bg-archaeological" title="Possui modelo 3D">
+                                <span class="badge bg-archaeological" title="{{ _('Possui modelo 3D') }}">
                                     <i class="fas fa-cube"></i>
                                 </span>
                                 {% endif %}
                                 {% if artifact.iphan_form_path %}
-                                <span class="badge bg-primary" title="Possui ficha IPHAN">
+                                <span class="badge bg-primary" title="{{ _('Possui ficha IPHAN') }}">
                                     <i class="fas fa-file-alt"></i>
                                 </span>
                                 {% endif %}
                                 {% if artifact.scans_3d %}
-                                <span class="badge bg-info" title="Possui modelo 3D">
+                                <span class="badge bg-info" title="{{ _('Possui modelo 3D') }}">
                                     <i class="fas fa-cube"></i>
                                 </span>
                                 {% endif %}
                                 {% if artifact.transports %}
-                                <span class="badge bg-warning" title="Possui registros de transporte">
+                                <span class="badge bg-warning" title="{{ _('Possui registros de transporte') }}">
                                     <i class="fas fa-truck"></i>
                                 </span>
                                 {% endif %}
@@ -179,10 +197,10 @@
                         </td>
                         <td>
                             <div class="btn-group btn-group-sm">
-                                <button type="button" class="btn btn-outline-archaeological" title="Ver detalhes" onclick="viewArtifact({{ artifact.id }})">
+                                <button type="button" class="btn btn-outline-archaeological" title="{{ _('Ver detalhes') }}" onclick="viewArtifact({{ artifact.id }})">
                                     <i class="fas fa-eye"></i>
                                 </button>
-                                <button type="button" class="btn btn-outline-secondary" title="Gerar QR Code" onclick="generateQR('{{ artifact.qr_code }}')">
+                                <button type="button" class="btn btn-outline-secondary" title="{{ _('Gerar QR Code') }}" onclick="generateQR('{{ artifact.qr_code }}')">
                                     <i class="fas fa-qrcode"></i>
                                 </button>
                             </div>
@@ -197,10 +215,10 @@
 {% else %}
 <div class="empty-state text-center py-5">
     <i class="fas fa-archive fa-4x text-muted mb-4"></i>
-    <h3 class="text-muted">Acervo Vazio</h3>
-    <p class="lead text-muted mb-4">Não há artefatos catalogados no sistema ainda.</p>
+    <h3 class="text-muted">{{ _('Acervo Vazio') }}</h3>
+    <p class="lead text-muted mb-4">{{ _('Não há artefatos catalogados no sistema ainda.') }}</p>
     <a href="{{ url_for('catalogar_novo') }}" class="btn btn-archaeological btn-lg">
-        <i class="fas fa-plus me-2"></i>Catalogar Primeiro Artefato
+        <i class="fas fa-plus me-2"></i>{{ _('Catalogar Primeiro Artefato') }}
     </a>
 </div>
 {% endif %}
@@ -210,7 +228,7 @@
     <div class="modal-dialog modal-lg">
         <div class="modal-content">
             <div class="modal-header bg-archaeological text-white">
-                <h5 class="modal-title">Detalhes do Artefato</h5>
+                <h5 class="modal-title">{{ _('Detalhes do Artefato') }}</h5>
                 <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
             </div>
             <div class="modal-body" id="artifactDetails">
@@ -268,14 +286,14 @@
         document.getElementById('artifactDetails').innerHTML = `
             <div class="text-center">
                 <i class="fas fa-spinner fa-spin fa-2x text-archaeological mb-3"></i>
-                <p>Carregando detalhes do artefato ID: ${artifactId}</p>
+                <p>{{ _('Carregando detalhes do artefato ID') }}: ${artifactId}</p>
             </div>
         `;
         new bootstrap.Modal(document.getElementById('artifactModal')).show();
     }
     
     function generateQR(qrCode) {
-        alert(`Gerando QR Code para: ${qrCode}`);
+        alert(`{{ _('Gerando QR Code para') }}: ${qrCode}`);
     }
 </script>
 {% endblock %}

@@ -1,13 +1,13 @@
 {% extends "base.html" %}
 
-{% block title %}Catalogar Novo Artefato - L.A.A.R.I{% endblock %}
+{% block title %}{{ _('Catalogar Novo Artefato') }} - L.A.A.R.I{% endblock %}
 
 {% block content %}
 <div class="page-header mb-4">
     <h1 class="display-6 fw-bold">
-        <i class="fas fa-plus-circle me-3"></i>Catalogar Novo Artefato
+        <i class="fas fa-plus-circle me-3"></i>{{ _('Catalogar Novo Artefato') }}
     </h1>
-    <p class="lead text-muted">Adicione um novo artefato ao sistema L.A.A.R.I</p>
+    <p class="lead text-muted">{{ _('Adicione um novo artefato ao sistema L.A.A.R.I') }}</p>
 </div>
 
 <div class="row justify-content-center">
@@ -15,7 +15,7 @@
         <div class="card border-0 shadow">
             <div class="card-header bg-archaeological text-white">
                 <h4 class="mb-0">
-                    <i class="fas fa-tags me-2"></i>Informações do Artefato
+                    <i class="fas fa-tags me-2"></i>{{ _('Informações do Artefato') }}
                 </h4>
             </div>
             
@@ -27,10 +27,10 @@
                         <!-- Nome do Artefato -->
                         <div class="col-md-8">
                             <label for="{{ form.name.id }}" class="form-label fw-bold">
-                                <i class="fas fa-signature me-2"></i>Nome do Artefato *
+                                <i class="fas fa-signature me-2"></i>{{ _('Nome do Artefato') }} *
                             </label>
-                            {{ form.name(class="form-control form-control-lg", placeholder="Ex: ST001, ARQ-2024-015") }}
-                            <small class="form-text text-muted"><i class="fas fa-info-circle me-1"></i>Use a sigla do sítio seguida da numeração do artefato</small>
+                            {{ form.name(class="form-control form-control-lg", placeholder=_("Ex: ST001, ARQ-2024-015")) }}
+                            <small class="form-text text-muted"><i class="fas fa-info-circle me-1"></i>{{ _('Use a sigla do sítio seguida da numeração do artefato') }}</small>
                             {% if form.name.errors %}
                                 <div class="invalid-feedback d-block">
                                     {% for error in form.name.errors %}{{ error }}{% endfor %}
@@ -41,10 +41,10 @@
                         <!-- Código do Artefato -->
                         <div class="col-md-4">
                             <label for="{{ form.code.id }}" class="form-label fw-bold">
-                                <i class="fas fa-barcode me-2"></i>Código do Artefato
+                                <i class="fas fa-barcode me-2"></i>{{ _('Código do Artefato') }}
                             </label>
-                            {{ form.code(class="form-control form-control-lg", placeholder="Código único") }}
-                            <small class="form-text text-muted">Se vazio, será gerado automaticamente</small>
+                            {{ form.code(class="form-control form-control-lg", placeholder=_('Código único')) }}
+                            <small class="form-text text-muted">{{ _('Se vazio, será gerado automaticamente') }}</small>
                             {% if form.code.errors %}
                                 <div class="invalid-feedback d-block">
                                     {% for error in form.code.errors %}{{ error }}{% endfor %}
@@ -55,7 +55,7 @@
                         <!-- Data de Descoberta -->
                         <div class="col-md-6">
                             <label for="{{ form.discovery_date.id }}" class="form-label fw-bold">
-                                <i class="fas fa-calendar me-2"></i>Data de Descoberta
+                                <i class="fas fa-calendar me-2"></i>{{ _('Data de Descoberta') }}
                             </label>
                             {{ form.discovery_date(class="form-control") }}
                             {% if form.discovery_date.errors %}
@@ -68,7 +68,7 @@
                         <!-- Tipo de Artefato -->
                         <div class="col-md-6">
                             <label for="{{ form.artifact_type.id }}" class="form-label fw-bold">
-                                <i class="fas fa-tag me-2"></i>Tipo de Artefato
+                                <i class="fas fa-tag me-2"></i>{{ _('Tipo') }}
                             </label>
                             {{ form.artifact_type(class="form-select") }}
                             {% if form.artifact_type.errors %}
@@ -81,9 +81,9 @@
                         <!-- Local de Origem -->
                         <div class="col-12">
                             <label for="{{ form.origin_location.id }}" class="form-label fw-bold">
-                                <i class="fas fa-map-marker-alt me-2"></i>Local de Origem
+                                <i class="fas fa-map-marker-alt me-2"></i>{{ _('Local de Origem') }}
                             </label>
-                            {{ form.origin_location(class="form-control", placeholder="Digite o local onde o artefato foi encontrado") }}
+                            {{ form.origin_location(class="form-control", placeholder=_('Digite o local onde o artefato foi encontrado')) }}
                             {% if form.origin_location.errors %}
                                 <div class="invalid-feedback d-block">
                                     {% for error in form.origin_location.errors %}{{ error }}{% endfor %}
@@ -96,16 +96,16 @@
                             <div class="card bg-light border-0 mb-0">
                                 <div class="card-body">
                                     <h6 class="fw-bold mb-3">
-                                        <i class="fas fa-layer-group me-2"></i>Localização Arqueológica
+                                        <i class="fas fa-layer-group me-2"></i>{{ _('Localização Arqueológica') }}
                                     </h6>
                                     <div class="row g-3">
                                         <!-- Profundidade -->
                                         <div class="col-md-4">
                                             <label for="{{ form.depth.id }}" class="form-label fw-bold">
-                                                <i class="fas fa-arrows-alt-v me-2"></i>Profundidade
+                                                <i class="fas fa-arrows-alt-v me-2"></i>{{ _('Profundidade') }}
                                             </label>
-                                            {{ form.depth(class="form-control", placeholder="Ex: 1.5m, 150cm") }}
-                                            <small class="form-text text-muted">Profundidade onde foi encontrado</small>
+                                            {{ form.depth(class="form-control", placeholder=_("Ex: 1.5m, 150cm")) }}
+                                            <small class="form-text text-muted">{{ _('Profundidade onde foi encontrado') }}</small>
                                             {% if form.depth.errors %}
                                                 <div class="invalid-feedback d-block">
                                                     {% for error in form.depth.errors %}{{ error }}{% endfor %}
@@ -116,10 +116,10 @@
                                         <!-- Nível Estratigráfico -->
                                         <div class="col-md-4">
                                             <label for="{{ form.level.id }}" class="form-label fw-bold">
-                                                <i class="fas fa-layer-group me-2"></i>Nível Estratigráfico
+                                                <i class="fas fa-layer-group me-2"></i>{{ _('Nível Estratigráfico') }}
                                             </label>
-                                            {{ form.level(class="form-control", placeholder="Ex: Nível III, Camada A") }}
-                                            <small class="form-text text-muted">Nível ou camada estratigráfica</small>
+                                            {{ form.level(class="form-control", placeholder=_("Ex: Nível III, Camada A")) }}
+                                            <small class="form-text text-muted">{{ _('Nível ou camada estratigráfica') }}</small>
                                             {% if form.level.errors %}
                                                 <div class="invalid-feedback d-block">
                                                     {% for error in form.level.errors %}{{ error }}{% endfor %}
@@ -130,10 +130,10 @@
                                         <!-- Coordenadas -->
                                         <div class="col-md-4">
                                             <label for="{{ form.coordinates.id }}" class="form-label fw-bold">
-                                                <i class="fas fa-compass me-2"></i>Coordenadas
+                                                <i class="fas fa-compass me-2"></i>{{ _('Coordenadas') }}
                                             </label>
-                                            {{ form.coordinates(class="form-control", placeholder="Ex: -23.5505, -46.6333") }}
-                                            <small class="form-text text-muted">GPS ou coordenadas do grid</small>
+                                            {{ form.coordinates(class="form-control", placeholder=_("Ex: -23.5505, -46.6333")) }}
+                                            <small class="form-text text-muted">{{ _('GPS ou coordenadas do grid') }}</small>
                                             {% if form.coordinates.errors %}
                                                 <div class="invalid-feedback d-block">
                                                     {% for error in form.coordinates.errors %}{{ error }}{% endfor %}
@@ -148,7 +148,7 @@
                         <!-- Estado de Conservação -->
                         <div class="col-12">
                             <label for="{{ form.conservation_state.id }}" class="form-label fw-bold">
-                                <i class="fas fa-heart-pulse me-2"></i>Estado de Conservação
+                                <i class="fas fa-heart-pulse me-2"></i>{{ _('Estado de Conservação') }}
                             </label>
                             {{ form.conservation_state(class="form-select") }}
                             {% if form.conservation_state.errors %}
@@ -161,9 +161,9 @@
                         <!-- Observações -->
                         <div class="col-12">
                             <label for="{{ form.observations.id }}" class="form-label fw-bold">
-                                <i class="fas fa-comments me-2"></i>Observações
+                                <i class="fas fa-comments me-2"></i>{{ _('Observações') }}
                             </label>
-                            {{ form.observations(class="form-control", rows="4", placeholder="Adicione observações relevantes sobre o artefato") }}
+                            {{ form.observations(class="form-control", rows="4", placeholder=_('Adicione observações relevantes sobre o artefato')) }}
                             {% if form.observations.errors %}
                                 <div class="invalid-feedback d-block">
                                     {% for error in form.observations.errors %}{{ error }}{% endfor %}
@@ -176,10 +176,10 @@
                             <div class="row g-3">
                                 <div class="col-md-4">
                                     <label for="{{ form.photo.id }}" class="form-label fw-bold">
-                                        <i class="fas fa-camera me-2"></i>Foto do Artefato
+                                        <i class="fas fa-camera me-2"></i>{{ _('Foto do Artefato') }}
                                     </label>
                                     {{ form.photo(class="form-control", accept=".jpg,.jpeg,.png,.gif") }}
-                                    <small class="form-text text-muted">Formatos aceitos: JPG, JPEG, PNG, GIF</small>
+                                    <small class="form-text text-muted">{{ _('Formatos aceitos: JPG, JPEG, PNG, GIF') }}</small>
                                     {% if form.photo.errors %}
                                         <div class="invalid-feedback d-block">
                                             {% for error in form.photo.errors %}{{ error }}{% endfor %}
@@ -189,10 +189,10 @@
                                 
                                 <div class="col-md-4">
                                     <label for="{{ form.model_3d.id }}" class="form-label fw-bold">
-                                        <i class="fas fa-cube me-2"></i>Modelo 3D
+                                        <i class="fas fa-cube me-2"></i>{{ _('Modelo 3D') }}
                                     </label>
                                     {{ form.model_3d(class="form-control", accept=".obj,.ply,.stl,.fbx") }}
-                                    <small class="form-text text-muted">Formatos aceitos: OBJ, PLY, STL, FBX</small>
+                                    <small class="form-text text-muted">{{ _('Formatos aceitos: OBJ, PLY, STL, FBX') }}</small>
                                     {% if form.model_3d.errors %}
                                         <div class="invalid-feedback d-block">
                                             {% for error in form.model_3d.errors %}{{ error }}{% endfor %}
@@ -202,10 +202,10 @@
                                 
                                 <div class="col-md-4">
                                     <label for="{{ form.iphan_form.id }}" class="form-label fw-bold">
-                                        <i class="fas fa-file-alt me-2"></i>Ficha IPHAN
+                                        <i class="fas fa-file-alt me-2"></i>{{ _('Ficha IPHAN') }}
                                     </label>
                                     {{ form.iphan_form(class="form-control", accept=".pdf,.doc,.docx,.jpg,.jpeg,.png") }}
-                                    <small class="form-text text-muted">PDF, DOC, DOCX ou imagem</small>
+                                    <small class="form-text text-muted">{{ _('PDF, DOC, DOCX ou imagem') }}</small>
                                     {% if form.iphan_form.errors %}
                                         <div class="invalid-feedback d-block">
                                             {% for error in form.iphan_form.errors %}{{ error }}{% endfor %}
@@ -219,11 +219,11 @@
                     <!-- Form Actions -->
                     <div class="d-flex justify-content-between mt-4">
                         <a href="{{ url_for('catalogacao') }}" class="btn btn-secondary btn-lg">
-                            <i class="fas fa-arrow-left me-2"></i>Voltar
+                            <i class="fas fa-arrow-left me-2"></i>{{ _('Voltar') }}
                         </a>
                         
                         <button type="submit" class="btn btn-archaeological btn-lg">
-                            <i class="fas fa-save me-2"></i>Catalogar Artefato
+                            <i class="fas fa-save me-2"></i>{{ _('Catalogar Artefato') }}
                         </button>
                     </div>
                 </form>
@@ -231,13 +231,13 @@
         </div>
         
         <div class="mt-4 p-3 bg-light rounded">
-            <h6 class="fw-bold"><i class="fas fa-info-circle me-2"></i>Informações Importantes</h6>
+            <h6 class="fw-bold"><i class="fas fa-info-circle me-2"></i>{{ _('Informações Importantes') }}</h6>
             <ul class="mb-0 small text-muted">
-                <li>Todos os artefatos receberão automaticamente um código QR único para identificação</li>
-                <li>Apenas o campo "Nome do Artefato" é obrigatório</li>
-                <li>Você pode adicionar fotos, modelos 3D e fichas IPHAN para melhor documentação</li>
-                <li>As fichas IPHAN podem ser anexadas em PDF, DOC, DOCX ou imagem (JPG, PNG)</li>
-                <li>As informações podem ser editadas posteriormente se necessário</li>
+                <li>{{ _('Todos os artefatos receberão automaticamente um código QR único para identificação') }}</li>
+                <li>{{ _('Apenas o campo "Nome do Artefato" é obrigatório') }}</li>
+                <li>{{ _('Você pode adicionar fotos, modelos 3D e fichas IPHAN para melhor documentação') }}</li>
+                <li>{{ _('As fichas IPHAN podem ser anexadas em PDF, DOC, DOCX ou imagem (JPG, PNG)') }}</li>
+                <li>{{ _('As informações podem ser editadas posteriormente se necessário') }}</li>
             </ul>
         </div>
     </div>
@@ -250,14 +250,14 @@
     document.getElementById('photo').addEventListener('change', function(e) {
         const file = e.target.files[0];
         if (file) {
-            console.log('Foto selecionada:', file.name);
+            console.log('{{ _("Foto selecionada:") }}', file.name);
         }
     });
     
     document.getElementById('model_3d').addEventListener('change', function(e) {
         const file = e.target.files[0];
         if (file) {
-            console.log('Modelo 3D selecionado:', file.name);
+            console.log('{{ _("Modelo 3D selecionado:") }}', file.name);
         }
     });
 </script>

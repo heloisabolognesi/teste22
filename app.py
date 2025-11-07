@@ -7,6 +7,7 @@ from flask_babel import Babel, gettext, ngettext
 from flask_wtf.csrf import CSRFProtect
 from sqlalchemy.orm import DeclarativeBase
 from werkzeug.middleware.proxy_fix import ProxyFix
+from translations_acervo_catalog import ACERVO_CATALOG_TRANSLATIONS
 
 # Configure logging (adjust for production)
 log_level = logging.DEBUG if os.environ.get('FLASK_ENV') != 'production' else logging.INFO
@@ -396,6 +397,10 @@ def simple_translate(text, lang=None):
             'Próxima': 'Suivant'
         }
     }
+    
+    for language in ['en', 'es', 'fr']:
+        if language in ACERVO_CATALOG_TRANSLATIONS:
+            translations[language].update(ACERVO_CATALOG_TRANSLATIONS[language])
     
     if lang in translations and text in translations[lang]:
         return translations[lang][text]
