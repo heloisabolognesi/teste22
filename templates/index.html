@@ -489,15 +489,15 @@
         const originalBtnText = submitBtn.innerHTML;
         
         const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content');
+        if (csrfToken) {
+            formData.append('csrf_token', csrfToken);
+        }
         
         submitBtn.disabled = true;
         submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>Enviando...';
         
         fetch('{{ url_for("upload_team_photo") }}', {
             method: 'POST',
-            headers: {
-                'X-CSRFToken': csrfToken
-            },
             body: formData
         })
         .then(response => response.json())
