@@ -27,6 +27,13 @@ Preferred communication style: Simple, everyday language.
 
 ### Feature Specifications
 -   **User Management**: Registration with distinct account types (Professional, University, Student) and conditional academic information capture.
+-   **Account Verification System**: 
+    - Professional accounts must upload CV for admin review before accessing cataloging features
+    - University accounts require institutional information validation before full access
+    - Student accounts have basic access without cataloging permissions
+    - Status tracking: "Em análise" (Under review), "Aprovado" (Approved), "Rejeitado" (Rejected)
+    - Automatic account deactivation on rejection
+    - Multilingual notification messages (PT, EN, ES, FR)
 -   **Artifact Management**: Cataloging with support for metadata, photo, and 3D model uploads, and QR code generation.
 -   **Professional Directory**: Management of archaeological specialists with contact information, including LinkedIn and Currículo Lattes profiles.
 -   **Transportation Tracking**: System for tracking the movement of artifacts.
@@ -56,6 +63,69 @@ Preferred communication style: Simple, everyday language.
 -   **PostgreSQL**: Replit-managed database.
 
 ## Recent Changes
+
+### 2025-11-07: Comprehensive Authentication and User Verification System
+
+**Implementation Overview**:
+Implemented a complete authentication and user verification system with Portuguese status values, multilingual support, and role-based access control according to the specification provided in the attached requirements document.
+
+**Changes Made**:
+
+**1. Database Models (models.py)**:
+- Updated default status values to Portuguese:
+  - `cv_status` default: "Em análise" (previously "pending")
+  - `institution_status` default: "Em análise" (previously "pending")
+  - Status values: "Em análise", "Aprovado", "Rejeitado"
+- Fixed `can_catalog_artifacts()` method:
+  - Students now correctly return `False` (no cataloging access)
+  - Professionals require CV status "Aprovado"
+  - Universities require institution status "Aprovado"
+
+**2. Registration Flow (routes.py)**:
+- Professional accounts: CV upload mandatory, status set to "Em análise"
+- University accounts: Institutional fields required, status set to "Em análise"
+- Student accounts: No verification needed, basic access only
+
+**3. Admin Validation Routes (routes.py)**:
+- Updated `validate_cv` and `validate_institution` routes:
+  - Use Portuguese status values ("Aprovado", "Rejeitado")
+  - Automatic account deactivation (`is_active_user = False`) on rejection
+  - Multilingual flash messages in PT, EN, ES, FR for approvals and rejections
+
+**4. Access Control (routes.py)**:
+- Added permission checks to `catalogacao` and `catalogar_novo` routes
+- Prevents pending users from accessing cataloging features
+- Multilingual error messages explaining access denial reasons:
+  - Professional: "Seu currículo ainda está em análise" / CV status messages
+  - University: "Seu cadastro institucional ainda está em análise" / Institution status messages
+  - Student: "Contas de estudantes não têm permissão para catalogar artefatos"
+
+**5. Admin Interface (templates/admin.html)**:
+- Updated pending validation queries to filter by "Em análise" status
+- Added comprehensive status badges in user table:
+  - CV status indicators (Em Análise, Aprovado, Rejeitado)
+  - Institution status indicators
+  - Account type badges with icons (Profissional, Universitária, Estudante)
+- Enhanced visual feedback for admins
+
+**6. Data Migration**:
+- Created `migrate_status_values.py` script to update legacy English status values to Portuguese
+- Script maps: 'pending' → 'Em análise', 'approved' → 'Aprovado', 'rejected' → 'Rejeitado'
+
+**Key Features**:
+- ✅ Portuguese status values throughout the system
+- ✅ Multilingual support (PT, EN, ES, FR) for all user-facing messages
+- ✅ Automatic account deactivation on CV/institution rejection
+- ✅ Access control preventing unauthorized cataloging
+- ✅ Student accounts blocked from cataloging (as per requirements)
+- ✅ Comprehensive admin interface for managing verifications
+- ✅ Data migration support for existing databases
+
+**Files Modified**:
+- `models.py` - Status values and access control logic
+- `routes.py` - Registration, validation, and access control routes
+- `templates/admin.html` - Admin interface with status displays
+- `migrate_status_values.py` - Migration script for legacy data
 
 ### 2025-11-07: Enhanced Team Photo Upload System with Validation
 
