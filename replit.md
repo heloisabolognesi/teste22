@@ -57,17 +57,39 @@ Preferred communication style: Simple, everyday language.
 
 ## Recent Changes
 
-### 2025-11-07: Fixed Team Photo Upload System
-**Issue**: The team photo upload form in the dashboard would show a preview when an image was selected, but the gallery would not reload after a successful upload due to JavaScript scope issues.
+### 2025-11-07: Enhanced Team Photo Upload System with Validation
 
-**Solution**: 
+**Issues Fixed**:
+1. Gallery would not reload after successful upload due to JavaScript scope issues
+2. Submit button was always enabled, allowing invalid file submissions
+3. No client-side validation for file type and size
+4. No visual feedback for invalid files
+5. Missing multilingual error/success messages
+
+**Solutions Implemented**:
+
+**Part 1 - Gallery Reload Fix:**
 - Modified `templates/dashboard.html` to expose the `loadGalleryPhotos` function globally via `window.LAARI.reloadGallery()`
 - Added a `forceReload` parameter to allow forcing a gallery refresh
-- Updated the upload form submission handler to call the global reload function instead of local scoped variables
-- This ensures the gallery automatically refreshes after uploading a new team photo without requiring a page reload
+- Updated the upload form submission handler to call the global reload function
+- Gallery now automatically refreshes after uploading a new team photo without requiring a page reload
+
+**Part 2 - File Validation & UX Improvements:**
+- Submit button now starts disabled and only enables when a valid file is selected
+- Implemented client-side validation:
+  - Valid file types: JPG, JPEG, PNG, GIF
+  - Maximum file size: 5 MB
+- Added visual error messages for invalid files (type or size)
+- Preview image only displays for valid files
+- Multilingual validation messages (Portuguese, English, Spanish, French)
+- Multilingual success messages after upload
+- Fixed button state management: stays disabled after successful upload until new valid file is selected
+- Error states re-enable button to allow retry
 
 **Files Modified**:
-- `templates/dashboard.html` - Fixed JavaScript scope issues in the gallery and upload form handlers
+- `templates/dashboard.html` - Complete upload form validation and multilingual messaging
 
 **Testing**:
-- Created admin user (admin@laari.com / admin123) for testing upload functionality
+- Created admin users for testing:
+  - admin@laari.com / admin123
+  - roboticos415f2@gmail.com / 24062025
