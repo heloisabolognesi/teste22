@@ -104,6 +104,16 @@ Preferred communication style: Simple, everyday language.
 ## Recent Changes
 
 **Date:** November 07, 2025
+- **Professionals Section Translation Implementation**: Complete multilingual implementation for Professionals section
+  - Added 60+ translation keys to `static/js/translations.js` for PT-BR/EN/ES/FR covering all Professionals module UI elements
+  - Updated `profissionais.html` template with data-i18n attributes for page title, subtitle, buttons, search modal, specialization groups
+  - Updated `perfil_profissional.html` template with data-i18n attributes for profile sections, contact info, experience, statistics, action buttons
+  - Updated `adicionar_profissional.html` template with data-i18n attributes for form headers, labels (name, email, age, specialization, photo, description, experience, LinkedIn, Currículo Lattes), guidelines
+  - Fixed incorrect server-side I18n.translate() usage, replaced with client-side data-i18n attributes for consistency
+  - All main UI elements (titles, labels, buttons, tooltips, messages) now properly translate across 4 languages
+  - Language switching functional for entire Professionals directory, profile view, and add professional form
+  - Translation keys follow naming convention: prof_* (e.g., prof_page_title, prof_btn_add, prof_contact_info_title)
+  
 - **Acervo & Catalogar Translation Implementation**: Complete multilingual implementation for Collection and Cataloging sections
   - Created modular translation file `translations_acervo_catalog.py` with 74 translation keys for PT/EN/ES/FR
   - Integrated translations via automatic merge in `app.py` using update() function
