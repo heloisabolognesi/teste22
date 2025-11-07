@@ -156,8 +156,17 @@ Implemented a complete authentication and user verification system with Portugue
 - Fixed button state management: stays disabled after successful upload until new valid file is selected
 - Error states re-enable button to allow retry
 
+**Part 3 - Modal Scroll & Button Visibility Fix:**
+- Moved upload form container into modal-body to make it part of the scrollable area
+- Added bottom margin (mb-4) to upload form container to prevent footer from clipping buttons
+- Implemented scroll sentinel element positioned after submit buttons
+- Modified JavaScript to scroll to sentinel element using `scrollIntoView({block: 'end'})`
+- Ensures "Enviar Foto" button is always visible on both mobile and desktop screens
+- Smooth scroll animation with proper focus management
+- Responsive behavior tested across different viewport sizes
+
 **Files Modified**:
-- `templates/dashboard.html` - Complete upload form validation and multilingual messaging
+- `templates/dashboard.html` - Complete upload form validation, multilingual messaging, and scroll fix
 
 **Testing**:
 - Created admin users for testing:
