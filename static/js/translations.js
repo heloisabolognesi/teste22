@@ -80,7 +80,7 @@ const translations = {
         "team_cv_inclusion": "Inclusão: valorizamos cada voz e respeitamos as diferenças.",
         "team_cv_teamwork": "Trabalho em equipe: colaboramos e crescemos juntos.",
         "team_cv_fun": "Diversão: celebramos cada conquista com alegria e entusiasmo!",
-        "team_conclusion": "Acreditamos que a verdadeira tecnologia está nas pessoas — e é com união, curiosidade e propósito que a Tech Era constrói o futuro! 💜",
+        "team_conclusion": "Acreditamos que a verdadeira tecnologia nasce das pessoas — quando mentes curiosas se unem para criar soluções que fazem a diferença. É na troca de ideias e na vontade de transformar que encontramos nossa força. É assim que a Tech Era transforma o presente e constrói o futuro! 💜",
         
         "language_pt": "Português",
         "language_en": "English",
@@ -655,7 +655,7 @@ const translations = {
         "team_cv_inclusion": "Inclusion: we value each voice and respect differences.",
         "team_cv_teamwork": "Teamwork: we collaborate and grow together.",
         "team_cv_fun": "Fun: we celebrate each achievement with joy and enthusiasm!",
-        "team_conclusion": "We believe that true technology lies in people — and it is with unity, curiosity and purpose that Tech Era builds the future! 💜",
+        "team_conclusion": "We believe that true technology is born from people — when curious minds unite to create solutions that make a difference. It is in the exchange of ideas and the will to transform that we find our strength. This is how Tech Era transforms the present and builds the future! 💜",
         
         "language_pt": "Português",
         "language_en": "English",
@@ -1230,7 +1230,7 @@ const translations = {
         "team_cv_inclusion": "Inclusión: valoramos cada voz y respetamos las diferencias.",
         "team_cv_teamwork": "Trabajo en equipo: colaboramos y crecemos juntos.",
         "team_cv_fun": "Diversión: ¡celebramos cada logro con alegría y entusiasmo!",
-        "team_conclusion": "Creemos que la verdadera tecnología está en las personas — ¡y es con unión, curiosidad y propósito que Tech Era construye el futuro! 💜",
+        "team_conclusion": "Creemos que la verdadera tecnología nace de las personas — cuando mentes curiosas se unen para crear soluciones que marcan la diferencia. Es en el intercambio de ideas y en la voluntad de transformar que encontramos nuestra fuerza. ¡Así es como Tech Era transforma el presente y construye el futuro! 💜",
         
         "language_pt": "Português",
         "language_en": "English",
@@ -1805,7 +1805,7 @@ const translations = {
         "team_cv_inclusion": "Inclusion : nous valorisons chaque voix et respectons les différences.",
         "team_cv_teamwork": "Travail d'équipe : nous collaborons et grandissons ensemble.",
         "team_cv_fun": "Plaisir : nous célébrons chaque réussite avec joie et enthousiasme !",
-        "team_conclusion": "Nous croyons que la vraie technologie réside dans les personnes — et c'est avec unité, curiosité et détermination que Tech Era construit l'avenir ! 💜",
+        "team_conclusion": "Nous croyons que la vraie technologie naît des personnes — lorsque des esprits curieux s'unissent pour créer des solutions qui font la différence. C'est dans l'échange d'idées et dans la volonté de transformer que nous trouvons notre force. C'est ainsi que Tech Era transforme le présent et construit l'avenir ! 💜",
         
         "language_pt": "Português",
         "language_en": "English",
