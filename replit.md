@@ -207,3 +207,15 @@ Implemented a complete authentication and user verification system with Portugue
 - Email: roboticos415f2@gmail.com
 - Password: 24062025
 - Type: Administrator
+
+### 2025-11-12: Favicon Integration
+
+**Changes Made**:
+- Added Tech Era team logo as site favicon
+- Favicon file: `static/Logo TE Roxo e Verde.ico`
+- Added favicon link tag to `templates/base.html` in the `<head>` section
+- Favicon appears on all pages (all templates extend base.html)
+
+**Files Modified**:
+- `templates/base.html` - Added favicon link tag
+- `static/Logo TE Roxo e Verde.ico` - Team logo favicon file
