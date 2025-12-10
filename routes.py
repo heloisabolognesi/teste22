@@ -23,13 +23,23 @@ def save_uploaded_file(file, folder='uploads'):
 @app.route('/storage/<path:file_path>')
 def serve_storage_file(file_path):
     """Serve files from Replit Object Storage or local fallback."""
+    from werkzeug.utils import safe_join
+    from flask import abort
+    
+    # Security: Reject path traversal attempts
+    if '..' in file_path or file_path.startswith('/'):
+        abort(403)
+    
     try:
         file_bytes = download_file(file_path)
         
         if file_bytes is None:
-            static_path = os.path.join(current_app.static_folder, file_path)
-            if os.path.exists(static_path):
-                return send_file(static_path)
+            # Use safe_join to prevent path traversal in local fallback
+            safe_path = safe_join(current_app.static_folder, file_path)
+            if safe_path is None:
+                abort(403)
+            if os.path.exists(safe_path):
+                return send_file(safe_path)
             current_app.logger.warning(f"File not found: {file_path}")
             return Response("File not found", status=404)
         

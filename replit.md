@@ -219,3 +219,48 @@ Implemented a complete authentication and user verification system with Portugue
 **Files Modified**:
 - `templates/base.html` - Added favicon link tag
 - `static/Logo TE Roxo e Verde.ico` - Team logo favicon file
+
+### 2025-12-10: Replit Object Storage Migration
+
+**Issues Fixed**:
+- User-uploaded files (artifacts, professionals, gallery photos) not persisting in production deployment
+- Local filesystem storage is ephemeral in Replit's production environment
+- Files uploaded in production were lost after deployment restarts
+
+**Solutions Implemented**:
+
+**1. Object Storage Integration**:
+- Created `storage.py` utility module with functions:
+  - `upload_file(file, folder)` - Uploads files to Object Storage with UUID-based naming
+  - `download_file(file_path)` - Downloads file bytes from Object Storage
+  - `file_exists(file_path)` - Checks if file exists in storage
+  - `get_content_type(file_path)` - Returns MIME type based on file extension
+  - `is_object_storage_available()` - Checks if Object Storage is initialized
+
+**2. File Serving Route**:
+- Created `/storage/<path:file_path>` route to serve files from Object Storage
+- Implements local fallback for development with proper security
+- Security hardening: Path traversal prevention with safe_join and explicit validation
+- Proper MIME type detection and caching headers
+
+**3. Template Updates**:
+- Updated all templates to use `url_for('serve_storage_file', file_path=...)` instead of static file references
+- Templates updated: catalogacao.html, acervo.html, profissionais.html, galeria.html, perfil_profissional.html, admin_galeria.html, inventario.html
+- JavaScript updates in index.html and dashboard.html for dynamic gallery loading
+
+**4. Security Measures**:
+- Reject paths containing '..' or starting with '/'
+- Use werkzeug.utils.safe_join for local fallback paths
+- Abort with 403 on any path traversal attempts
+
+**Key Features**:
+- ✅ Persistent file storage using Replit Object Storage (99.999999999% durability)
+- ✅ Automatic MIME type detection for images
+- ✅ Secure file serving with path traversal prevention
+- ✅ Local development fallback for testing
+- ✅ One-year browser caching for performance
+
+**Files Modified**:
+- `storage.py` - New utility module for Object Storage operations
+- `routes.py` - Updated save_uploaded_file and added serve_storage_file route
+- Multiple templates updated for new storage route
