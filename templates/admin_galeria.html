@@ -128,7 +128,7 @@
                             {% for photo in photos %}
                             <tr>
                                 <td>
-                                    <img src="{{ url_for('static', filename=photo.image_path) }}" 
+                                    <img src="{{ url_for('serve_storage_file', file_path=photo.image_path) }}" 
                                          alt="{{ photo.title }}" 
                                          class="rounded"
                                          style="width: 60px; height: 60px; object-fit: cover;">

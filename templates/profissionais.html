@@ -28,7 +28,7 @@
                     <!-- Profile Photo -->
                     <div class="profile-photo-container mb-3">
                         {% if professional.profile_photo %}
-                            <img src="{{ url_for('static', filename=professional.profile_photo) }}" 
+                            <img src="{{ url_for('serve_storage_file', file_path=professional.profile_photo) }}" 
                                  alt="{{ professional.name }}" 
                                  class="profile-photo rounded-circle">
                         {% else %}

@@ -444,9 +444,7 @@
         const col = document.createElement('div');
         col.className = 'col-lg-4 col-md-6';
         
-        const imagePath = photo.image_path.startsWith('static/') 
-            ? '{{ url_for("static", filename="") }}' + photo.image_path.replace('static/', '')
-            : '{{ url_for("static", filename="") }}' + photo.image_path;
+        const imagePath = '/storage/' + photo.image_path;
         
         col.innerHTML = `
             <div class="gallery-item" data-photo-id="${photo.id}">

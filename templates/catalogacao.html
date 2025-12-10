@@ -25,7 +25,7 @@
             <div class="card artifact-card h-100 border-0 shadow-sm">
                 {% if artifact.photo_path %}
                 <div class="card-img-top-container">
-                    <img src="{{ url_for('static', filename=artifact.photo_path) }}" class="card-img-top artifact-photo" alt="{{ artifact.name }}">
+                    <img src="{{ url_for('serve_storage_file', file_path=artifact.photo_path) }}" class="card-img-top artifact-photo" alt="{{ artifact.name }}">
                 </div>
                 {% else %}
                 <div class="card-img-top no-image d-flex align-items-center justify-content-center">

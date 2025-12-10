@@ -85,7 +85,7 @@
                         data-conservation="{{ artifact.conservation_state }}">
                         <td>
                             {% if artifact.photo_path %}
-                                <img src="{{ url_for('static', filename=artifact.photo_path) }}" 
+                                <img src="{{ url_for('serve_storage_file', file_path=artifact.photo_path) }}" 
                                      alt="{{ artifact.name }}" 
                                      class="artifact-thumbnail rounded">
                             {% else %}
