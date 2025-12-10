@@ -1,6 +1,7 @@
 import os
+import io
 import uuid
-from flask import render_template, request, redirect, url_for, flash, current_app, jsonify, session
+from flask import render_template, request, redirect, url_for, flash, current_app, jsonify, session, send_file, Response
 from flask_login import login_user, logout_user, login_required, current_user
 from werkzeug.security import generate_password_hash, check_password_hash
 from werkzeug.utils import secure_filename
@@ -9,43 +10,43 @@ from datetime import datetime
 from app import app, db, LANGUAGES
 from models import User, Artifact, Professional, Transport, Scanner3D, PhotoGallery
 from forms import LoginForm, RegisterForm, ArtifactForm, ProfessionalForm, TransportForm, Scanner3DForm, AdminUserForm, PhotoGalleryForm
+from storage import upload_file, download_file, file_exists, get_content_type, is_object_storage_available
 
 def allowed_file(filename, allowed_extensions):
     return '.' in filename and filename.rsplit('.', 1)[1].lower() in allowed_extensions
 
 def save_uploaded_file(file, folder='uploads'):
-    """Save uploaded file with proper error handling and path consistency"""
-    if not file or not file.filename:
-        return None
-        
+    """Save uploaded file using Replit Object Storage for persistence"""
+    return upload_file(file, folder)
+
+
+@app.route('/storage/<path:file_path>')
+def serve_storage_file(file_path):
+    """Serve files from Replit Object Storage or local fallback."""
     try:
-        # Secure the filename
-        filename = secure_filename(file.filename)
-        if not filename:
-            return None
-            
-        # Generate unique filename
-        unique_filename = f"{uuid.uuid4().hex}_{filename}"
+        file_bytes = download_file(file_path)
         
-        # Ensure folder exists
-        full_folder_path = os.path.join(current_app.static_folder, folder) if folder.startswith('uploads/') else folder
-        os.makedirs(full_folder_path, exist_ok=True)
+        if file_bytes is None:
+            static_path = os.path.join(current_app.static_folder, file_path)
+            if os.path.exists(static_path):
+                return send_file(static_path)
+            current_app.logger.warning(f"File not found: {file_path}")
+            return Response("File not found", status=404)
         
-        # Full file path
-        file_path = os.path.join(full_folder_path, unique_filename)
+        content_type = get_content_type(file_path)
         
-        # Save file
-        file.save(file_path)
-        
-        # Return relative path for database storage
-        if folder.startswith('uploads/'):
-            return f"{folder}/{unique_filename}"
-        else:
-            return file_path
-            
+        return Response(
+            file_bytes,
+            mimetype=content_type,
+            headers={
+                'Cache-Control': 'public, max-age=31536000',
+                'Content-Disposition': 'inline'
+            }
+        )
     except Exception as e:
-        current_app.logger.error(f"Error saving file: {str(e)}")
-        return None
+        current_app.logger.error(f"Error serving file {file_path}: {str(e)}")
+        return Response("Error loading file", status=500)
+
 
 @app.route('/')
 def index():
