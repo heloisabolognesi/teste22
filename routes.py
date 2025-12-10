@@ -332,6 +332,112 @@ def catalogar_novo():
     
     return render_template('catalogar_novo.html', form=form)
 
+
+@app.route('/editar_artefato/<int:id>', methods=['GET', 'POST'])
+@login_required
+def editar_artefato(id):
+    """Edit an existing artifact. Only the cataloger or admin can edit."""
+    artifact = Artifact.query.get_or_404(id)
+    
+    # Check permissions: only the user who cataloged or admin can edit
+    if artifact.user_id != current_user.id and not current_user.is_admin:
+        lang = session.get('language', 'pt')
+        messages = {
+            'pt': 'Você não tem permissão para editar este artefato.',
+            'en': 'You do not have permission to edit this artifact.',
+            'es': 'No tienes permiso para editar este artefacto.',
+            'fr': 'Vous n\'avez pas la permission de modifier cet artefact.'
+        }
+        flash(messages.get(lang, messages['pt']), 'error')
+        return redirect(url_for('catalogacao'))
+    
+    form = ArtifactForm(obj=artifact)
+    
+    if form.validate_on_submit():
+        artifact.name = form.name.data
+        artifact.code = form.code.data if form.code.data else artifact.code
+        artifact.discovery_date = form.discovery_date.data
+        artifact.origin_location = form.origin_location.data
+        artifact.artifact_type = form.artifact_type.data
+        artifact.conservation_state = form.conservation_state.data
+        artifact.depth = form.depth.data
+        artifact.level = form.level.data
+        artifact.coordinates = form.coordinates.data
+        artifact.observations = form.observations.data
+        
+        # Handle new photo upload
+        if form.photo.data:
+            photo_path = save_uploaded_file(form.photo.data, 'uploads/photos')
+            if photo_path:
+                artifact.photo_path = photo_path
+        
+        # Handle new 3D model upload
+        if form.model_3d.data:
+            model_path = save_uploaded_file(form.model_3d.data, 'uploads/3d_models')
+            if model_path:
+                artifact.model_3d_path = model_path
+        
+        # Handle new IPHAN form upload
+        if form.iphan_form.data:
+            iphan_path = save_uploaded_file(form.iphan_form.data, 'uploads/iphan_forms')
+            if iphan_path:
+                artifact.iphan_form_path = iphan_path
+        
+        db.session.commit()
+        
+        lang = session.get('language', 'pt')
+        messages = {
+            'pt': 'Artefato atualizado com sucesso!',
+            'en': 'Artifact updated successfully!',
+            'es': '¡Artefacto actualizado con éxito!',
+            'fr': 'Artefact mis à jour avec succès!'
+        }
+        flash(messages.get(lang, messages['pt']), 'success')
+        return redirect(url_for('catalogacao'))
+    
+    return render_template('editar_artefato.html', form=form, artifact=artifact)
+
+
+@app.route('/excluir_artefato/<int:id>', methods=['POST'])
+@login_required
+def excluir_artefato(id):
+    """Delete an artifact. Only the cataloger or admin can delete."""
+    artifact = Artifact.query.get_or_404(id)
+    
+    # Check permissions: only the user who cataloged or admin can delete
+    if artifact.user_id != current_user.id and not current_user.is_admin:
+        lang = session.get('language', 'pt')
+        messages = {
+            'pt': 'Você não tem permissão para excluir este artefato.',
+            'en': 'You do not have permission to delete this artifact.',
+            'es': 'No tienes permiso para eliminar este artefacto.',
+            'fr': 'Vous n\'avez pas la permission de supprimer cet artefact.'
+        }
+        flash(messages.get(lang, messages['pt']), 'error')
+        return redirect(url_for('catalogacao'))
+    
+    artifact_name = artifact.name
+    
+    try:
+        db.session.delete(artifact)
+        db.session.commit()
+        
+        lang = session.get('language', 'pt')
+        messages = {
+            'pt': f'Artefato "{artifact_name}" excluído com sucesso!',
+            'en': f'Artifact "{artifact_name}" deleted successfully!',
+            'es': f'¡Artefacto "{artifact_name}" eliminado con éxito!',
+            'fr': f'Artefact "{artifact_name}" supprimé avec succès!'
+        }
+        flash(messages.get(lang, messages['pt']), 'success')
+    except Exception as e:
+        db.session.rollback()
+        current_app.logger.error(f'Error deleting artifact: {str(e)}')
+        flash('Erro ao excluir artefato. Tente novamente.', 'error')
+    
+    return redirect(url_for('catalogacao'))
+
+
 @app.route('/acervo')
 @login_required
 def acervo():
