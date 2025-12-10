@@ -495,10 +495,115 @@ def adicionar_profissional():
         
         db.session.add(professional)
         db.session.commit()
-        flash('Profissional adicionado com sucesso!', 'success')
+        
+        lang = session.get('language', 'pt')
+        messages = {
+            'pt': 'Profissional adicionado com sucesso!',
+            'en': 'Professional added successfully!',
+            'es': '¡Profesional añadido con éxito!',
+            'fr': 'Professionnel ajouté avec succès!'
+        }
+        flash(messages.get(lang, messages['pt']), 'success')
         return redirect(url_for('profissionais'))
     
     return render_template('adicionar_profissional.html', form=form)
+
+
+@app.route('/editar_profissional/<int:id>', methods=['GET', 'POST'])
+@login_required
+def editar_profissional(id):
+    """Edit an existing professional. Only admin can edit."""
+    # Check if user is admin
+    if not current_user.is_admin:
+        lang = session.get('language', 'pt')
+        messages = {
+            'pt': 'Apenas administradores podem editar profissionais.',
+            'en': 'Only administrators can edit professionals.',
+            'es': 'Solo los administradores pueden editar profesionales.',
+            'fr': 'Seuls les administrateurs peuvent modifier les professionnels.'
+        }
+        flash(messages.get(lang, messages['pt']), 'error')
+        return redirect(url_for('profissionais'))
+    
+    professional = Professional.query.get_or_404(id)
+    form = ProfessionalForm(obj=professional)
+    
+    if form.validate_on_submit():
+        professional.name = form.name.data
+        professional.email = form.email.data
+        professional.age = form.age.data
+        professional.specialization = form.specialization.data
+        professional.description = form.description.data
+        professional.experience = form.experience.data
+        professional.linkedin = form.linkedin.data
+        professional.lattes_cv = form.lattes_cv.data
+        
+        # Handle new photo upload
+        if form.profile_photo.data:
+            photo_path = save_uploaded_file(form.profile_photo.data, 'uploads/profiles')
+            if photo_path:
+                professional.profile_photo = photo_path
+        
+        db.session.commit()
+        
+        lang = session.get('language', 'pt')
+        messages = {
+            'pt': 'Profissional atualizado com sucesso!',
+            'en': 'Professional updated successfully!',
+            'es': '¡Profesional actualizado con éxito!',
+            'fr': 'Professionnel mis à jour avec succès!'
+        }
+        flash(messages.get(lang, messages['pt']), 'success')
+        return redirect(url_for('profissionais'))
+    
+    return render_template('editar_profissional.html', form=form, professional=professional)
+
+
+@app.route('/excluir_profissional/<int:id>', methods=['POST'])
+@login_required
+def excluir_profissional(id):
+    """Delete a professional. Only admin can delete."""
+    # Check if user is admin
+    if not current_user.is_admin:
+        lang = session.get('language', 'pt')
+        messages = {
+            'pt': 'Apenas administradores podem excluir profissionais.',
+            'en': 'Only administrators can delete professionals.',
+            'es': 'Solo los administradores pueden eliminar profesionales.',
+            'fr': 'Seuls les administrateurs peuvent supprimer les professionnels.'
+        }
+        flash(messages.get(lang, messages['pt']), 'error')
+        return redirect(url_for('profissionais'))
+    
+    professional = Professional.query.get_or_404(id)
+    professional_name = professional.name
+    
+    try:
+        db.session.delete(professional)
+        db.session.commit()
+        
+        lang = session.get('language', 'pt')
+        messages = {
+            'pt': f'Profissional "{professional_name}" excluído com sucesso!',
+            'en': f'Professional "{professional_name}" deleted successfully!',
+            'es': f'¡Profesional "{professional_name}" eliminado con éxito!',
+            'fr': f'Professionnel "{professional_name}" supprimé avec succès!'
+        }
+        flash(messages.get(lang, messages['pt']), 'success')
+    except Exception as e:
+        db.session.rollback()
+        current_app.logger.error(f'Error deleting professional: {str(e)}')
+        lang = session.get('language', 'pt')
+        error_messages = {
+            'pt': 'Erro ao excluir profissional. Tente novamente.',
+            'en': 'Error deleting professional. Please try again.',
+            'es': 'Error al eliminar el profesional. Inténtalo de nuevo.',
+            'fr': 'Erreur lors de la suppression du professionnel. Veuillez réessayer.'
+        }
+        flash(error_messages.get(lang, error_messages['pt']), 'error')
+    
+    return redirect(url_for('profissionais'))
+
 
 @app.route('/scanner_3d', methods=['GET', 'POST'])
 @login_required

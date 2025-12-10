@@ -1,0 +1,173 @@
+{% extends "base.html" %}
+
+{% block title %}<span data-i18n="prof_edit_title">Editar Profissional</span> - L.A.A.R.I{% endblock %}
+
+{% block content %}
+<div class="page-header mb-4">
+    <h1 class="display-6 fw-bold">
+        <i class="fas fa-user-edit me-3"></i><span data-i18n="prof_edit_title">Editar Profissional</span>
+    </h1>
+    <p class="lead text-muted">
+        <span data-i18n="prof_edit_subtitle">Editando:</span> <strong>{{ professional.name }}</strong>
+    </p>
+</div>
+
+<div class="row justify-content-center">
+    <div class="col-lg-8">
+        <div class="card border-0 shadow">
+            <div class="card-header bg-archaeological text-white">
+                <h4 class="mb-0">
+                    <i class="fas fa-user me-2"></i><span data-i18n="prof_add_info_header">Informações do Profissional</span>
+                </h4>
+            </div>
+            
+            <div class="card-body p-4">
+                {% if professional.profile_photo %}
+                <div class="mb-4 text-center">
+                    <img src="{{ url_for('serve_storage_file', file_path=professional.profile_photo) }}" 
+                         alt="{{ professional.name }}" 
+                         class="rounded-circle shadow-sm" 
+                         style="width: 150px; height: 150px; object-fit: cover;">
+                    <p class="text-muted small mt-2" data-i18n="prof_edit_current_photo">Foto atual do profissional</p>
+                </div>
+                {% endif %}
+                
+                <form method="POST" enctype="multipart/form-data" class="needs-validation" novalidate>
+                    {{ form.hidden_tag() }}
+                    
+                    <div class="row g-3">
+                        <div class="col-12">
+                            <label for="{{ form.name.id }}" class="form-label fw-bold">
+                                <i class="fas fa-signature me-2"></i><span data-i18n="prof_add_name_label">Nome Completo *</span>
+                            </label>
+                            <input type="text" class="form-control form-control-lg" id="{{ form.name.id }}" name="{{ form.name.name }}" value="{{ form.name.data or '' }}" data-i18n-placeholder="prof_name_placeholder" placeholder="Digite o nome completo do profissional">
+                            {% if form.name.errors %}
+                                <div class="invalid-feedback d-block">
+                                    {% for error in form.name.errors %}{{ error }}{% endfor %}
+                                </div>
+                            {% endif %}
+                        </div>
+                        
+                        <div class="col-12">
+                            <label for="{{ form.email.id }}" class="form-label fw-bold">
+                                <i class="fas fa-envelope me-2"></i><span data-i18n="prof_add_email_label">Email para Contato *</span>
+                            </label>
+                            <input type="email" class="form-control form-control-lg" id="{{ form.email.id }}" name="{{ form.email.name }}" value="{{ form.email.data or '' }}" placeholder="email@exemplo.com">
+                            {% if form.email.errors %}
+                                <div class="invalid-feedback d-block">
+                                    {% for error in form.email.errors %}{{ error }}{% endfor %}
+                                </div>
+                            {% endif %}
+                        </div>
+                        
+                        <div class="col-md-4">
+                            <label for="{{ form.age.id }}" class="form-label fw-bold">
+                                <i class="fas fa-birthday-cake me-2"></i><span data-i18n="prof_add_age_label">Idade</span>
+                            </label>
+                            <input type="number" class="form-control" id="{{ form.age.id }}" name="{{ form.age.name }}" value="{{ form.age.data or '' }}" placeholder="Ex: 35">
+                            {% if form.age.errors %}
+                                <div class="invalid-feedback d-block">
+                                    {% for error in form.age.errors %}{{ error }}{% endfor %}
+                                </div>
+                            {% endif %}
+                        </div>
+                        
+                        <div class="col-md-8">
+                            <label for="{{ form.specialization.id }}" class="form-label fw-bold">
+                                <i class="fas fa-star me-2"></i><span data-i18n="prof_add_spec_label">Especialização</span>
+                            </label>
+                            <input type="text" class="form-control" id="{{ form.specialization.id }}" name="{{ form.specialization.name }}" value="{{ form.specialization.data or '' }}" data-i18n-placeholder="prof_spec_placeholder" placeholder="Ex: Arqueologia Pré-Histórica, Conservação, etc.">
+                            {% if form.specialization.errors %}
+                                <div class="invalid-feedback d-block">
+                                    {% for error in form.specialization.errors %}{{ error }}{% endfor %}
+                                </div>
+                            {% endif %}
+                        </div>
+                        
+                        <div class="col-12">
+                            <div class="alert alert-info">
+                                <i class="fas fa-info-circle me-2"></i>
+                                <span data-i18n="prof_edit_photo_note">Para alterar a foto, selecione uma nova imagem. A foto atual será mantida se nenhuma nova for selecionada.</span>
+                            </div>
+                            <label for="{{ form.profile_photo.id }}" class="form-label fw-bold">
+                                <i class="fas fa-camera me-2"></i><span data-i18n="prof_edit_new_photo">Nova Foto de Perfil</span>
+                            </label>
+                            {{ form.profile_photo(class="form-control", accept=".jpg,.jpeg,.png") }}
+                            <small class="form-text text-muted" data-i18n="prof_photo_formats">Formatos aceitos: JPG, JPEG, PNG</small>
+                        </div>
+                        
+                        <div class="col-12">
+                            <label for="{{ form.description.id }}" class="form-label fw-bold">
+                                <i class="fas fa-info-circle me-2"></i><span data-i18n="prof_add_desc_label">Descrição Profissional</span>
+                            </label>
+                            <textarea class="form-control" id="{{ form.description.id }}" name="{{ form.description.name }}" rows="4" data-i18n-placeholder="prof_desc_placeholder" placeholder="Breve descrição sobre o profissional...">{{ form.description.data or '' }}</textarea>
+                            {% if form.description.errors %}
+                                <div class="invalid-feedback d-block">
+                                    {% for error in form.description.errors %}{{ error }}{% endfor %}
+                                </div>
+                            {% endif %}
+                        </div>
+                        
+                        <div class="col-12">
+                            <label for="{{ form.experience.id }}" class="form-label fw-bold">
+                                <i class="fas fa-medal me-2"></i><span data-i18n="prof_add_exp_label">Experiência Profissional</span>
+                            </label>
+                            <textarea class="form-control" id="{{ form.experience.id }}" name="{{ form.experience.name }}" rows="6" data-i18n-placeholder="prof_exp_placeholder" placeholder="Descreva a experiência profissional...">{{ form.experience.data or '' }}</textarea>
+                            {% if form.experience.errors %}
+                                <div class="invalid-feedback d-block">
+                                    {% for error in form.experience.errors %}{{ error }}{% endfor %}
+                                </div>
+                            {% endif %}
+                        </div>
+                        
+                        <div class="col-md-6">
+                            <label for="{{ form.linkedin.id }}" class="form-label fw-bold">
+                                <i class="fab fa-linkedin me-2"></i><span data-i18n="prof_add_linkedin_label">LinkedIn</span>
+                            </label>
+                            <input type="url" class="form-control" id="{{ form.linkedin.id }}" name="{{ form.linkedin.name }}" value="{{ form.linkedin.data or '' }}" placeholder="https://linkedin.com/in/seu-perfil">
+                            {% if form.linkedin.errors %}
+                                <div class="invalid-feedback d-block">
+                                    {% for error in form.linkedin.errors %}{{ error }}{% endfor %}
+                                </div>
+                            {% endif %}
+                        </div>
+                        
+                        <div class="col-md-6">
+                            <label for="{{ form.lattes_cv.id }}" class="form-label fw-bold">
+                                <i class="fas fa-graduation-cap me-2"></i><span data-i18n="prof_add_lattes_label">Currículo Lattes</span>
+                            </label>
+                            <input type="url" class="form-control" id="{{ form.lattes_cv.id }}" name="{{ form.lattes_cv.name }}" value="{{ form.lattes_cv.data or '' }}" placeholder="http://lattes.cnpq.br/seu-curriculo">
+                            {% if form.lattes_cv.errors %}
+                                <div class="invalid-feedback d-block">
+                                    {% for error in form.lattes_cv.errors %}{{ error }}{% endfor %}
+                                </div>
+                            {% endif %}
+                        </div>
+                    </div>
+                    
+                    <div class="d-flex justify-content-between mt-4">
+                        <a href="{{ url_for('profissionais') }}" class="btn btn-secondary btn-lg">
+                            <i class="fas fa-arrow-left me-2"></i><span data-i18n="btn_back">Voltar</span>
+                        </a>
+                        
+                        <button type="submit" class="btn btn-archaeological btn-lg">
+                            <i class="fas fa-save me-2"></i><span data-i18n="btn_save_changes">Salvar Alterações</span>
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+        
+        <div class="mt-4 p-3 bg-light rounded">
+            <div class="d-flex justify-content-between align-items-center">
+                <div>
+                    <h6 class="fw-bold mb-1"><i class="fas fa-info-circle me-2"></i><span data-i18n="prof_edit_info_title">Informações do Registro</span></h6>
+                    <ul class="mb-0 small text-muted">
+                        <li><span data-i18n="prof_edit_registered">Cadastrado em:</span> {{ professional.created_at.strftime('%d/%m/%Y às %H:%M') }}</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
