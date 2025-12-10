@@ -1,0 +1,230 @@
+{% extends "base.html" %}
+
+{% block title %}<span data-i18n="edit_artifact_title">Editar Artefato</span> - L.A.A.R.I{% endblock %}
+
+{% block content %}
+<div class="page-header mb-4">
+    <h1 class="display-6 fw-bold">
+        <i class="fas fa-edit me-3"></i><span data-i18n="edit_artifact_title">Editar Artefato</span>
+    </h1>
+    <p class="lead text-muted">
+        <span data-i18n="edit_artifact_subtitle">Editando:</span> <strong>{{ artifact.name }}</strong>
+    </p>
+</div>
+
+<div class="row justify-content-center">
+    <div class="col-lg-8">
+        <div class="card border-0 shadow">
+            <div class="card-header bg-archaeological text-white">
+                <h4 class="mb-0">
+                    <i class="fas fa-tags me-2"></i><span data-i18n="catalog_info_header">Informações do Artefato</span>
+                </h4>
+            </div>
+            
+            <div class="card-body p-4">
+                {% if artifact.photo_path %}
+                <div class="mb-4 text-center">
+                    <img src="{{ url_for('serve_storage_file', file_path=artifact.photo_path) }}" 
+                         alt="{{ artifact.name }}" 
+                         class="img-fluid rounded shadow-sm" 
+                         style="max-height: 200px;">
+                    <p class="text-muted small mt-2" data-i18n="edit_current_photo">Foto atual do artefato</p>
+                </div>
+                {% endif %}
+                
+                <form method="POST" enctype="multipart/form-data" class="needs-validation" novalidate>
+                    {{ form.hidden_tag() }}
+                    
+                    <div class="row g-3">
+                        <div class="col-md-8">
+                            <label for="{{ form.name.id }}" class="form-label fw-bold">
+                                <i class="fas fa-signature me-2"></i><span data-i18n="catalog_field_name">Nome do Artefato</span> *
+                            </label>
+                            <input type="text" class="form-control form-control-lg" id="{{ form.name.id }}" name="{{ form.name.name }}" value="{{ form.name.data or '' }}" data-i18n-placeholder="catalog_field_name_placeholder" placeholder="Ex: ST001, ARQ-2024-015">
+                            {% if form.name.errors %}
+                                <div class="invalid-feedback d-block">
+                                    {% for error in form.name.errors %}{{ error }}{% endfor %}
+                                </div>
+                            {% endif %}
+                        </div>
+                        
+                        <div class="col-md-4">
+                            <label for="{{ form.code.id }}" class="form-label fw-bold">
+                                <i class="fas fa-barcode me-2"></i><span data-i18n="catalog_field_code">Código do Artefato</span>
+                            </label>
+                            <input type="text" class="form-control form-control-lg" id="{{ form.code.id }}" name="{{ form.code.name }}" value="{{ form.code.data or '' }}" data-i18n-placeholder="catalog_field_code_placeholder" placeholder="Código único">
+                            {% if form.code.errors %}
+                                <div class="invalid-feedback d-block">
+                                    {% for error in form.code.errors %}{{ error }}{% endfor %}
+                                </div>
+                            {% endif %}
+                        </div>
+                        
+                        <div class="col-md-6">
+                            <label for="{{ form.discovery_date.id }}" class="form-label fw-bold">
+                                <i class="fas fa-calendar me-2"></i><span data-i18n="catalog_field_discovery_date">Data de Descoberta</span>
+                            </label>
+                            {{ form.discovery_date(class="form-control") }}
+                            {% if form.discovery_date.errors %}
+                                <div class="invalid-feedback d-block">
+                                    {% for error in form.discovery_date.errors %}{{ error }}{% endfor %}
+                                </div>
+                            {% endif %}
+                        </div>
+                        
+                        <div class="col-md-6">
+                            <label for="{{ form.artifact_type.id }}" class="form-label fw-bold">
+                                <i class="fas fa-tag me-2"></i><span data-i18n="catalog_field_type">Tipo</span>
+                            </label>
+                            {{ form.artifact_type(class="form-select") }}
+                            {% if form.artifact_type.errors %}
+                                <div class="invalid-feedback d-block">
+                                    {% for error in form.artifact_type.errors %}{{ error }}{% endfor %}
+                                </div>
+                            {% endif %}
+                        </div>
+                        
+                        <div class="col-12">
+                            <label for="{{ form.origin_location.id }}" class="form-label fw-bold">
+                                <i class="fas fa-map-marker-alt me-2"></i><span data-i18n="catalog_field_origin">Local de Origem</span>
+                            </label>
+                            <input type="text" class="form-control" id="{{ form.origin_location.id }}" name="{{ form.origin_location.name }}" value="{{ form.origin_location.data or '' }}" data-i18n-placeholder="catalog_field_origin_placeholder" placeholder="Digite o local onde o artefato foi encontrado">
+                            {% if form.origin_location.errors %}
+                                <div class="invalid-feedback d-block">
+                                    {% for error in form.origin_location.errors %}{{ error }}{% endfor %}
+                                </div>
+                            {% endif %}
+                        </div>
+                        
+                        <div class="col-12">
+                            <div class="card bg-light border-0 mb-0">
+                                <div class="card-body">
+                                    <h6 class="fw-bold mb-3">
+                                        <i class="fas fa-layer-group me-2"></i><span data-i18n="catalog_location_header">Localização Arqueológica</span>
+                                    </h6>
+                                    <div class="row g-3">
+                                        <div class="col-md-4">
+                                            <label for="{{ form.depth.id }}" class="form-label fw-bold">
+                                                <i class="fas fa-arrows-alt-v me-2"></i><span data-i18n="catalog_field_depth">Profundidade</span>
+                                            </label>
+                                            <input type="text" class="form-control" id="{{ form.depth.id }}" name="{{ form.depth.name }}" value="{{ form.depth.data or '' }}" data-i18n-placeholder="catalog_field_depth_placeholder" placeholder="Ex: 1.5m, 150cm">
+                                            {% if form.depth.errors %}
+                                                <div class="invalid-feedback d-block">
+                                                    {% for error in form.depth.errors %}{{ error }}{% endfor %}
+                                                </div>
+                                            {% endif %}
+                                        </div>
+                                        
+                                        <div class="col-md-4">
+                                            <label for="{{ form.level.id }}" class="form-label fw-bold">
+                                                <i class="fas fa-layer-group me-2"></i><span data-i18n="catalog_field_level">Nível Estratigráfico</span>
+                                            </label>
+                                            <input type="text" class="form-control" id="{{ form.level.id }}" name="{{ form.level.name }}" value="{{ form.level.data or '' }}" data-i18n-placeholder="catalog_field_level_placeholder" placeholder="Ex: Nível III, Camada A">
+                                            {% if form.level.errors %}
+                                                <div class="invalid-feedback d-block">
+                                                    {% for error in form.level.errors %}{{ error }}{% endfor %}
+                                                </div>
+                                            {% endif %}
+                                        </div>
+                                        
+                                        <div class="col-md-4">
+                                            <label for="{{ form.coordinates.id }}" class="form-label fw-bold">
+                                                <i class="fas fa-compass me-2"></i><span data-i18n="catalog_field_coordinates">Coordenadas</span>
+                                            </label>
+                                            <input type="text" class="form-control" id="{{ form.coordinates.id }}" name="{{ form.coordinates.name }}" value="{{ form.coordinates.data or '' }}" data-i18n-placeholder="catalog_field_coordinates_placeholder" placeholder="Ex: -23.5505, -46.6333">
+                                            {% if form.coordinates.errors %}
+                                                <div class="invalid-feedback d-block">
+                                                    {% for error in form.coordinates.errors %}{{ error }}{% endfor %}
+                                                </div>
+                                            {% endif %}
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="col-12">
+                            <label for="{{ form.conservation_state.id }}" class="form-label fw-bold">
+                                <i class="fas fa-heart-pulse me-2"></i><span data-i18n="catalog_field_conservation">Estado de Conservação</span>
+                            </label>
+                            {{ form.conservation_state(class="form-select") }}
+                            {% if form.conservation_state.errors %}
+                                <div class="invalid-feedback d-block">
+                                    {% for error in form.conservation_state.errors %}{{ error }}{% endfor %}
+                                </div>
+                            {% endif %}
+                        </div>
+                        
+                        <div class="col-12">
+                            <label for="{{ form.observations.id }}" class="form-label fw-bold">
+                                <i class="fas fa-comments me-2"></i><span data-i18n="catalog_field_observations">Observações</span>
+                            </label>
+                            <textarea class="form-control" id="{{ form.observations.id }}" name="{{ form.observations.name }}" rows="4" data-i18n-placeholder="catalog_field_observations_placeholder" placeholder="Adicione observações relevantes sobre o artefato">{{ form.observations.data or '' }}</textarea>
+                            {% if form.observations.errors %}
+                                <div class="invalid-feedback d-block">
+                                    {% for error in form.observations.errors %}{{ error }}{% endfor %}
+                                </div>
+                            {% endif %}
+                        </div>
+                        
+                        <div class="col-12">
+                            <div class="alert alert-info">
+                                <i class="fas fa-info-circle me-2"></i>
+                                <span data-i18n="edit_upload_note">Para alterar arquivos, selecione novos arquivos abaixo. Arquivos existentes serão mantidos se nenhum novo for selecionado.</span>
+                            </div>
+                            <div class="row g-3">
+                                <div class="col-md-4">
+                                    <label for="{{ form.photo.id }}" class="form-label fw-bold">
+                                        <i class="fas fa-camera me-2"></i><span data-i18n="catalog_field_photo">Nova Foto</span>
+                                    </label>
+                                    {{ form.photo(class="form-control", accept=".jpg,.jpeg,.png,.gif") }}
+                                    <small class="form-text text-muted" data-i18n="catalog_field_photo_hint">Formatos aceitos: JPG, JPEG, PNG, GIF</small>
+                                </div>
+                                
+                                <div class="col-md-4">
+                                    <label for="{{ form.model_3d.id }}" class="form-label fw-bold">
+                                        <i class="fas fa-cube me-2"></i><span data-i18n="catalog_field_model3d">Novo Modelo 3D</span>
+                                    </label>
+                                    {{ form.model_3d(class="form-control", accept=".obj,.ply,.stl,.fbx") }}
+                                    <small class="form-text text-muted" data-i18n="catalog_field_model3d_hint">Formatos aceitos: OBJ, PLY, STL, FBX</small>
+                                </div>
+                                
+                                <div class="col-md-4">
+                                    <label for="{{ form.iphan_form.id }}" class="form-label fw-bold">
+                                        <i class="fas fa-file-alt me-2"></i><span data-i18n="catalog_field_iphan">Nova Ficha IPHAN</span>
+                                    </label>
+                                    {{ form.iphan_form(class="form-control", accept=".pdf,.doc,.docx,.jpg,.jpeg,.png") }}
+                                    <small class="form-text text-muted" data-i18n="catalog_field_iphan_hint">PDF, DOC, DOCX ou imagem</small>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="d-flex justify-content-between mt-4">
+                        <a href="{{ url_for('catalogacao') }}" class="btn btn-secondary btn-lg">
+                            <i class="fas fa-arrow-left me-2"></i><span data-i18n="catalog_btn_back">Voltar</span>
+                        </a>
+                        
+                        <button type="submit" class="btn btn-archaeological btn-lg">
+                            <i class="fas fa-save me-2"></i><span data-i18n="edit_btn_save">Salvar Alterações</span>
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+        
+        <div class="mt-4 p-3 bg-light rounded">
+            <div class="d-flex justify-content-between align-items-center">
+                <div>
+                    <h6 class="fw-bold mb-1"><i class="fas fa-info-circle me-2"></i><span data-i18n="edit_info_title">Informações do Registro</span></h6>
+                    <ul class="mb-0 small text-muted">
+                        <li><span data-i18n="edit_info_code">Código QR:</span> <strong>{{ artifact.qr_code }}</strong></li>
+                        <li><span data-i18n="edit_info_created">Catalogado em:</span> {{ artifact.created_at.strftime('%d/%m/%Y às %H:%M') }}</li>
+                        <li><span data-i18n="edit_info_by">Catalogado por:</span> {{ artifact.cataloged_by.username }}</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
