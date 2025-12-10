@@ -433,7 +433,14 @@ def excluir_artefato(id):
     except Exception as e:
         db.session.rollback()
         current_app.logger.error(f'Error deleting artifact: {str(e)}')
-        flash('Erro ao excluir artefato. Tente novamente.', 'error')
+        lang = session.get('language', 'pt')
+        error_messages = {
+            'pt': 'Erro ao excluir artefato. Tente novamente.',
+            'en': 'Error deleting artifact. Please try again.',
+            'es': 'Error al eliminar el artefacto. Inténtalo de nuevo.',
+            'fr': 'Erreur lors de la suppression de l\'artefact. Veuillez réessayer.'
+        }
+        flash(error_messages.get(lang, error_messages['pt']), 'error')
     
     return redirect(url_for('catalogacao'))
 
