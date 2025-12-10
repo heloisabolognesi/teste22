@@ -817,6 +817,62 @@ def upload_team_photo():
         current_app.logger.error(f'Erro ao fazer upload de foto da equipe: {str(e)}', exc_info=True)
         return jsonify({'success': False, 'error': 'Erro interno ao processar upload. Tente novamente.'}), 500
 
+@app.route('/admin/migrate-storage')
+@login_required
+def migrate_storage():
+    """Admin route to migrate local files to Object Storage."""
+    if not current_user.is_admin:
+        flash('Acesso negado.', 'error')
+        return redirect(url_for('dashboard'))
+    
+    import os
+    from storage import is_object_storage_available
+    
+    if not is_object_storage_available():
+        flash('Object Storage não está disponível.', 'error')
+        return redirect(url_for('admin'))
+    
+    try:
+        from replit.object_storage import Client
+        storage_client = Client()
+    except Exception as e:
+        flash(f'Erro ao inicializar Object Storage: {str(e)}', 'error')
+        return redirect(url_for('admin'))
+    
+    uploads_dir = os.path.join(current_app.static_folder, 'uploads')
+    migrated_count = 0
+    error_count = 0
+    skipped_count = 0
+    
+    if not os.path.exists(uploads_dir):
+        flash('Pasta de uploads não encontrada.', 'warning')
+        return redirect(url_for('admin'))
+    
+    for root, dirs, files in os.walk(uploads_dir):
+        for filename in files:
+            local_path = os.path.join(root, filename)
+            relative_path = os.path.relpath(local_path, current_app.static_folder)
+            
+            try:
+                if storage_client.exists(relative_path):
+                    skipped_count += 1
+                    continue
+                
+                with open(local_path, 'rb') as f:
+                    file_bytes = f.read()
+                
+                storage_client.upload_from_bytes(relative_path, file_bytes)
+                migrated_count += 1
+                current_app.logger.info(f"Migrated: {relative_path}")
+                
+            except Exception as e:
+                error_count += 1
+                current_app.logger.error(f"Failed to migrate {relative_path}: {str(e)}")
+    
+    flash(f'Migração concluída. Migrados: {migrated_count}, Já existentes: {skipped_count}, Erros: {error_count}', 'success')
+    return redirect(url_for('admin'))
+
+
 # Error handlers
 @app.errorhandler(404)
 def not_found_error(error):
