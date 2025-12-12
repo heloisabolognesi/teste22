@@ -14,11 +14,13 @@ ARTEFATOS_FOLDER = os.path.join(UPLOAD_FOLDER, 'artefatos')
 EQUIPE_FOLDER = os.path.join(UPLOAD_FOLDER, 'equipe')
 GALLERY_FOLDER = os.path.join(UPLOAD_FOLDER, 'gallery')
 CVS_FOLDER = os.path.join(UPLOAD_FOLDER, 'cvs')
+QRCODES_FOLDER = os.path.join(UPLOAD_FOLDER, 'qrcodes')
 
 os.makedirs(ARTEFATOS_FOLDER, exist_ok=True)
 os.makedirs(EQUIPE_FOLDER, exist_ok=True)
 os.makedirs(GALLERY_FOLDER, exist_ok=True)
 os.makedirs(CVS_FOLDER, exist_ok=True)
+os.makedirs(QRCODES_FOLDER, exist_ok=True)
 
 logger.info("Local storage initialized successfully")
 
@@ -80,6 +82,45 @@ def upload_gallery_photo(file):
 def upload_cv(file):
     """Upload a CV/curriculum file to uploads/cvs/"""
     return upload_file(file, CVS_FOLDER)
+
+
+def generate_qr_code_image(qr_code_string, artifact_id):
+    """
+    Generate a QR code image for an artifact.
+    
+    Args:
+        qr_code_string: The string to encode in the QR code (e.g., "LAARI-XXXXXXXX")
+        artifact_id: The artifact ID for filename
+        
+    Returns:
+        str: The storage path of the generated QR code image, or None on failure
+    """
+    try:
+        import qrcode
+        from PIL import Image
+        
+        qr = qrcode.QRCode(
+            version=1,
+            error_correction=qrcode.constants.ERROR_CORRECT_L,
+            box_size=10,
+            border=4,
+        )
+        qr.add_data(qr_code_string)
+        qr.make(fit=True)
+        
+        img = qr.make_image(fill_color="black", back_color="white")
+        
+        filename = f"qrcode_{artifact_id}.png"
+        file_path = os.path.join(QRCODES_FOLDER, filename)
+        
+        img.save(file_path)
+        
+        logger.info(f"QR code generated and saved: {file_path}")
+        return file_path
+        
+    except Exception as e:
+        logger.error(f"Error generating QR code: {str(e)}")
+        return None
 
 
 def download_file(storage_key):

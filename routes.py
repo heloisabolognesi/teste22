@@ -10,7 +10,7 @@ from datetime import datetime
 from app import app, db, LANGUAGES
 from models import User, Artifact, Professional, Transport, Scanner3D, PhotoGallery
 from forms import LoginForm, RegisterForm, ArtifactForm, ProfessionalForm, TransportForm, Scanner3DForm, AdminUserForm, PhotoGalleryForm
-from storage import upload_file, upload_artifact_photo, upload_professional_photo, upload_gallery_photo, download_file, file_exists, get_content_type
+from storage import upload_file, upload_artifact_photo, upload_professional_photo, upload_gallery_photo, download_file, file_exists, get_content_type, generate_qr_code_image
 
 def allowed_file(filename, allowed_extensions):
     return '.' in filename and filename.rsplit('.', 1)[1].lower() in allowed_extensions
@@ -330,6 +330,14 @@ def catalogar_novo():
         
         db.session.add(artifact)
         db.session.commit()
+        
+        # Generate QR code image after artifact is saved (to get the ID)
+        if artifact.qr_code:
+            qr_image_path = generate_qr_code_image(artifact.qr_code, artifact.id)
+            if qr_image_path:
+                artifact.qr_code_image_path = qr_image_path
+                db.session.commit()
+        
         flash('Artefato catalogado com sucesso!', 'success')
         return redirect(url_for('catalogacao'))
     
@@ -467,6 +475,10 @@ def api_artefato_detalhes(id):
         if artifact.iphan_form_path:
             iphan_form_url = url_for('serve_storage_file', file_path=artifact.iphan_form_path)
         
+        qr_code_image_url = None
+        if artifact.qr_code_image_path:
+            qr_code_image_url = url_for('serve_storage_file', file_path=artifact.qr_code_image_path)
+        
         return jsonify({
             'success': True,
             'artifact': {
@@ -474,6 +486,7 @@ def api_artefato_detalhes(id):
                 'name': artifact.name,
                 'code': artifact.code,
                 'qr_code': artifact.qr_code,
+                'qr_code_image_url': qr_code_image_url,
                 'discovery_date': artifact.discovery_date.strftime('%d/%m/%Y') if artifact.discovery_date else None,
                 'origin_location': artifact.origin_location,
                 'artifact_type': artifact.artifact_type,
@@ -502,6 +515,29 @@ def api_artefato_detalhes(id):
 def acervo():
     artifacts = Artifact.query.order_by(Artifact.name).all()
     return render_template('acervo.html', artifacts=artifacts)
+
+
+@app.route('/regenerar_qrcodes')
+@login_required
+def regenerar_qrcodes():
+    """Regenerate QR code images for all artifacts that don't have them. Admin only."""
+    if not current_user.is_admin:
+        flash('Você não tem permissão para executar esta ação.', 'error')
+        return redirect(url_for('dashboard'))
+    
+    artifacts = Artifact.query.filter(Artifact.qr_code.isnot(None)).all()
+    regenerated = 0
+    
+    for artifact in artifacts:
+        if not artifact.qr_code_image_path or not file_exists(artifact.qr_code_image_path):
+            qr_image_path = generate_qr_code_image(artifact.qr_code, artifact.id)
+            if qr_image_path:
+                artifact.qr_code_image_path = qr_image_path
+                regenerated += 1
+    
+    db.session.commit()
+    flash(f'{regenerated} QR codes foram regenerados com sucesso!', 'success')
+    return redirect(url_for('acervo'))
 
 @app.route('/inventario')
 @login_required

@@ -82,6 +82,7 @@ class Artifact(db.Model):
     model_3d_path = db.Column(db.String(255))
     iphan_form_path = db.Column(db.String(255))
     qr_code = db.Column(db.String(100), unique=True)
+    qr_code_image_path = db.Column(db.String(255))
     
     # Campos de localização arqueológica
     depth = db.Column(db.String(50))  # Profundidade
