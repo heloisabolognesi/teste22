@@ -515,14 +515,154 @@
         alert(`Remover privilégios admin: ${users.join(', ')}`);
     }
     
+    function getAccountTypeBadge(type) {
+        const badges = {
+            'profissional': '<span class="badge bg-primary">Profissional</span>',
+            'universitaria': '<span class="badge bg-info">Universitária</span>',
+            'estudante': '<span class="badge bg-success">Estudante</span>'
+        };
+        return badges[type] || '<span class="badge bg-secondary">N/A</span>';
+    }
+    
+    function getStatusBadge(status) {
+        const badges = {
+            'Em análise': '<span class="badge bg-warning">Em análise</span>',
+            'Aprovado': '<span class="badge bg-success">Aprovado</span>',
+            'Rejeitado': '<span class="badge bg-danger">Rejeitado</span>'
+        };
+        return badges[status] || '<span class="badge bg-secondary">N/A</span>';
+    }
+    
     function showUserDetails(userId) {
-        document.getElementById('userDetailsContent').innerHTML = `
-            <div class="text-center">
+        const detailsDiv = document.getElementById('userDetailsContent');
+        
+        detailsDiv.innerHTML = `
+            <div class="text-center py-4">
                 <i class="fas fa-spinner fa-spin fa-2x text-archaeological mb-3"></i>
-                <p>Carregando detalhes do usuário ${userId}...</p>
+                <p>Carregando detalhes...</p>
             </div>
         `;
+        
         new bootstrap.Modal(document.getElementById('userDetailsModal')).show();
+        
+        fetch(`/api/usuario/${userId}`)
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    const u = data.user;
+                    
+                    let accountTypeSection = '';
+                    
+                    if (u.account_type === 'profissional') {
+                        accountTypeSection = `
+                            <div class="mt-4 p-3 bg-light rounded">
+                                <h6 class="text-primary mb-3"><i class="fas fa-briefcase me-2"></i>Dados Profissionais</h6>
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <p><strong>Status CV:</strong> ${getStatusBadge(u.cv_status)}</p>
+                                        ${u.cv_file_url ? `<p><a href="${u.cv_file_url}" target="_blank" class="btn btn-sm btn-outline-primary"><i class="fas fa-file-pdf me-1"></i>Ver Currículo</a></p>` : ''}
+                                    </div>
+                                    <div class="col-md-6">
+                                        ${u.cv_reviewed_at ? `<p><strong>Revisado em:</strong> ${u.cv_reviewed_at}</p>` : ''}
+                                        ${u.cv_rejection_reason ? `<p><strong>Motivo rejeição:</strong> ${u.cv_rejection_reason}</p>` : ''}
+                                    </div>
+                                </div>
+                            </div>
+                        `;
+                    } else if (u.account_type === 'universitaria') {
+                        accountTypeSection = `
+                            <div class="mt-4 p-3 bg-light rounded">
+                                <h6 class="text-info mb-3"><i class="fas fa-university me-2"></i>Dados Institucionais</h6>
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <p><strong>Instituição:</strong> ${u.institution_name || 'N/A'}</p>
+                                        <p><strong>CNPJ:</strong> ${u.institution_cnpj || 'N/A'}</p>
+                                        <p><strong>Cursos:</strong> ${u.institution_courses || 'N/A'}</p>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <p><strong>Responsável:</strong> ${u.institution_responsible_name || 'N/A'}</p>
+                                        <p><strong>Email institucional:</strong> ${u.institution_contact_email || 'N/A'}</p>
+                                        <p><strong>Status:</strong> ${getStatusBadge(u.institution_status)}</p>
+                                        ${u.institution_reviewed_at ? `<p><strong>Revisado em:</strong> ${u.institution_reviewed_at}</p>` : ''}
+                                    </div>
+                                </div>
+                            </div>
+                        `;
+                    } else if (u.account_type === 'estudante') {
+                        accountTypeSection = `
+                            <div class="mt-4 p-3 bg-light rounded">
+                                <h6 class="text-success mb-3"><i class="fas fa-graduation-cap me-2"></i>Dados Acadêmicos</h6>
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <p><strong>Universidade:</strong> ${u.university || 'N/A'}</p>
+                                        <p><strong>Curso:</strong> ${u.course || 'N/A'}</p>
+                                        <p><strong>Ano de entrada:</strong> ${u.entry_year || 'N/A'}</p>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <p><strong>Tipo instituição:</strong> ${u.institution_type ? (u.institution_type === 'publica' ? 'Pública' : 'Privada') : 'N/A'}</p>
+                                        <p><strong>Localização:</strong> ${[u.city, u.state, u.country].filter(x => x).join(', ') || 'N/A'}</p>
+                                    </div>
+                                </div>
+                            </div>
+                        `;
+                    }
+                    
+                    detailsDiv.innerHTML = `
+                        <div class="row">
+                            <div class="col-md-6">
+                                <table class="table table-borderless">
+                                    <tr>
+                                        <th class="text-muted" style="width: 40%"><i class="fas fa-user me-2"></i>Usuário</th>
+                                        <td class="fw-bold">${u.username || 'N/A'}</td>
+                                    </tr>
+                                    <tr>
+                                        <th class="text-muted"><i class="fas fa-envelope me-2"></i>Email</th>
+                                        <td>${u.email || 'N/A'}</td>
+                                    </tr>
+                                    <tr>
+                                        <th class="text-muted"><i class="fas fa-id-card me-2"></i>Tipo de Conta</th>
+                                        <td>${getAccountTypeBadge(u.account_type)}</td>
+                                    </tr>
+                                </table>
+                            </div>
+                            <div class="col-md-6">
+                                <table class="table table-borderless">
+                                    <tr>
+                                        <th class="text-muted" style="width: 40%"><i class="fas fa-crown me-2"></i>Admin</th>
+                                        <td>${u.is_admin ? '<span class="badge bg-warning">Sim</span>' : '<span class="badge bg-secondary">Não</span>'}</td>
+                                    </tr>
+                                    <tr>
+                                        <th class="text-muted"><i class="fas fa-toggle-on me-2"></i>Status</th>
+                                        <td>${u.is_active_user ? '<span class="badge bg-success">Ativo</span>' : '<span class="badge bg-danger">Inativo</span>'}</td>
+                                    </tr>
+                                    <tr>
+                                        <th class="text-muted"><i class="fas fa-calendar me-2"></i>Cadastro</th>
+                                        <td>${u.created_at || 'N/A'}</td>
+                                    </tr>
+                                </table>
+                            </div>
+                        </div>
+                        
+                        ${accountTypeSection}
+                    `;
+                } else {
+                    detailsDiv.innerHTML = `
+                        <div class="alert alert-danger">
+                            <i class="fas fa-exclamation-circle me-2"></i>
+                            ${data.error || 'Erro ao carregar detalhes do usuário.'}
+                        </div>
+                    `;
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                detailsDiv.innerHTML = `
+                    <div class="alert alert-danger">
+                        <i class="fas fa-exclamation-circle me-2"></i>
+                        Erro de conexão. Tente novamente.
+                    </div>
+                `;
+            });
     }
     
     function exportUserList() {

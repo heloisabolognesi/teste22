@@ -722,6 +722,61 @@ def transporte():
     transports = Transport.query.order_by(Transport.created_at.desc()).all()
     return render_template('transporte.html', form=form, transports=transports)
 
+@app.route('/api/usuario/<int:id>')
+@login_required
+def api_usuario_detalhes(id):
+    """API endpoint to get user details for modal display."""
+    if not current_user.is_admin:
+        return jsonify({'success': False, 'error': 'Acesso negado.'}), 403
+    
+    try:
+        user = User.query.get_or_404(id)
+        
+        cv_url = None
+        if user.cv_file_path:
+            cv_url = url_for('serve_storage_file', file_path=user.cv_file_path)
+        
+        university_name = user.university_custom if user.university_custom else user.university
+        
+        return jsonify({
+            'success': True,
+            'user': {
+                'id': user.id,
+                'username': user.username,
+                'email': user.email,
+                'is_admin': user.is_admin,
+                'is_active_user': user.is_active_user,
+                'created_at': user.created_at.strftime('%d/%m/%Y %H:%M') if user.created_at else None,
+                'account_type': user.account_type,
+                'cv_file_url': cv_url,
+                'cv_status': user.cv_status,
+                'cv_rejection_reason': user.cv_rejection_reason,
+                'cv_reviewed_at': user.cv_reviewed_at.strftime('%d/%m/%Y %H:%M') if user.cv_reviewed_at else None,
+                'institution_name': user.institution_name,
+                'institution_cnpj': user.institution_cnpj,
+                'institution_courses': user.institution_courses,
+                'institution_responsible_name': user.institution_responsible_name,
+                'institution_contact_email': user.institution_contact_email,
+                'institution_status': user.institution_status,
+                'institution_rejection_reason': user.institution_rejection_reason,
+                'institution_reviewed_at': user.institution_reviewed_at.strftime('%d/%m/%Y %H:%M') if user.institution_reviewed_at else None,
+                'university': university_name,
+                'course': user.course,
+                'entry_year': user.entry_year,
+                'institution_type': user.institution_type,
+                'city': user.city,
+                'state': user.state,
+                'country': user.country
+            }
+        })
+    except Exception as e:
+        current_app.logger.error(f'Error getting user details: {str(e)}')
+        return jsonify({
+            'success': False,
+            'error': 'Erro ao carregar detalhes do usuário.'
+        }), 500
+
+
 @app.route('/admin')
 @login_required
 def admin():
