@@ -10,49 +10,52 @@ from datetime import datetime
 from app import app, db, LANGUAGES
 from models import User, Artifact, Professional, Transport, Scanner3D, PhotoGallery
 from forms import LoginForm, RegisterForm, ArtifactForm, ProfessionalForm, TransportForm, Scanner3DForm, AdminUserForm, PhotoGalleryForm
-from storage import upload_file, download_file, file_exists, get_content_type, is_object_storage_available
+from storage import upload_file, upload_artifact_photo, upload_professional_photo, upload_gallery_photo, download_file, file_exists, get_content_type
 
 def allowed_file(filename, allowed_extensions):
     return '.' in filename and filename.rsplit('.', 1)[1].lower() in allowed_extensions
 
 def save_uploaded_file(file, folder='uploads'):
-    """Save uploaded file using Replit Object Storage for persistence"""
+    """Save uploaded file to local storage"""
     return upload_file(file, folder)
 
 
-@app.route('/storage/<path:file_path>')
-def serve_storage_file(file_path):
-    """Serve files from Replit Object Storage or local fallback."""
-    from werkzeug.utils import safe_join
-    from flask import abort
+@app.route('/uploads/<path:file_path>')
+def serve_uploads(file_path):
+    """Serve files from uploads/ directory."""
+    from flask import abort, send_from_directory
     
-    # Security: Reject path traversal attempts
     if '..' in file_path or file_path.startswith('/'):
         abort(403)
     
     try:
-        file_bytes = download_file(file_path)
+        return send_from_directory('uploads', file_path)
+    except Exception as e:
+        current_app.logger.error(f"Error serving file {file_path}: {str(e)}")
+        return Response("File not found", status=404)
+
+
+@app.route('/storage/<path:file_path>')
+def serve_storage_file(file_path):
+    """Serve files from uploads/ or static/ directory (legacy support)."""
+    from flask import abort, send_from_directory
+    
+    if '..' in file_path or file_path.startswith('/'):
+        abort(403)
+    
+    try:
+        if file_path.startswith('uploads/'):
+            return send_from_directory('.', file_path)
         
-        if file_bytes is None:
-            # Use safe_join to prevent path traversal in local fallback
-            safe_path = safe_join(current_app.static_folder, file_path)
-            if safe_path is None:
-                abort(403)
-            if os.path.exists(safe_path):
-                return send_file(safe_path)
-            current_app.logger.warning(f"File not found: {file_path}")
-            return Response("File not found", status=404)
+        if os.path.exists(file_path):
+            return send_file(file_path)
         
-        content_type = get_content_type(file_path)
+        static_path = os.path.join('static', file_path)
+        if os.path.exists(static_path):
+            return send_file(static_path)
         
-        return Response(
-            file_bytes,
-            mimetype=content_type,
-            headers={
-                'Cache-Control': 'public, max-age=31536000',
-                'Content-Disposition': 'inline'
-            }
-        )
+        current_app.logger.warning(f"File not found: {file_path}")
+        return Response("File not found", status=404)
     except Exception as e:
         current_app.logger.error(f"Error serving file {file_path}: {str(e)}")
         return Response("Error loading file", status=500)

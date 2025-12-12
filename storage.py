@@ -1,7 +1,6 @@
 """
-Replit Object Storage utilities for persistent file storage.
-This module handles all file uploads and downloads using Replit's Object Storage
-to ensure files persist across deployments and restarts.
+Local file storage utilities for persistent file uploads.
+This module handles all file uploads using local directories.
 """
 import os
 import uuid
@@ -10,16 +9,16 @@ from werkzeug.utils import secure_filename
 
 logger = logging.getLogger(__name__)
 
-try:
-    from replit.object_storage import Client
-    from replit.object_storage.errors import ObjectNotFoundError, BucketNotFoundError
-    OBJECT_STORAGE_AVAILABLE = True
-    storage_client = Client()
-    logger.info("Replit Object Storage initialized successfully")
-except Exception as e:
-    OBJECT_STORAGE_AVAILABLE = False
-    storage_client = None
-    logger.warning(f"Replit Object Storage not available: {e}. Falling back to local storage.")
+UPLOAD_FOLDER = 'uploads'
+ARTEFATOS_FOLDER = os.path.join(UPLOAD_FOLDER, 'artefatos')
+EQUIPE_FOLDER = os.path.join(UPLOAD_FOLDER, 'equipe')
+GALLERY_FOLDER = os.path.join(UPLOAD_FOLDER, 'gallery')
+
+os.makedirs(ARTEFATOS_FOLDER, exist_ok=True)
+os.makedirs(EQUIPE_FOLDER, exist_ok=True)
+os.makedirs(GALLERY_FOLDER, exist_ok=True)
+
+logger.info("Local storage initialized successfully")
 
 
 def get_storage_path(folder, filename):
@@ -29,11 +28,11 @@ def get_storage_path(folder, filename):
 
 def upload_file(file, folder='uploads'):
     """
-    Upload a file to Replit Object Storage.
+    Upload a file to local storage.
     
     Args:
         file: FileStorage object from Flask request
-        folder: Folder/prefix to store the file under
+        folder: Folder to store the file under
         
     Returns:
         str: The storage key (path) of the uploaded file, or None on failure
@@ -47,34 +46,38 @@ def upload_file(file, folder='uploads'):
             return None
         
         unique_filename = f"{uuid.uuid4().hex}_{original_filename}"
-        storage_key = get_storage_path(folder, unique_filename)
         
-        file_bytes = file.read()
+        os.makedirs(folder, exist_ok=True)
         
-        if OBJECT_STORAGE_AVAILABLE and storage_client:
-            storage_client.upload_from_bytes(storage_key, file_bytes)
-            logger.info(f"File uploaded to Object Storage: {storage_key}")
-            return storage_key
-        else:
-            static_folder = os.path.join(os.getcwd(), 'static')
-            full_folder_path = os.path.join(static_folder, folder)
-            os.makedirs(full_folder_path, exist_ok=True)
-            
-            file_path = os.path.join(full_folder_path, unique_filename)
-            with open(file_path, 'wb') as f:
-                f.write(file_bytes)
-            
-            logger.info(f"File saved to local storage: {storage_key}")
-            return storage_key
+        file_path = os.path.join(folder, unique_filename)
+        file.save(file_path)
+        
+        logger.info(f"File saved to local storage: {file_path}")
+        return file_path
             
     except Exception as e:
         logger.error(f"Error uploading file: {str(e)}")
         return None
 
 
+def upload_artifact_photo(file):
+    """Upload an artifact photo to uploads/artefatos/"""
+    return upload_file(file, ARTEFATOS_FOLDER)
+
+
+def upload_professional_photo(file):
+    """Upload a professional photo to uploads/equipe/"""
+    return upload_file(file, EQUIPE_FOLDER)
+
+
+def upload_gallery_photo(file):
+    """Upload a gallery photo to uploads/gallery/"""
+    return upload_file(file, GALLERY_FOLDER)
+
+
 def download_file(storage_key):
     """
-    Download a file from Replit Object Storage.
+    Download a file from local storage.
     
     Args:
         storage_key: The storage path/key of the file
@@ -86,19 +89,11 @@ def download_file(storage_key):
         return None
     
     try:
-        if OBJECT_STORAGE_AVAILABLE and storage_client:
-            return storage_client.download_as_bytes(storage_key)
-        else:
-            static_folder = os.path.join(os.getcwd(), 'static')
-            file_path = os.path.join(static_folder, storage_key)
-            if os.path.exists(file_path):
-                with open(file_path, 'rb') as f:
-                    return f.read()
-            return None
-            
-    except ObjectNotFoundError:
-        logger.warning(f"File not found in Object Storage: {storage_key}")
+        if os.path.exists(storage_key):
+            with open(storage_key, 'rb') as f:
+                return f.read()
         return None
+            
     except Exception as e:
         logger.error(f"Error downloading file: {str(e)}")
         return None
@@ -118,13 +113,7 @@ def file_exists(storage_key):
         return False
     
     try:
-        if OBJECT_STORAGE_AVAILABLE and storage_client:
-            return storage_client.exists(storage_key)
-        else:
-            static_folder = os.path.join(os.getcwd(), 'static')
-            file_path = os.path.join(static_folder, storage_key)
-            return os.path.exists(file_path)
-            
+        return os.path.exists(storage_key)
     except Exception as e:
         logger.error(f"Error checking file existence: {str(e)}")
         return False
@@ -144,17 +133,10 @@ def delete_file(storage_key):
         return False
     
     try:
-        if OBJECT_STORAGE_AVAILABLE and storage_client:
-            storage_client.delete(storage_key, ignore_not_found=True)
-            logger.info(f"File deleted from Object Storage: {storage_key}")
-            return True
-        else:
-            static_folder = os.path.join(os.getcwd(), 'static')
-            file_path = os.path.join(static_folder, storage_key)
-            if os.path.exists(file_path):
-                os.remove(file_path)
-                logger.info(f"File deleted from local storage: {storage_key}")
-            return True
+        if os.path.exists(storage_key):
+            os.remove(storage_key)
+            logger.info(f"File deleted from local storage: {storage_key}")
+        return True
             
     except Exception as e:
         logger.error(f"Error deleting file: {str(e)}")
@@ -177,10 +159,11 @@ def get_content_type(filename):
         'stl': 'model/stl',
         'fbx': 'application/octet-stream',
         'pdf': 'application/pdf',
+        'mp4': 'video/mp4',
     }
     return content_types.get(ext, 'application/octet-stream')
 
 
 def is_object_storage_available():
-    """Check if Object Storage is available."""
-    return OBJECT_STORAGE_AVAILABLE
+    """Check if Object Storage is available (always False for local storage)."""
+    return False
