@@ -13,10 +13,12 @@ UPLOAD_FOLDER = 'uploads'
 ARTEFATOS_FOLDER = os.path.join(UPLOAD_FOLDER, 'artefatos')
 EQUIPE_FOLDER = os.path.join(UPLOAD_FOLDER, 'equipe')
 GALLERY_FOLDER = os.path.join(UPLOAD_FOLDER, 'gallery')
+CVS_FOLDER = os.path.join(UPLOAD_FOLDER, 'cvs')
 
 os.makedirs(ARTEFATOS_FOLDER, exist_ok=True)
 os.makedirs(EQUIPE_FOLDER, exist_ok=True)
 os.makedirs(GALLERY_FOLDER, exist_ok=True)
+os.makedirs(CVS_FOLDER, exist_ok=True)
 
 logger.info("Local storage initialized successfully")
 
@@ -73,6 +75,11 @@ def upload_professional_photo(file):
 def upload_gallery_photo(file):
     """Upload a gallery photo to uploads/gallery/"""
     return upload_file(file, GALLERY_FOLDER)
+
+
+def upload_cv(file):
+    """Upload a CV/curriculum file to uploads/cvs/"""
+    return upload_file(file, CVS_FOLDER)
 
 
 def download_file(storage_key):
