@@ -448,6 +448,55 @@ def excluir_artefato(id):
     return redirect(url_for('catalogacao'))
 
 
+@app.route('/api/artefato/<int:id>')
+@login_required
+def api_artefato_detalhes(id):
+    """API endpoint to get artifact details for modal display."""
+    try:
+        artifact = Artifact.query.get_or_404(id)
+        
+        photo_url = None
+        if artifact.photo_path:
+            photo_url = url_for('serve_storage_file', file_path=artifact.photo_path)
+        
+        model_3d_url = None
+        if artifact.model_3d_path:
+            model_3d_url = url_for('serve_storage_file', file_path=artifact.model_3d_path)
+        
+        iphan_form_url = None
+        if artifact.iphan_form_path:
+            iphan_form_url = url_for('serve_storage_file', file_path=artifact.iphan_form_path)
+        
+        return jsonify({
+            'success': True,
+            'artifact': {
+                'id': artifact.id,
+                'name': artifact.name,
+                'code': artifact.code,
+                'qr_code': artifact.qr_code,
+                'discovery_date': artifact.discovery_date.strftime('%d/%m/%Y') if artifact.discovery_date else None,
+                'origin_location': artifact.origin_location,
+                'artifact_type': artifact.artifact_type,
+                'conservation_state': artifact.conservation_state,
+                'depth': artifact.depth,
+                'level': artifact.level,
+                'coordinates': artifact.coordinates,
+                'observations': artifact.observations,
+                'photo_url': photo_url,
+                'model_3d_url': model_3d_url,
+                'iphan_form_url': iphan_form_url,
+                'cataloged_by': artifact.cataloged_by.username if artifact.cataloged_by else 'N/A',
+                'created_at': artifact.created_at.strftime('%d/%m/%Y %H:%M') if artifact.created_at else None
+            }
+        })
+    except Exception as e:
+        current_app.logger.error(f'Error getting artifact details: {str(e)}')
+        return jsonify({
+            'success': False,
+            'error': 'Erro ao carregar detalhes do artefato.'
+        }), 500
+
+
 @app.route('/acervo')
 @login_required
 def acervo():
