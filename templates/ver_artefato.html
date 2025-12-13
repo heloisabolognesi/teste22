@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ artifact.name }} - L.A.A.R.I</title>
+    
+    <link rel="icon" type="image/x-icon" href="{{ url_for('static', filename='Logo TE Roxo e Verde.ico') }}">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Kelly+Slab&display=swap" rel="stylesheet">
+    <link href="{{ url_for('static', filename='css/style.css') }}" rel="stylesheet">
+</head>
+<body class="bg-light">
+    <nav class="navbar navbar-dark bg-archaeological">
+        <div class="container">
+            <a class="navbar-brand fw-bold" href="{{ url_for('index') }}">
+                <i class="fas fa-university me-2"></i>L.A.A.R.I
+            </a>
+            <span class="navbar-text text-white">
+                Laboratório e Acervo Arqueológico Remoto Integrado
+            </span>
+        </div>
+    </nav>
+
+    <div class="container py-5">
+        <div class="row justify-content-center">
+            <div class="col-lg-10">
+                <div class="card shadow-lg border-0">
+                    <div class="card-header bg-archaeological text-white py-3">
+                        <h2 class="mb-0">
+                            <i class="fas fa-monument me-2"></i>{{ artifact.name }}
+                        </h2>
+                    </div>
+                    
+                    <div class="card-body p-4">
+                        <div class="row">
+                            <div class="col-md-6">
+                                {% if photo_url %}
+                                <div class="mb-4">
+                                    <img src="{{ photo_url }}" alt="{{ artifact.name }}" class="img-fluid rounded shadow" style="max-height: 400px; width: 100%; object-fit: cover;">
+                                </div>
+                                {% else %}
+                                <div class="mb-4 d-flex align-items-center justify-content-center bg-light rounded" style="height: 300px;">
+                                    <div class="text-center text-muted">
+                                        <i class="fas fa-image fa-4x mb-3"></i>
+                                        <p>Sem foto disponível</p>
+                                    </div>
+                                </div>
+                                {% endif %}
+                                
+                                {% if qr_code_image_url %}
+                                <div class="text-center mb-4">
+                                    <h5 class="text-muted mb-3"><i class="fas fa-qrcode me-2"></i>QR Code</h5>
+                                    <img src="{{ qr_code_image_url }}" alt="QR Code" class="img-fluid" style="max-width: 150px; border: 1px solid #ddd; border-radius: 8px; padding: 10px; background: white;">
+                                    <p class="small text-muted mt-2 font-monospace">{{ artifact.qr_code }}</p>
+                                </div>
+                                {% endif %}
+                            </div>
+                            
+                            <div class="col-md-6">
+                                <table class="table table-borderless">
+                                    <tr>
+                                        <th class="text-muted" style="width: 40%">
+                                            <i class="fas fa-barcode me-2"></i>Código
+                                        </th>
+                                        <td>
+                                            <span class="badge bg-secondary font-monospace">{{ artifact.code or 'N/A' }}</span>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <th class="text-muted">
+                                            <i class="fas fa-layer-group me-2"></i>Tipo
+                                        </th>
+                                        <td>{{ artifact.artifact_type|capitalize if artifact.artifact_type else 'N/A' }}</td>
+                                    </tr>
+                                    <tr>
+                                        <th class="text-muted">
+                                            <i class="fas fa-heart-pulse me-2"></i>Estado de Conservação
+                                        </th>
+                                        <td>
+                                            {% if artifact.conservation_state == 'excelente' %}
+                                            <span class="badge bg-success">Excelente</span>
+                                            {% elif artifact.conservation_state == 'bom' %}
+                                            <span class="badge bg-info">Bom</span>
+                                            {% elif artifact.conservation_state == 'regular' %}
+                                            <span class="badge bg-warning">Regular</span>
+                                            {% elif artifact.conservation_state == 'ruim' %}
+                                            <span class="badge bg-danger">Ruim</span>
+                                            {% elif artifact.conservation_state == 'pessimo' %}
+                                            <span class="badge bg-dark">Péssimo</span>
+                                            {% else %}
+                                            <span class="badge bg-secondary">N/A</span>
+                                            {% endif %}
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <th class="text-muted">
+                                            <i class="fas fa-map-marker-alt me-2"></i>Local de Origem
+                                        </th>
+                                        <td>{{ artifact.origin_location or 'N/A' }}</td>
+                                    </tr>
+                                    <tr>
+                                        <th class="text-muted">
+                                            <i class="fas fa-calendar me-2"></i>Data de Descoberta
+                                        </th>
+                                        <td>{{ artifact.discovery_date.strftime('%d/%m/%Y') if artifact.discovery_date else 'N/A' }}</td>
+                                    </tr>
+                                    <tr>
+                                        <th class="text-muted">
+                                            <i class="fas fa-ruler-vertical me-2"></i>Profundidade
+                                        </th>
+                                        <td>{{ artifact.depth or 'N/A' }}</td>
+                                    </tr>
+                                    <tr>
+                                        <th class="text-muted">
+                                            <i class="fas fa-layer-group me-2"></i>Nível Estratigráfico
+                                        </th>
+                                        <td>{{ artifact.level or 'N/A' }}</td>
+                                    </tr>
+                                    <tr>
+                                        <th class="text-muted">
+                                            <i class="fas fa-crosshairs me-2"></i>Coordenadas
+                                        </th>
+                                        <td>{{ artifact.coordinates or 'N/A' }}</td>
+                                    </tr>
+                                </table>
+                                
+                                {% if artifact.observations %}
+                                <div class="mt-4 p-3 bg-light rounded">
+                                    <h6 class="text-muted mb-2">
+                                        <i class="fas fa-sticky-note me-2"></i>Observações
+                                    </h6>
+                                    <p class="mb-0">{{ artifact.observations }}</p>
+                                </div>
+                                {% endif %}
+                                
+                                {% if model_3d_url %}
+                                <div class="mt-4">
+                                    <a href="{{ model_3d_url }}" target="_blank" class="btn btn-archaeological">
+                                        <i class="fas fa-cube me-2"></i>Ver Modelo 3D
+                                    </a>
+                                </div>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="card-footer bg-light py-3">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <small class="text-muted">
+                                <i class="fas fa-user me-1"></i>
+                                Catalogado por: {{ artifact.cataloged_by.username if artifact.cataloged_by else 'N/A' }}
+                            </small>
+                            <small class="text-muted">
+                                <i class="fas fa-clock me-1"></i>
+                                {{ artifact.created_at.strftime('%d/%m/%Y %H:%M') if artifact.created_at else 'N/A' }}
+                            </small>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="text-center mt-4">
+                    <a href="{{ url_for('index') }}" class="btn btn-outline-archaeological">
+                        <i class="fas fa-home me-2"></i>Página Inicial
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <footer class="bg-archaeological text-white py-4 mt-5">
+        <div class="container text-center">
+            <p class="mb-0">&copy; 2025 L.A.A.R.I - Integrated Remote Archaeological Laboratory and Collection</p>
+        </div>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

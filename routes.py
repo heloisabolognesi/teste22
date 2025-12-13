@@ -331,9 +331,10 @@ def catalogar_novo():
         db.session.add(artifact)
         db.session.commit()
         
-        # Generate QR code image after artifact is saved (to get the ID)
+        # Generate QR code image with URL after artifact is saved (to get the ID)
         if artifact.qr_code:
-            qr_image_path = generate_qr_code_image(artifact.qr_code, artifact.id)
+            artifact_url = url_for('ver_artefato', id=artifact.id, _external=True)
+            qr_image_path = generate_qr_code_image(artifact_url, artifact.id)
             if qr_image_path:
                 artifact.qr_code_image_path = qr_image_path
                 db.session.commit()
@@ -510,6 +511,30 @@ def api_artefato_detalhes(id):
         }), 500
 
 
+@app.route('/artefato/<int:id>')
+def ver_artefato(id):
+    """Public page to view artifact details (accessed via QR code)."""
+    artifact = Artifact.query.get_or_404(id)
+    
+    photo_url = None
+    if artifact.photo_path:
+        photo_url = url_for('serve_storage_file', file_path=artifact.photo_path)
+    
+    model_3d_url = None
+    if artifact.model_3d_path:
+        model_3d_url = url_for('serve_storage_file', file_path=artifact.model_3d_path)
+    
+    qr_code_image_url = None
+    if artifact.qr_code_image_path:
+        qr_code_image_url = url_for('serve_storage_file', file_path=artifact.qr_code_image_path)
+    
+    return render_template('ver_artefato.html', 
+                           artifact=artifact, 
+                           photo_url=photo_url, 
+                           model_3d_url=model_3d_url,
+                           qr_code_image_url=qr_code_image_url)
+
+
 @app.route('/acervo')
 @login_required
 def acervo():
@@ -529,11 +554,12 @@ def regenerar_qrcodes():
     regenerated = 0
     
     for artifact in artifacts:
-        if not artifact.qr_code_image_path or not file_exists(artifact.qr_code_image_path):
-            qr_image_path = generate_qr_code_image(artifact.qr_code, artifact.id)
-            if qr_image_path:
-                artifact.qr_code_image_path = qr_image_path
-                regenerated += 1
+        # Always regenerate with URL to ensure QR codes contain valid links
+        artifact_url = url_for('ver_artefato', id=artifact.id, _external=True)
+        qr_image_path = generate_qr_code_image(artifact_url, artifact.id)
+        if qr_image_path:
+            artifact.qr_code_image_path = qr_image_path
+            regenerated += 1
     
     db.session.commit()
     flash(f'{regenerated} QR codes foram regenerados com sucesso!', 'success')
