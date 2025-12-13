@@ -292,13 +292,23 @@ h1, h2, h3, h4, h5, h6 {
     color: var(--archaeological-beige) !important;
 }
 
-/* Login Page Styles */
-.login-page-container {
-    min-height: calc(100vh - 200px);
+/* Login Page Styles - Isolated to login page only */
+.login-page-wrapper {
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+}
+
+.login-page-wrapper .login-content {
+    flex: 1;
     display: flex;
     align-items: center;
     justify-content: center;
     padding: 2rem 0;
+}
+
+.login-page-wrapper .login-footer {
+    margin-top: auto;
 }
 
 /* Welcome Page Styles */
