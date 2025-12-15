@@ -84,49 +84,52 @@
                     </div>
                     {% endif %}
                 </div>
-                
-                {% if current_user.is_admin %}
-                <div class="modal fade" id="deleteProfModal{{ professional.id }}" tabindex="-1" aria-hidden="true">
-                    <div class="modal-dialog modal-dialog-centered">
-                        <div class="modal-content">
-                            <div class="modal-header bg-danger text-white">
-                                <h5 class="modal-title">
-                                    <i class="fas fa-exclamation-triangle me-2"></i>
-                                    <span data-i18n="delete_confirm_title">Confirmar Exclusão</span>
-                                </h5>
-                                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
-                            </div>
-                            <div class="modal-body">
-                                <p data-i18n="prof_delete_confirm_message">Tem certeza que deseja excluir este profissional?</p>
-                                <p class="fw-bold text-center mb-2">{{ professional.name }}</p>
-                                {% if professional.specialization %}
-                                <p class="text-center text-muted small mb-3">{{ professional.specialization }}</p>
-                                {% endif %}
-                                <div class="alert alert-warning small mb-0">
-                                    <i class="fas fa-exclamation-circle me-2"></i>
-                                    <span data-i18n="prof_delete_warning">Esta ação não pode ser desfeita. Todos os dados do profissional serão permanentemente removidos.</span>
-                                </div>
-                            </div>
-                            <div class="modal-footer">
-                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
-                                    <i class="fas fa-times me-1"></i><span data-i18n="btn_cancel">Cancelar</span>
-                                </button>
-                                <form action="{{ url_for('excluir_profissional', id=professional.id) }}" method="POST" class="d-inline">
-                                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
-                                    <button type="submit" class="btn btn-danger">
-                                        <i class="fas fa-trash me-1"></i><span data-i18n="btn_confirm_delete">Sim, Excluir</span>
-                                    </button>
-                                </form>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                {% endif %}
             </div>
         </div>
         {% endfor %}
     </div>
 </div>
+
+<!-- Delete Confirmation Modals - Outside of cards for proper z-index -->
+{% if current_user.is_admin %}
+{% for professional in professionals %}
+<div class="modal fade" id="deleteProfModal{{ professional.id }}" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header bg-danger text-white">
+                <h5 class="modal-title">
+                    <i class="fas fa-exclamation-triangle me-2"></i>
+                    <span data-i18n="delete_confirm_title">Confirmar Exclusão</span>
+                </h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <p data-i18n="prof_delete_confirm_message">Tem certeza que deseja excluir este profissional?</p>
+                <p class="fw-bold text-center mb-2">{{ professional.name }}</p>
+                {% if professional.specialization %}
+                <p class="text-center text-muted small mb-3">{{ professional.specialization }}</p>
+                {% endif %}
+                <div class="alert alert-warning small mb-0">
+                    <i class="fas fa-exclamation-circle me-2"></i>
+                    <span data-i18n="prof_delete_warning">Esta ação não pode ser desfeita. Todos os dados do profissional serão permanentemente removidos.</span>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                    <i class="fas fa-times me-1"></i><span data-i18n="btn_cancel">Cancelar</span>
+                </button>
+                <form action="{{ url_for('excluir_profissional', id=professional.id) }}" method="POST" class="d-inline">
+                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                    <button type="submit" class="btn btn-danger">
+                        <i class="fas fa-trash me-1"></i><span data-i18n="btn_confirm_delete">Sim, Excluir</span>
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endfor %}
+{% endif %}
 
 <!-- Specializations Summary -->
 <div class="specializations-summary mt-5">

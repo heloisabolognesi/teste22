@@ -677,6 +677,8 @@ def editar_profissional(id):
 @login_required
 def excluir_profissional(id):
     """Delete a professional. Only admin can delete."""
+    from storage import delete_file
+    
     # Check if user is admin
     if not current_user.is_admin:
         lang = session.get('language', 'pt')
@@ -691,10 +693,20 @@ def excluir_profissional(id):
     
     professional = Professional.query.get_or_404(id)
     professional_name = professional.name
+    profile_photo_path = professional.profile_photo
     
     try:
+        # Delete the professional record
         db.session.delete(professional)
         db.session.commit()
+        
+        # Delete associated profile photo file if it exists
+        if profile_photo_path:
+            try:
+                delete_file(profile_photo_path)
+                current_app.logger.info(f'Deleted profile photo: {profile_photo_path}')
+            except Exception as file_err:
+                current_app.logger.warning(f'Could not delete profile photo {profile_photo_path}: {str(file_err)}')
         
         lang = session.get('language', 'pt')
         messages = {
