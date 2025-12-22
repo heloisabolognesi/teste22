@@ -972,6 +972,40 @@ def view_3d_model(scan_id):
     
     return render_template('view_3d_model.html', scan=scan)
 
+@app.route('/delete_3d_scan/<int:scan_id>', methods=['POST'])
+@login_required
+def delete_3d_scan(scan_id):
+    """Delete a 3D scan record."""
+    scan = Scanner3D.query.get_or_404(scan_id)
+    
+    # Permission check: admin or the user who generated/created the scan
+    can_delete = current_user.is_admin
+    if scan.generated_by_user_id:
+        can_delete = can_delete or (scan.generated_by_user_id == current_user.id)
+    if scan.artifact and scan.artifact.user_id:
+        can_delete = can_delete or (scan.artifact.user_id == current_user.id)
+    
+    if not can_delete:
+        flash('Você não tem permissão para excluir este registro.', 'error')
+        return redirect(url_for('scanner_3d'))
+    
+    # Delete from Cloudinary if it's a cloud file
+    if scan.file_path and scan.file_path.startswith('http') and 'cloudinary' in scan.file_path:
+        try:
+            import cloudinary.uploader
+            # Extract public_id from URL
+            public_id = scan.file_path.split('/')[-1].rsplit('.', 1)[0]
+            cloudinary.uploader.destroy(f"laari/3d_models/{public_id}", resource_type='raw')
+        except Exception as e:
+            current_app.logger.warning(f"Could not delete file from Cloudinary: {e}")
+    
+    artifact_name = scan.artifact.name if scan.artifact else 'Desconhecido'
+    db.session.delete(scan)
+    db.session.commit()
+    
+    flash(f'Registro 3D do artefato "{artifact_name}" excluído com sucesso.', 'success')
+    return redirect(url_for('scanner_3d'))
+
 @app.route('/transporte', methods=['GET', 'POST'])
 @login_required
 def transporte():
