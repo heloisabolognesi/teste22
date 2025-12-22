@@ -49,27 +49,51 @@ def generate_3d_from_image(image_url, artifact_id=None):
         logger.error(f"Hugging Face exception: {str(e)}")
         return {'success': False, 'error': str(e)}
 
-def download_image_to_temp(image_url):
-    """Download image from URL to a temporary file."""
+def download_image_to_temp(image_url_or_path):
+    """Download image from URL or read from local file to a temporary file."""
     try:
-        response = requests.get(image_url, timeout=60)
-        if response.status_code != 200:
-            return None, f"Erro ao baixar imagem: {response.status_code}"
-        
-        content_type = response.headers.get('content-type', 'image/jpeg')
-        if 'png' in content_type.lower():
-            ext = '.png'
-        elif 'gif' in content_type.lower():
-            ext = '.gif'
+        if image_url_or_path.startswith('http://') or image_url_or_path.startswith('https://'):
+            response = requests.get(image_url_or_path, timeout=60)
+            if response.status_code != 200:
+                return None, f"Erro ao baixar imagem: {response.status_code}"
+            
+            content_type = response.headers.get('content-type', 'image/jpeg')
+            if 'png' in content_type.lower():
+                ext = '.png'
+            elif 'gif' in content_type.lower():
+                ext = '.gif'
+            else:
+                ext = '.jpg'
+            
+            with tempfile.NamedTemporaryFile(delete=False, suffix=ext) as tmp_file:
+                tmp_file.write(response.content)
+                return tmp_file.name, None
         else:
-            ext = '.jpg'
-        
-        with tempfile.NamedTemporaryFile(delete=False, suffix=ext) as tmp_file:
-            tmp_file.write(response.content)
-            return tmp_file.name, None
+            local_path = image_url_or_path
+            if local_path.startswith('/'):
+                local_path = local_path[1:]
+            
+            if os.path.exists(local_path):
+                file_path = local_path
+            elif os.path.exists(f"static/{local_path}"):
+                file_path = f"static/{local_path}"
+            elif os.path.exists(local_path.replace('uploads/', '')):
+                file_path = local_path.replace('uploads/', '')
+            else:
+                logger.error(f"Local file not found: {local_path}")
+                return None, f"Arquivo de imagem não encontrado: {local_path}"
+            
+            ext = os.path.splitext(file_path)[1] or '.jpg'
+            
+            with open(file_path, 'rb') as f:
+                image_data = f.read()
+            
+            with tempfile.NamedTemporaryFile(delete=False, suffix=ext) as tmp_file:
+                tmp_file.write(image_data)
+                return tmp_file.name, None
             
     except Exception as e:
-        logger.error(f"Error downloading image: {str(e)}")
+        logger.error(f"Error downloading/reading image: {str(e)}")
         return None, str(e)
 
 def extract_model_from_zip(zip_path, artifact_id):

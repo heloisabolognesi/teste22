@@ -872,23 +872,16 @@ def generate_3d_ai(artifact_id):
         flash('Sistema de geração 3D por IA não está configurado. Configure o token da Hugging Face.', 'error')
         return redirect(url_for('gerar_3d_ia'))
     
-    # Get the image URL - must be publicly accessible for AI processing
+    # Get the image path - can be Cloudinary URL or local path
     photo_path = artifact.photo_path
     if photo_path.startswith('http'):
         # Already a Cloudinary or external URL
         image_url = photo_path
+        current_app.logger.info(f"Using Cloudinary URL for AI: {image_url}")
     else:
-        # Local file - AI requires a public URL
-        from flask import request
-        host_url = request.host_url.rstrip('/')
-        
-        # Construct a publicly accessible URL for the image
-        if photo_path.startswith('uploads/'):
-            image_url = f"{host_url}/{photo_path}"
-        else:
-            image_url = f"{host_url}/uploads/{photo_path}"
-        
-        current_app.logger.info(f"Using public URL for AI: {image_url}")
+        # Local file - pass the path directly, the AI module will read it
+        image_url = photo_path
+        current_app.logger.info(f"Using local path for AI: {image_url}")
     
     # Create a tracking record first
     import uuid
