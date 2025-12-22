@@ -10,7 +10,7 @@ logger = logging.getLogger(__name__)
 
 HUGGINGFACE_API_TOKEN = os.environ.get('HUGGINGFACE_API_TOKEN')
 
-SPACE_ID = "TencentARC/InstantMesh"
+SPACE_ID = "trellis-community/TRELLIS"
 
 def is_ai_configured():
     """Check if Hugging Face AI is properly configured."""
@@ -96,37 +96,11 @@ def download_image_to_temp(image_url_or_path):
         logger.error(f"Error downloading/reading image: {str(e)}")
         return None, str(e)
 
-def extract_model_from_zip(zip_path, artifact_id):
-    """Extract 3D model file from ZIP archive."""
-    try:
-        with tempfile.TemporaryDirectory() as tmp_dir:
-            with zipfile.ZipFile(zip_path, 'r') as zip_ref:
-                zip_ref.extractall(tmp_dir)
-            
-            model_extensions = ['.glb', '.obj', '.gltf', '.ply']
-            
-            for root, dirs, files in os.walk(tmp_dir):
-                for file in files:
-                    for ext in model_extensions:
-                        if file.lower().endswith(ext):
-                            file_path = os.path.join(root, file)
-                            with open(file_path, 'rb') as f:
-                                model_data = f.read()
-                            return model_data, ext.lstrip('.')
-            
-            return None, None
-    except Exception as e:
-        logger.error(f"Error extracting model from ZIP: {str(e)}")
-        return None, None
-
 def process_3d_generation(image_url, artifact_id):
     """
     Process the actual 3D model generation using Hugging Face Spaces.
     
-    Uses the TencentARC/InstantMesh Space with the correct API flow:
-    1. /preprocess - Clean and prepare the image
-    2. /generate_mvs - Generate multiview images
-    3. /make3d - Generate the final 3D model
+    Uses the TRELLIS Space for image-to-3D generation.
     
     Args:
         image_url: URL of the image to convert
@@ -149,94 +123,43 @@ def process_3d_generation(image_url, artifact_id):
         
         client = Client(SPACE_ID, token=HUGGINGFACE_API_TOKEN)
         
-        logger.info("Step 1: Preprocessing image (removing background)...")
-        preprocess_result = client.predict(
-            input_image=handle_file(temp_image_path),
-            do_remove_background=True,
-            erode_kernel=3,
-            dilate_iteration=1,
-            api_name="/preprocess"
-        )
-        logger.info(f"Preprocess completed. Result: {type(preprocess_result)}")
+        logger.info("Starting 3D generation with TRELLIS...")
         
-        if isinstance(preprocess_result, tuple):
-            processed_image = preprocess_result[0]
-        else:
-            processed_image = preprocess_result
+        result = client.predict(
+            image=handle_file(temp_image_path),
+            multiimages=[],
+            seed=42,
+            ss_guidance_strength=7.5,
+            ss_sampling_steps=12,
+            slat_guidance_strength=3.0,
+            slat_sampling_steps=12,
+            multiimage_algo="stochastic",
+            mesh_simplify=0.95,
+            texture_size=1024,
+            api_name="/generate_and_extract_glb"
+        )
+        
+        logger.info(f"TRELLIS result: {type(result)}, {result}")
+        
+        glb_file = None
+        if isinstance(result, tuple) and len(result) >= 3:
+            glb_file = result[2]
+        elif isinstance(result, tuple) and len(result) >= 2:
+            glb_file = result[1]
+        elif isinstance(result, str):
+            glb_file = result
+        
+        if glb_file:
+            if isinstance(glb_file, dict) and 'path' in glb_file:
+                glb_file = glb_file['path']
             
-        if isinstance(processed_image, dict) and 'path' in processed_image:
-            processed_image_path = processed_image['path']
-        elif isinstance(processed_image, str):
-            processed_image_path = processed_image
-        else:
-            logger.error(f"Unexpected preprocess result format: {processed_image}")
-            return {'success': False, 'error': 'Erro no pré-processamento da imagem.'}
-        
-        logger.info("Step 2: Generating multiview images...")
-        mvs_result = client.predict(
-            image=handle_file(processed_image_path),
-            sample_steps=75,
-            sample_seed=42,
-            camera_distance_ratio=1.5,
-            elevation_deg=20,
-            api_name="/generate_mvs"
-        )
-        logger.info(f"Multiview generation completed. Result type: {type(mvs_result)}")
-        
-        if isinstance(mvs_result, tuple):
-            mvs_file = mvs_result[0]
-        else:
-            mvs_file = mvs_result
-            
-        if isinstance(mvs_file, dict) and 'path' in mvs_file:
-            mvs_file_path = mvs_file['path']
-        elif isinstance(mvs_file, str):
-            mvs_file_path = mvs_file
-        else:
-            logger.error(f"Unexpected MVS result format: {mvs_file}")
-            return {'success': False, 'error': 'Erro na geração de visualizações múltiplas.'}
-        
-        logger.info("Step 3: Generating 3D model...")
-        model_result = client.predict(
-            mvs_result=handle_file(mvs_file_path),
-            mesh_simplify_ratio=0.95,
-            api_name="/make3d"
-        )
-        logger.info(f"3D model generation completed. Result: {type(model_result)}")
-        
-        model_file = None
-        if isinstance(model_result, tuple):
-            for item in model_result:
-                if isinstance(item, str) and (item.endswith('.glb') or item.endswith('.obj') or item.endswith('.zip')):
-                    model_file = item
-                    break
-                elif isinstance(item, dict) and 'path' in item:
-                    model_file = item['path']
-                    break
-            if not model_file and len(model_result) > 0:
-                model_file = model_result[1] if len(model_result) > 1 else model_result[0]
-        elif isinstance(model_result, dict) and 'path' in model_result:
-            model_file = model_result['path']
-        elif isinstance(model_result, str):
-            model_file = model_result
-        
-        if model_file:
-            if isinstance(model_file, dict) and 'path' in model_file:
-                model_file = model_file['path']
-                
-            if model_file.endswith('.zip'):
-                model_data, file_ext = extract_model_from_zip(model_file, artifact_id)
-                if model_data:
-                    return store_model_data(model_data, artifact_id, file_ext)
-                else:
-                    return {'success': False, 'error': 'Não foi possível extrair o modelo 3D do arquivo.'}
-            elif os.path.exists(model_file):
-                with open(model_file, 'rb') as f:
+            if os.path.exists(glb_file):
+                with open(glb_file, 'rb') as f:
                     model_data = f.read()
                 
-                file_ext = 'glb' if model_file.endswith('.glb') else 'obj'
-                return store_model_data(model_data, artifact_id, file_ext)
+                return store_model_data(model_data, artifact_id, 'glb')
             else:
+                logger.error(f"GLB file not found: {glb_file}")
                 return {'success': False, 'error': 'Arquivo do modelo 3D não encontrado.'}
         
         return {
@@ -269,13 +192,19 @@ def process_3d_generation(image_url, artifact_id):
         elif 'exceeded your gpu quota' in error_str:
             return {
                 'success': False,
-                'error': 'Cota de GPU excedida. Tente novamente mais tarde ou atualize para PRO.',
+                'error': 'Cota de GPU excedida. Tente novamente mais tarde.',
+                'retry': True
+            }
+        elif 'runtime_error' in error_str or 'invalid state' in error_str:
+            return {
+                'success': False,
+                'error': 'O serviço de IA está temporariamente indisponível. Tente novamente mais tarde.',
                 'retry': True
             }
         else:
             return {
                 'success': False,
-                'error': f'A geração 3D depende de serviços externos de IA e pode estar temporariamente indisponível.'
+                'error': f'A geração 3D depende de serviços externos de IA e pode estar temporariamente indisponível. Detalhes: {str(e)[:150]}'
             }
     finally:
         if temp_image_path and os.path.exists(temp_image_path):
