@@ -416,6 +416,39 @@ def inject_conf_vars():
         'ngettext': ngettext
     }
 
+# Template filter to get proper image URL
+@app.template_filter('image_url')
+def image_url_filter(path, default='/static/images/default-placeholder.svg'):
+    """
+    Convert storage path/URL to a displayable image URL.
+    Handles both Cloudinary URLs and local file paths.
+    """
+    if not path:
+        return default
+    
+    # If it's already a full URL (Cloudinary), return as-is
+    if path.startswith('http://') or path.startswith('https://'):
+        return path
+    
+    # If it's a relative local path starting with 'uploads/', serve it
+    if path.startswith('uploads/'):
+        return f'/{path}'
+    
+    # For any other path, try to serve through storage route
+    # But don't expose absolute paths - only allow relative paths
+    if not path.startswith('/') and os.path.exists(path):
+        return f'/{path}'
+    
+    # For legacy paths that might be stored incorrectly, try to extract filename
+    if '/' in path:
+        filename = path.split('/')[-1]
+        for folder in ['uploads/profiles', 'uploads/photos', 'uploads/gallery', 'uploads/equipe', 'uploads/artefatos']:
+            potential_path = f'{folder}/{filename}'
+            if os.path.exists(potential_path):
+                return f'/{potential_path}'
+    
+    return default
+
 @login_manager.user_loader
 def load_user(user_id):
     from models import User

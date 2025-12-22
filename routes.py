@@ -306,25 +306,28 @@ def catalogar_novo():
         
         # Handle photo upload
         if form.photo.data:
-            photo_path = save_uploaded_file(form.photo.data, 'uploads/photos')
-            if photo_path:
-                artifact.photo_path = photo_path
+            from storage import upload_artifact_photo
+            photo_url = upload_artifact_photo(form.photo.data)
+            if photo_url:
+                artifact.photo_path = photo_url
             else:
                 flash('Erro ao fazer upload da foto. Tente novamente.', 'warning')
         
         # Handle 3D model upload
         if form.model_3d.data:
-            model_path = save_uploaded_file(form.model_3d.data, 'uploads/3d_models')
-            if model_path:
-                artifact.model_3d_path = model_path
+            from storage import upload_file
+            model_url = upload_file(form.model_3d.data, 'uploads/3d_models')
+            if model_url:
+                artifact.model_3d_path = model_url
             else:
                 flash('Erro ao fazer upload do modelo 3D. Tente novamente.', 'warning')
         
         # Handle IPHAN form upload
         if form.iphan_form.data:
-            iphan_path = save_uploaded_file(form.iphan_form.data, 'uploads/iphan_forms')
-            if iphan_path:
-                artifact.iphan_form_path = iphan_path
+            from storage import upload_file
+            iphan_url = upload_file(form.iphan_form.data, 'uploads/iphan_forms')
+            if iphan_url:
+                artifact.iphan_form_path = iphan_url
             else:
                 flash('Erro ao fazer upload da ficha IPHAN. Tente novamente.', 'warning')
         
@@ -379,21 +382,30 @@ def editar_artefato(id):
         
         # Handle new photo upload
         if form.photo.data:
-            photo_path = save_uploaded_file(form.photo.data, 'uploads/photos')
-            if photo_path:
-                artifact.photo_path = photo_path
+            from storage import upload_artifact_photo, delete_file
+            if artifact.photo_path:
+                delete_file(artifact.photo_path)
+            photo_url = upload_artifact_photo(form.photo.data)
+            if photo_url:
+                artifact.photo_path = photo_url
         
         # Handle new 3D model upload
         if form.model_3d.data:
-            model_path = save_uploaded_file(form.model_3d.data, 'uploads/3d_models')
-            if model_path:
-                artifact.model_3d_path = model_path
+            from storage import upload_file, delete_file
+            if artifact.model_3d_path:
+                delete_file(artifact.model_3d_path)
+            model_url = upload_file(form.model_3d.data, 'uploads/3d_models')
+            if model_url:
+                artifact.model_3d_path = model_url
         
         # Handle new IPHAN form upload
         if form.iphan_form.data:
-            iphan_path = save_uploaded_file(form.iphan_form.data, 'uploads/iphan_forms')
-            if iphan_path:
-                artifact.iphan_form_path = iphan_path
+            from storage import upload_file, delete_file
+            if artifact.iphan_form_path:
+                delete_file(artifact.iphan_form_path)
+            iphan_url = upload_file(form.iphan_form.data, 'uploads/iphan_forms')
+            if iphan_url:
+                artifact.iphan_form_path = iphan_url
         
         db.session.commit()
         
@@ -601,9 +613,10 @@ def adicionar_profissional():
         
         # Handle profile photo upload
         if form.profile_photo.data:
-            photo_path = save_uploaded_file(form.profile_photo.data, 'uploads/profiles')
-            if photo_path:
-                professional.profile_photo = photo_path
+            from storage import upload_professional_photo
+            photo_url = upload_professional_photo(form.profile_photo.data)
+            if photo_url:
+                professional.profile_photo = photo_url
             else:
                 flash('Erro ao fazer upload da foto de perfil. Tente novamente.', 'warning')
         
@@ -654,9 +667,13 @@ def editar_profissional(id):
         
         # Handle new photo upload
         if form.profile_photo.data:
-            photo_path = save_uploaded_file(form.profile_photo.data, 'uploads/profiles')
-            if photo_path:
-                professional.profile_photo = photo_path
+            from storage import upload_professional_photo, delete_file
+            # Delete old photo if exists
+            if professional.profile_photo:
+                delete_file(professional.profile_photo)
+            photo_url = upload_professional_photo(form.profile_photo.data)
+            if photo_url:
+                professional.profile_photo = photo_url
         
         db.session.commit()
         
@@ -1093,9 +1110,10 @@ def admin_galeria():
         
         # Handle image upload
         if form.image.data:
-            image_path = save_uploaded_file(form.image.data, 'uploads/gallery')
-            if image_path:
-                photo.image_path = image_path
+            from storage import upload_gallery_photo
+            image_url = upload_gallery_photo(form.image.data)
+            if image_url:
+                photo.image_path = image_url
                 db.session.add(photo)
                 db.session.commit()
                 flash('Foto adicionada à galeria com sucesso!', 'success')
@@ -1131,8 +1149,9 @@ def delete_photo(photo_id):
     photo = PhotoGallery.query.get_or_404(photo_id)
     
     # Delete the image file if it exists
-    if photo.image_path and os.path.exists(photo.image_path):
-        os.remove(photo.image_path)
+    if photo.image_path:
+        from storage import delete_file
+        delete_file(photo.image_path)
     
     db.session.delete(photo)
     db.session.commit()
@@ -1180,9 +1199,10 @@ def upload_team_photo():
             current_app.logger.error('Upload de foto da equipe falhou: arquivo vazio')
             return jsonify({'success': False, 'error': 'Arquivo vazio. Por favor, selecione uma imagem válida.'}), 400
         
-        image_path = save_uploaded_file(image, 'uploads/gallery')
+        from storage import upload_gallery_photo
+        image_url = upload_gallery_photo(image)
         
-        if not image_path:
+        if not image_url:
             current_app.logger.error(f'Upload de foto da equipe falhou: erro ao salvar arquivo {image.filename}')
             return jsonify({'success': False, 'error': 'Erro ao fazer upload da imagem. Tente novamente.'}), 500
         
@@ -1192,7 +1212,7 @@ def upload_team_photo():
             category='equipe',
             is_published=True,
             user_id=current_user.id,
-            image_path=image_path
+            image_path=image_url
         )
         
         db.session.add(photo)

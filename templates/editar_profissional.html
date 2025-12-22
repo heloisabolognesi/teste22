@@ -24,10 +24,11 @@
             <div class="card-body p-4">
                 {% if professional.profile_photo %}
                 <div class="mb-4 text-center">
-                    <img src="{{ url_for('serve_storage_file', file_path=professional.profile_photo) }}" 
+                    <img src="{{ professional.profile_photo|image_url }}" 
                          alt="{{ professional.name }}" 
                          class="rounded-circle shadow-sm" 
-                         style="width: 150px; height: 150px; object-fit: cover;">
+                         style="width: 150px; height: 150px; object-fit: cover;"
+                         onerror="this.style.display='none';">
                     <p class="text-muted small mt-2" data-i18n="prof_edit_current_photo">Foto atual do profissional</p>
                 </div>
                 {% endif %}
