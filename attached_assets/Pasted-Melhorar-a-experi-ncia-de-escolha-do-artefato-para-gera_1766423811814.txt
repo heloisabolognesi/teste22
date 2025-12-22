@@ -1,0 +1,104 @@
+Melhorar a experiência de escolha do artefato para geração de modelo 3D por IA, evitando a exibição de todos os artefatos de uma vez e adicionando um sistema de amostra + pesquisa, com foco em tipo de material.
+
+📌 Instruções
+1️⃣ Exibição inicial (amostra)
+
+Na página de Geração de Modelo 3D por IA, não exibir todos os artefatos cadastrados
+
+Mostrar apenas uma amostra limitada (ex: 6 ou 8 artefatos)
+
+Priorizar:
+
+Artefatos mais recentes
+
+Ou mais relevantes (a critério do sistema)
+
+Esses artefatos servem apenas como visualização inicial.
+
+2️⃣ Campo de pesquisa
+
+Adicionar um campo de busca acima da lista de artefatos com:
+
+Placeholder:
+“Pesquisar por nome, código ou tipo de material…”
+
+A pesquisa deve permitir:
+
+Nome do artefato
+
+Código / identificação
+
+Tipo de material (ex: cerâmica, lítico, metal, osso, vidro, etc.)
+
+📌 Não usar o termo “categoria” na interface — apenas Tipo de material.
+
+3️⃣ Comportamento da pesquisa
+
+Conforme o usuário digita:
+
+Filtrar os artefatos dinamicamente
+
+Exibir apenas os resultados correspondentes
+
+A busca deve funcionar por:
+
+Texto completo
+
+Parte do nome do material
+
+Exemplos:
+
+“cer” → artefatos de cerâmica
+
+“metal” → artefatos metálicos
+
+Caso não haja resultados:
+
+Exibir mensagem:
+“Nenhum artefato encontrado.”
+
+4️⃣ Seleção do artefato
+
+O usuário deve selecionar apenas um artefato por vez
+
+Após a seleção:
+
+Exibir claramente o artefato escolhido
+
+Liberar o botão “Gerar modelo 3D (IA)”
+
+5️⃣ Permissões
+
+Apenas administradores ou o usuário que catalogou o artefato podem:
+
+Visualizar a lista
+
+Pesquisar
+
+Selecionar
+
+Gerar o modelo 3D por IA
+
+Usuários sem permissão:
+
+Não visualizam o botão
+
+Ou recebem mensagem de acesso restrito
+
+6️⃣ Performance e organização
+
+Evitar carregar todos os artefatos de uma vez
+
+Utilizar limite de resultados ou paginação, se necessário
+
+Garantir que o layout continue leve e organizado
+
+✅ Resultado esperado
+
+Página mais limpa e rápida
+
+Pesquisa alinhada ao contexto arqueológico
+
+Melhor usabilidade para administradores
+
+Sistema escalável

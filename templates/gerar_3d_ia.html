@@ -118,10 +118,55 @@
     </div>
     <div class="card-body p-4">
         {% if artifacts_with_photos %}
-        <div class="row g-3">
+        <div class="mb-4">
+            <div class="input-group input-group-lg">
+                <span class="input-group-text bg-white border-end-0">
+                    <i class="fas fa-search text-muted"></i>
+                </span>
+                <input type="text" 
+                       id="artifact-search" 
+                       class="form-control border-start-0" 
+                       placeholder="Pesquisar por nome, código ou tipo de material...">
+            </div>
+            <small class="text-muted mt-1 d-block">
+                <i class="fas fa-info-circle me-1"></i>
+                Mostrando amostra inicial. Use a pesquisa para encontrar artefatos específicos.
+            </small>
+        </div>
+        
+        <div id="selected-artifact-container" class="alert alert-success d-none mb-4">
+            <div class="d-flex align-items-center justify-content-between">
+                <div class="d-flex align-items-center">
+                    <img id="selected-artifact-img" src="" alt="" class="artifact-thumbnail me-3">
+                    <div>
+                        <h6 class="mb-1" id="selected-artifact-name"></h6>
+                        <small class="text-muted" id="selected-artifact-code"></small>
+                    </div>
+                </div>
+                <div>
+                    <form id="generate-form" method="POST" class="d-inline">
+                        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                        <button type="submit" class="btn btn-archaeological btn-lg">
+                            <i class="fas fa-magic me-2"></i>Gerar modelo 3D (IA)
+                        </button>
+                    </form>
+                    <button type="button" class="btn btn-outline-secondary ms-2" onclick="clearSelection()">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+        
+        <div id="artifacts-grid" class="row g-3">
             {% for artifact in artifacts_with_photos %}
-            <div class="col-md-4 col-lg-3">
-                <div class="card artifact-select-card border shadow-sm h-100" data-artifact-id="{{ artifact.id }}">
+            <div class="col-md-4 col-lg-3 artifact-item" 
+                 data-name="{{ artifact.name|lower }}" 
+                 data-code="{{ (artifact.qr_code or '')|lower }}" 
+                 data-type="{{ (artifact.artifact_type or '')|lower }}"
+                 data-id="{{ artifact.id }}"
+                 data-photo="{{ artifact.photo_path|image_url }}"
+                 {% if loop.index > 8 %}style="display: none;" data-hidden="true"{% endif %}>
+                <div class="card artifact-select-card border shadow-sm h-100" onclick="selectArtifact(this.closest('.artifact-item'))">
                     <div class="card-body d-flex">
                         <img src="{{ artifact.photo_path|image_url }}" 
                              alt="{{ artifact.name }}" 
@@ -129,20 +174,25 @@
                              onerror="this.src='/static/images/default-placeholder.svg'">
                         <div class="flex-grow-1">
                             <h6 class="mb-1">{{ artifact.name }}</h6>
-                            <small class="text-muted d-block mb-2">{{ artifact.qr_code or 'Sem código' }}</small>
-                            <small class="text-muted d-block">{{ artifact.artifact_type or '' }}</small>
-                            
-                            <form action="{{ url_for('generate_3d_ai', artifact_id=artifact.id) }}" method="POST" class="mt-2">
-                                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
-                                <button type="submit" class="btn btn-sm btn-archaeological">
-                                    <i class="fas fa-magic me-1"></i>Gerar 3D
-                                </button>
-                            </form>
+                            <small class="text-muted d-block mb-1">{{ artifact.qr_code or 'Sem código' }}</small>
+                            <small class="text-archaeological d-block"><i class="fas fa-tag me-1"></i>{{ artifact.artifact_type or 'Não especificado' }}</small>
                         </div>
                     </div>
                 </div>
             </div>
             {% endfor %}
+        </div>
+        
+        <div id="no-results" class="text-center py-4 d-none">
+            <i class="fas fa-search fa-3x text-muted mb-3"></i>
+            <h5 class="text-muted">Nenhum artefato encontrado.</h5>
+            <p class="text-muted small">Tente buscar com outros termos.</p>
+        </div>
+        
+        <div id="show-more-container" class="text-center mt-4 {% if artifacts_with_photos|length <= 8 %}d-none{% endif %}">
+            <button type="button" class="btn btn-outline-archaeological" onclick="showAllArtifacts()">
+                <i class="fas fa-plus me-2"></i>Mostrar todos (<span id="total-count">{{ artifacts_with_photos|length }}</span> artefatos)
+            </button>
         </div>
         {% else %}
         <div class="text-center py-5">
@@ -287,16 +337,122 @@
 
 {% block scripts %}
 <script>
+let selectedArtifactId = null;
+let showingAll = false;
+
 document.addEventListener('DOMContentLoaded', function() {
-    const forms = document.querySelectorAll('form');
     const overlay = document.getElementById('processing-overlay');
+    const generateForm = document.getElementById('generate-form');
     
-    forms.forEach(form => {
-        form.addEventListener('submit', function() {
+    if (generateForm) {
+        generateForm.addEventListener('submit', function() {
             overlay.style.display = 'flex';
         });
-    });
+    }
+    
+    const searchInput = document.getElementById('artifact-search');
+    if (searchInput) {
+        searchInput.addEventListener('input', function() {
+            filterArtifacts(this.value.toLowerCase().trim());
+        });
+    }
 });
+
+function filterArtifacts(query) {
+    const items = document.querySelectorAll('.artifact-item');
+    const noResults = document.getElementById('no-results');
+    const showMoreContainer = document.getElementById('show-more-container');
+    let visibleCount = 0;
+    
+    items.forEach((item, index) => {
+        const name = item.dataset.name || '';
+        const code = item.dataset.code || '';
+        const type = item.dataset.type || '';
+        
+        const matches = query === '' || 
+                       name.includes(query) || 
+                       code.includes(query) || 
+                       type.includes(query);
+        
+        if (query === '') {
+            if (showingAll || index < 8) {
+                item.style.display = '';
+                visibleCount++;
+            } else {
+                item.style.display = 'none';
+            }
+        } else {
+            if (matches) {
+                item.style.display = '';
+                visibleCount++;
+            } else {
+                item.style.display = 'none';
+            }
+        }
+    });
+    
+    if (noResults) {
+        noResults.classList.toggle('d-none', visibleCount > 0);
+    }
+    
+    if (showMoreContainer) {
+        showMoreContainer.classList.toggle('d-none', query !== '' || showingAll || items.length <= 8);
+    }
+}
+
+function selectArtifact(itemElement) {
+    const container = document.getElementById('selected-artifact-container');
+    const generateForm = document.getElementById('generate-form');
+    const nameEl = document.getElementById('selected-artifact-name');
+    const codeEl = document.getElementById('selected-artifact-code');
+    const imgEl = document.getElementById('selected-artifact-img');
+    
+    document.querySelectorAll('.artifact-select-card').forEach(card => {
+        card.classList.remove('selected');
+    });
+    
+    itemElement.querySelector('.artifact-select-card').classList.add('selected');
+    
+    selectedArtifactId = itemElement.dataset.id;
+    const name = itemElement.querySelector('h6').textContent;
+    const code = itemElement.querySelector('small.text-muted').textContent;
+    const photo = itemElement.dataset.photo;
+    
+    nameEl.textContent = name;
+    codeEl.textContent = code;
+    imgEl.src = photo;
+    imgEl.alt = name;
+    
+    generateForm.action = `/generate_3d_ai/${selectedArtifactId}`;
+    
+    container.classList.remove('d-none');
+    
+    container.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+}
+
+function clearSelection() {
+    const container = document.getElementById('selected-artifact-container');
+    container.classList.add('d-none');
+    
+    document.querySelectorAll('.artifact-select-card').forEach(card => {
+        card.classList.remove('selected');
+    });
+    
+    selectedArtifactId = null;
+}
+
+function showAllArtifacts() {
+    showingAll = true;
+    const items = document.querySelectorAll('.artifact-item');
+    items.forEach(item => {
+        item.style.display = '';
+    });
+    
+    const showMoreContainer = document.getElementById('show-more-container');
+    if (showMoreContainer) {
+        showMoreContainer.classList.add('d-none');
+    }
+}
 
 function checkModelStatus(modelId) {
     fetch(`/check_3d_status/${modelId}`)
