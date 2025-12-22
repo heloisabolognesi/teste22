@@ -1,41 +1,24 @@
 import os
 import logging
 import requests
-import time
 import tempfile
 import uuid
-import base64
+import zipfile
+from gradio_client import Client, handle_file
 
 logger = logging.getLogger(__name__)
 
 HUGGINGFACE_API_TOKEN = os.environ.get('HUGGINGFACE_API_TOKEN')
-HUGGINGFACE_API_URL = "https://api-inference.huggingface.co/models"
 
-MODEL_ID = "stabilityai/TripoSR"
+SPACE_ID = "TencentARC/InstantMesh"
 
 def is_ai_configured():
     """Check if Hugging Face AI is properly configured."""
     return bool(HUGGINGFACE_API_TOKEN)
 
-def get_image_as_base64(image_url):
-    """Download image from URL and convert to base64."""
-    try:
-        response = requests.get(image_url, timeout=30)
-        if response.status_code == 200:
-            return base64.b64encode(response.content).decode('utf-8')
-        else:
-            logger.error(f"Failed to download image: {response.status_code}")
-            return None
-    except Exception as e:
-        logger.error(f"Error downloading image: {str(e)}")
-        return None
-
 def generate_3d_from_image(image_url, artifact_id=None):
     """
-    Generate a 3D model from an image using Hugging Face API.
-    
-    This function initiates the 3D generation process. Due to the nature of
-    image-to-3D models, the process may take some time.
+    Generate a 3D model from an image using Hugging Face Spaces.
     
     Args:
         image_url: URL of the image to convert to 3D
@@ -53,9 +36,7 @@ def generate_3d_from_image(image_url, artifact_id=None):
     
     try:
         task_id = f"hf_{uuid.uuid4().hex[:16]}"
-        
         logger.info(f"Starting 3D generation for artifact {artifact_id}, task_id: {task_id}")
-        logger.info(f"Image URL: {image_url}")
         
         return {
             'success': True, 
@@ -68,12 +49,60 @@ def generate_3d_from_image(image_url, artifact_id=None):
         logger.error(f"Hugging Face exception: {str(e)}")
         return {'success': False, 'error': str(e)}
 
+def download_image_to_temp(image_url):
+    """Download image from URL to a temporary file."""
+    try:
+        response = requests.get(image_url, timeout=60)
+        if response.status_code != 200:
+            return None, f"Erro ao baixar imagem: {response.status_code}"
+        
+        content_type = response.headers.get('content-type', 'image/jpeg')
+        if 'png' in content_type.lower():
+            ext = '.png'
+        elif 'gif' in content_type.lower():
+            ext = '.gif'
+        else:
+            ext = '.jpg'
+        
+        with tempfile.NamedTemporaryFile(delete=False, suffix=ext) as tmp_file:
+            tmp_file.write(response.content)
+            return tmp_file.name, None
+            
+    except Exception as e:
+        logger.error(f"Error downloading image: {str(e)}")
+        return None, str(e)
+
+def extract_model_from_zip(zip_path, artifact_id):
+    """Extract 3D model file from ZIP archive."""
+    try:
+        with tempfile.TemporaryDirectory() as tmp_dir:
+            with zipfile.ZipFile(zip_path, 'r') as zip_ref:
+                zip_ref.extractall(tmp_dir)
+            
+            model_extensions = ['.glb', '.obj', '.gltf', '.ply']
+            
+            for root, dirs, files in os.walk(tmp_dir):
+                for file in files:
+                    for ext in model_extensions:
+                        if file.lower().endswith(ext):
+                            file_path = os.path.join(root, file)
+                            with open(file_path, 'rb') as f:
+                                model_data = f.read()
+                            return model_data, ext.lstrip('.')
+            
+            return None, None
+    except Exception as e:
+        logger.error(f"Error extracting model from ZIP: {str(e)}")
+        return None, None
+
 def process_3d_generation(image_url, artifact_id):
     """
-    Process the actual 3D model generation using Hugging Face.
+    Process the actual 3D model generation using Hugging Face Spaces.
     
-    This is the synchronous processing function that handles the API call
-    and model download.
+    Uses the TencentARC/InstantMesh Space with the correct API flow:
+    1. /preprocess - Clean and prepare the image
+    2. /generate_mvs - Generate multiview images
+    3. /make3d - Generate the final 3D model
     
     Args:
         image_url: URL of the image to convert
@@ -85,103 +114,151 @@ def process_3d_generation(image_url, artifact_id):
     if not HUGGINGFACE_API_TOKEN:
         return {'success': False, 'error': 'API não configurada'}
     
+    temp_image_path = None
+    
     try:
-        headers = {
-            'Authorization': f'Bearer {HUGGINGFACE_API_TOKEN}',
-            'Content-Type': 'application/json'
-        }
+        temp_image_path, error = download_image_to_temp(image_url)
+        if error:
+            return {'success': False, 'error': error}
         
-        image_response = requests.get(image_url, timeout=60)
-        if image_response.status_code != 200:
-            return {'success': False, 'error': 'Não foi possível baixar a imagem do artefato'}
+        logger.info(f"Connecting to Hugging Face Space: {SPACE_ID}")
         
-        image_base64 = base64.b64encode(image_response.content).decode('utf-8')
+        client = Client(SPACE_ID, hf_token=HUGGINGFACE_API_TOKEN)
         
-        content_type = image_response.headers.get('content-type', 'image/jpeg')
-        if 'png' in content_type.lower():
-            mime_type = 'image/png'
-        elif 'gif' in content_type.lower():
-            mime_type = 'image/gif'
-        else:
-            mime_type = 'image/jpeg'
-        
-        payload = {
-            "inputs": f"data:{mime_type};base64,{image_base64}",
-            "parameters": {
-                "output_format": "glb"
-            }
-        }
-        
-        api_url = f"{HUGGINGFACE_API_URL}/{MODEL_ID}"
-        
-        logger.info(f"Calling Hugging Face API: {api_url}")
-        
-        response = requests.post(
-            api_url,
-            headers=headers,
-            json=payload,
-            timeout=300
+        logger.info("Step 1: Preprocessing image (removing background)...")
+        preprocess_result = client.predict(
+            input_image=handle_file(temp_image_path),
+            do_remove_background=True,
+            erode_kernel=3,
+            dilate_iteration=1,
+            api_name="/preprocess"
         )
+        logger.info(f"Preprocess completed. Result: {type(preprocess_result)}")
         
-        if response.status_code == 200:
-            model_data = response.content
+        if isinstance(preprocess_result, tuple):
+            processed_image = preprocess_result[0]
+        else:
+            processed_image = preprocess_result
             
-            result = store_model_data(model_data, artifact_id, 'glb')
-            return result
+        if isinstance(processed_image, dict) and 'path' in processed_image:
+            processed_image_path = processed_image['path']
+        elif isinstance(processed_image, str):
+            processed_image_path = processed_image
+        else:
+            logger.error(f"Unexpected preprocess result format: {processed_image}")
+            return {'success': False, 'error': 'Erro no pré-processamento da imagem.'}
+        
+        logger.info("Step 2: Generating multiview images...")
+        mvs_result = client.predict(
+            image=handle_file(processed_image_path),
+            sample_steps=75,
+            sample_seed=42,
+            camera_distance_ratio=1.5,
+            elevation_deg=20,
+            api_name="/generate_mvs"
+        )
+        logger.info(f"Multiview generation completed. Result type: {type(mvs_result)}")
+        
+        if isinstance(mvs_result, tuple):
+            mvs_file = mvs_result[0]
+        else:
+            mvs_file = mvs_result
             
-        elif response.status_code == 503:
-            try:
-                error_data = response.json()
-                estimated_time = error_data.get('estimated_time', 60)
-                return {
-                    'success': False, 
-                    'error': f'Modelo está carregando. Tente novamente em {int(estimated_time)} segundos.',
-                    'retry': True,
-                    'retry_after': estimated_time
-                }
-            except:
-                return {
-                    'success': False,
-                    'error': 'Serviço temporariamente indisponível. Tente novamente em alguns minutos.',
-                    'retry': True
-                }
-        elif response.status_code == 429:
+        if isinstance(mvs_file, dict) and 'path' in mvs_file:
+            mvs_file_path = mvs_file['path']
+        elif isinstance(mvs_file, str):
+            mvs_file_path = mvs_file
+        else:
+            logger.error(f"Unexpected MVS result format: {mvs_file}")
+            return {'success': False, 'error': 'Erro na geração de visualizações múltiplas.'}
+        
+        logger.info("Step 3: Generating 3D model...")
+        model_result = client.predict(
+            mvs_result=handle_file(mvs_file_path),
+            mesh_simplify_ratio=0.95,
+            api_name="/make3d"
+        )
+        logger.info(f"3D model generation completed. Result: {type(model_result)}")
+        
+        model_file = None
+        if isinstance(model_result, tuple):
+            for item in model_result:
+                if isinstance(item, str) and (item.endswith('.glb') or item.endswith('.obj') or item.endswith('.zip')):
+                    model_file = item
+                    break
+                elif isinstance(item, dict) and 'path' in item:
+                    model_file = item['path']
+                    break
+            if not model_file and len(model_result) > 0:
+                model_file = model_result[1] if len(model_result) > 1 else model_result[0]
+        elif isinstance(model_result, dict) and 'path' in model_result:
+            model_file = model_result['path']
+        elif isinstance(model_result, str):
+            model_file = model_result
+        
+        if model_file:
+            if isinstance(model_file, dict) and 'path' in model_file:
+                model_file = model_file['path']
+                
+            if model_file.endswith('.zip'):
+                model_data, file_ext = extract_model_from_zip(model_file, artifact_id)
+                if model_data:
+                    return store_model_data(model_data, artifact_id, file_ext)
+                else:
+                    return {'success': False, 'error': 'Não foi possível extrair o modelo 3D do arquivo.'}
+            elif os.path.exists(model_file):
+                with open(model_file, 'rb') as f:
+                    model_data = f.read()
+                
+                file_ext = 'glb' if model_file.endswith('.glb') else 'obj'
+                return store_model_data(model_data, artifact_id, file_ext)
+            else:
+                return {'success': False, 'error': 'Arquivo do modelo 3D não encontrado.'}
+        
+        return {
+            'success': False,
+            'error': 'Modelo 3D não foi gerado corretamente. Tente novamente.'
+        }
+            
+    except Exception as e:
+        error_str = str(e).lower()
+        logger.error(f"Hugging Face Space exception: {str(e)}")
+        
+        if 'queue is full' in error_str or 'busy' in error_str:
+            return {
+                'success': False,
+                'error': 'O serviço está ocupado. Tente novamente em alguns minutos.',
+                'retry': True
+            }
+        elif 'timeout' in error_str:
+            return {
+                'success': False,
+                'error': 'Tempo esgotado. A geração pode levar alguns minutos.',
+                'retry': True
+            }
+        elif 'rate limit' in error_str or '429' in error_str:
             return {
                 'success': False,
                 'error': 'Limite de requisições atingido. Aguarde alguns minutos.',
                 'retry': True
             }
-        elif response.status_code == 401 or response.status_code == 403:
-            logger.error(f"Hugging Face auth error: {response.status_code}")
+        elif 'exceeded your gpu quota' in error_str:
             return {
                 'success': False,
-                'error': 'Erro de autenticação com a API. Verifique o token.'
+                'error': 'Cota de GPU excedida. Tente novamente mais tarde ou atualize para PRO.',
+                'retry': True
             }
         else:
-            error_msg = response.text[:200] if response.text else 'Erro desconhecido'
-            logger.error(f"Hugging Face API error: {response.status_code} - {error_msg}")
             return {
                 'success': False,
                 'error': f'A geração 3D depende de serviços externos de IA e pode estar temporariamente indisponível.'
             }
-            
-    except requests.exceptions.Timeout:
-        logger.error("Hugging Face request timeout")
-        return {
-            'success': False, 
-            'error': 'Tempo esgotado. A geração de modelos 3D pode levar alguns minutos.',
-            'retry': True
-        }
-    except requests.exceptions.ConnectionError:
-        logger.error("Hugging Face connection error")
-        return {
-            'success': False,
-            'error': 'Erro de conexão com o serviço de IA. Tente novamente.',
-            'retry': True
-        }
-    except Exception as e:
-        logger.error(f"Hugging Face exception: {str(e)}")
-        return {'success': False, 'error': str(e)}
+    finally:
+        if temp_image_path and os.path.exists(temp_image_path):
+            try:
+                os.remove(temp_image_path)
+            except:
+                pass
 
 def store_model_data(model_data, artifact_id, file_format='glb'):
     """
@@ -235,9 +312,6 @@ def store_model_data(model_data, artifact_id, file_format='glb'):
 def check_task_status(task_id):
     """
     Check the status of a generation task.
-    
-    For Hugging Face, we use synchronous processing, so this function
-    is mainly for compatibility with the existing flow.
     
     Args:
         task_id: The task ID
