@@ -326,7 +326,7 @@
     </a>
 </div>
 
-<div class="processing-overlay" id="processing-overlay">
+<div class="processing-overlay" id="processing-overlay" style="display: none !important;">
     <div class="processing-content">
         <div class="spinner-border text-archaeological mb-3" style="width: 4rem; height: 4rem;"></div>
         <h4>Gerando Modelo 3D</h4>
@@ -346,7 +346,7 @@ document.addEventListener('DOMContentLoaded', function() {
     
     if (generateForm) {
         generateForm.addEventListener('submit', function() {
-            overlay.style.display = 'flex';
+            overlay.style.cssText = 'display: flex !important;';
         });
     }
     
