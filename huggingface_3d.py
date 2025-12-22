@@ -147,7 +147,7 @@ def process_3d_generation(image_url, artifact_id):
         
         logger.info(f"Connecting to Hugging Face Space: {SPACE_ID}")
         
-        client = Client(SPACE_ID, hf_token=HUGGINGFACE_API_TOKEN)
+        client = Client(SPACE_ID, token=HUGGINGFACE_API_TOKEN)
         
         logger.info("Step 1: Preprocessing image (removing background)...")
         preprocess_result = client.predict(
