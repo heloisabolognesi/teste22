@@ -1,0 +1,340 @@
+{% extends "base.html" %}
+
+{% block title %}Geração de Modelo 3D por IA - L.A.A.R.I{% endblock %}
+
+{% block head %}
+<style>
+    .ai-hero {
+        background: linear-gradient(135deg, #E6D2B7 0%, #d4c4a5 100%);
+        border-radius: 12px;
+        padding: 30px;
+        margin-bottom: 30px;
+    }
+    
+    .ai-disclaimer {
+        background: rgba(255, 255, 255, 0.9);
+        border-left: 4px solid #5F3A1F;
+        padding: 15px 20px;
+        margin-top: 20px;
+        border-radius: 0 8px 8px 0;
+        font-size: 0.9rem;
+    }
+    
+    .artifact-select-card {
+        transition: all 0.3s ease;
+        cursor: pointer;
+        border: 2px solid transparent;
+    }
+    
+    .artifact-select-card:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 8px 25px rgba(0,0,0,0.15) !important;
+    }
+    
+    .artifact-select-card.selected {
+        border-color: #5F3A1F !important;
+        background-color: #f9f5f0;
+    }
+    
+    .artifact-thumbnail {
+        width: 100px;
+        height: 100px;
+        object-fit: cover;
+        border-radius: 8px;
+    }
+    
+    .processing-overlay {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0,0,0,0.7);
+        display: none;
+        justify-content: center;
+        align-items: center;
+        z-index: 9999;
+    }
+    
+    .processing-content {
+        background: white;
+        padding: 40px;
+        border-radius: 16px;
+        text-align: center;
+        max-width: 400px;
+    }
+    
+    .scientific-text {
+        background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+        border-radius: 12px;
+        padding: 25px;
+        margin-top: 30px;
+    }
+    
+    .scientific-text h5 {
+        color: #5F3A1F;
+        border-bottom: 2px solid #E6D2B7;
+        padding-bottom: 10px;
+        margin-bottom: 15px;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="page-header mb-4">
+    <nav aria-label="breadcrumb">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="{{ url_for('dashboard') }}">Dashboard</a></li>
+            <li class="breadcrumb-item"><a href="{{ url_for('scanner_3d') }}">Scanner 3D</a></li>
+            <li class="breadcrumb-item active">Geração por IA</li>
+        </ol>
+    </nav>
+    <h1 class="display-6 fw-bold">
+        <i class="fas fa-robot me-3"></i>Geração de Modelo 3D por IA
+    </h1>
+    <p class="lead text-muted">Crie reconstruções 3D estimadas a partir de imagens de artefatos</p>
+</div>
+
+<div class="ai-hero">
+    <div class="row align-items-center">
+        <div class="col-md-8">
+            <h4 class="mb-3"><i class="fas fa-magic me-2"></i>Como Funciona</h4>
+            <ol class="mb-0">
+                <li class="mb-2">Selecione um artefato catalogado que possua foto</li>
+                <li class="mb-2">Clique em "Gerar modelo 3D (IA)"</li>
+                <li class="mb-2">Aguarde o processamento (1-3 minutos)</li>
+                <li>Visualize e baixe o modelo gerado</li>
+            </ol>
+        </div>
+        <div class="col-md-4 text-center">
+            <i class="fas fa-cube fa-5x text-archaeological opacity-50"></i>
+        </div>
+    </div>
+    
+    <div class="ai-disclaimer">
+        <i class="fas fa-info-circle me-2 text-warning"></i>
+        <strong>Aviso Importante:</strong> O modelo 3D gerado é uma reconstrução estimada por IA, destinada à visualização e fins educacionais. Não substitui escaneamento 3D profissional.
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-lg-8">
+        <div class="card border-0 shadow">
+            <div class="card-header bg-archaeological text-white">
+                <h4 class="mb-0">
+                    <i class="fas fa-image me-2"></i>Selecione um Artefato
+                </h4>
+            </div>
+            <div class="card-body p-4">
+                {% if artifacts_with_photos %}
+                <div class="row g-3">
+                    {% for artifact in artifacts_with_photos %}
+                    <div class="col-md-6">
+                        <div class="card artifact-select-card border shadow-sm h-100" data-artifact-id="{{ artifact.id }}">
+                            <div class="card-body d-flex">
+                                <img src="{{ artifact.photo_path|image_url }}" 
+                                     alt="{{ artifact.name }}" 
+                                     class="artifact-thumbnail me-3"
+                                     onerror="this.src='/static/images/default-placeholder.svg'">
+                                <div class="flex-grow-1">
+                                    <h6 class="mb-1">{{ artifact.name }}</h6>
+                                    <small class="text-muted d-block mb-2">{{ artifact.qr_code or 'Sem código' }}</small>
+                                    <small class="text-muted d-block">{{ artifact.artifact_type or '' }}</small>
+                                    
+                                    <form action="{{ url_for('generate_3d_ai', artifact_id=artifact.id) }}" method="POST" class="mt-2">
+                                        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                                        <button type="submit" class="btn btn-sm btn-archaeological">
+                                            <i class="fas fa-magic me-1"></i>Gerar 3D
+                                        </button>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+                {% else %}
+                <div class="text-center py-5">
+                    <i class="fas fa-image fa-4x text-muted mb-3"></i>
+                    <h5 class="text-muted">Nenhum artefato com foto disponível</h5>
+                    <p class="text-muted">Cadastre artefatos com fotos para usar esta funcionalidade.</p>
+                    <a href="{{ url_for('novo_artefato') }}" class="btn btn-archaeological">
+                        <i class="fas fa-plus me-2"></i>Cadastrar Artefato
+                    </a>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-lg-4">
+        <div class="card border-0 shadow mb-4">
+            <div class="card-header bg-info text-white">
+                <h5 class="mb-0"><i class="fas fa-lightbulb me-2"></i>Dicas para Melhores Resultados</h5>
+            </div>
+            <div class="card-body">
+                <ul class="list-unstyled mb-0">
+                    <li class="mb-3">
+                        <i class="fas fa-check text-success me-2"></i>
+                        <strong>Foto frontal:</strong> Use imagens frontais do artefato
+                    </li>
+                    <li class="mb-3">
+                        <i class="fas fa-check text-success me-2"></i>
+                        <strong>Fundo neutro:</strong> Fundo branco ou uniforme funciona melhor
+                    </li>
+                    <li class="mb-3">
+                        <i class="fas fa-check text-success me-2"></i>
+                        <strong>Boa iluminação:</strong> Evite sombras fortes
+                    </li>
+                    <li class="mb-0">
+                        <i class="fas fa-check text-success me-2"></i>
+                        <strong>Alta resolução:</strong> Imagens nítidas geram modelos melhores
+                    </li>
+                </ul>
+            </div>
+        </div>
+        
+        <div class="card border-0 shadow">
+            <div class="card-header bg-warning text-dark">
+                <h5 class="mb-0"><i class="fas fa-clock me-2"></i>Tempo de Processamento</h5>
+            </div>
+            <div class="card-body">
+                <p class="mb-2">A geração de um modelo 3D leva aproximadamente:</p>
+                <h4 class="text-center text-archaeological mb-2">1 a 3 minutos</h4>
+                <p class="small text-muted mb-0 text-center">
+                    Você será redirecionado automaticamente quando o modelo estiver pronto.
+                </p>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% if pending_models or completed_models %}
+<div class="card border-0 shadow mt-4">
+    <div class="card-header bg-archaeological text-white">
+        <h4 class="mb-0">
+            <i class="fas fa-clock me-2"></i>Status dos Modelos
+        </h4>
+    </div>
+    <div class="card-body">
+        {% if pending_models %}
+        <h6 class="mb-3"><i class="fas fa-spinner fa-spin me-2"></i>Em Processamento</h6>
+        <div class="row g-3 mb-4">
+            {% for model in pending_models %}
+            <div class="col-md-6">
+                <div class="card border-warning">
+                    <div class="card-body">
+                        <div class="d-flex align-items-center">
+                            <div class="spinner-border text-warning me-3" role="status"></div>
+                            <div>
+                                <h6 class="mb-1">{{ model.artifact.name }}</h6>
+                                <small class="text-muted">Processando... aguarde</small>
+                                <button class="btn btn-sm btn-outline-info d-block mt-2" onclick="checkModelStatus({{ model.id }})">
+                                    <i class="fas fa-sync me-1"></i>Verificar Status
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+        {% endif %}
+        
+        {% if completed_models %}
+        <h6 class="mb-3"><i class="fas fa-check-circle text-success me-2"></i>Modelos Prontos</h6>
+        <div class="row g-3">
+            {% for model in completed_models %}
+            <div class="col-md-6">
+                <div class="card border-success">
+                    <div class="card-body">
+                        <div class="d-flex">
+                            {% if model.ai_thumbnail %}
+                            <img src="{{ model.ai_thumbnail }}" alt="Preview" class="artifact-thumbnail me-3">
+                            {% endif %}
+                            <div class="flex-grow-1">
+                                <h6 class="mb-1">{{ model.artifact.name }}</h6>
+                                <small class="text-muted d-block mb-2">Gerado em {{ model.scan_date.strftime('%d/%m/%Y') }}</small>
+                                <div class="btn-group btn-group-sm">
+                                    <a href="{{ url_for('view_3d_model', scan_id=model.id) }}" class="btn btn-archaeological">
+                                        <i class="fas fa-eye me-1"></i>Visualizar
+                                    </a>
+                                    <a href="{{ model.file_path }}" class="btn btn-outline-success" download>
+                                        <i class="fas fa-download me-1"></i>Baixar
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+        {% endif %}
+    </div>
+</div>
+{% endif %}
+
+<div class="scientific-text">
+    <h5><i class="fas fa-book me-2"></i>Reconstrução 3D por Inteligência Artificial</h5>
+    <p class="mb-3">
+        O L.A.A.R.I utiliza inteligência artificial para gerar modelos tridimensionais estimados a partir de imagens bidimensionais de artefatos arqueológicos. Essa funcionalidade tem caráter educativo e visual, permitindo a observação da forma geral do objeto em ambiente digital.
+    </p>
+    <p class="mb-0">
+        O modelo gerado não substitui métodos científicos de escaneamento 3D ou análises métricas profissionais, sendo destinado ao apoio didático, à divulgação científica e à preservação digital.
+    </p>
+</div>
+
+<div class="mt-4">
+    <a href="{{ url_for('scanner_3d') }}" class="btn btn-secondary btn-lg">
+        <i class="fas fa-arrow-left me-2"></i>Voltar
+    </a>
+</div>
+
+<div class="processing-overlay" id="processing-overlay">
+    <div class="processing-content">
+        <div class="spinner-border text-archaeological mb-3" style="width: 4rem; height: 4rem;"></div>
+        <h4>Gerando Modelo 3D</h4>
+        <p class="text-muted mb-0">Por favor, aguarde enquanto a IA processa sua imagem...</p>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const forms = document.querySelectorAll('form');
+    const overlay = document.getElementById('processing-overlay');
+    
+    forms.forEach(form => {
+        form.addEventListener('submit', function() {
+            overlay.style.display = 'flex';
+        });
+    });
+});
+
+function checkModelStatus(modelId) {
+    fetch(`/check_3d_status/${modelId}`)
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                if (data.status === 'SUCCEEDED') {
+                    alert('Modelo 3D gerado com sucesso! A página será recarregada.');
+                    location.reload();
+                } else if (data.status === 'FAILED') {
+                    alert('A geração do modelo falhou. Tente novamente.');
+                    location.reload();
+                } else {
+                    alert(`Status: ${data.status}. Progresso: ${data.progress || 0}%\nAguarde alguns minutos e verifique novamente.`);
+                }
+            } else {
+                alert('Erro ao verificar status: ' + (data.error || 'Erro desconhecido'));
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('Erro ao verificar status.');
+        });
+}
+</script>
+{% endblock %}

@@ -793,6 +793,63 @@ def scanner_3d():
     
     return render_template('scanner_3d.html', form=form, scans=scans, ai_configured=ai_configured, artifacts_list=artifacts_list)
 
+@app.route('/scanner-3d/gerar')
+@login_required
+def gerar_3d_ia():
+    """Dedicated page for AI 3D model generation."""
+    # Permission check: admin or users who can catalog
+    if not current_user.is_admin and not current_user.can_catalog_artifacts():
+        flash('Acesso restrito. Apenas administradores e profissionais aprovados podem gerar modelos 3D.', 'warning')
+        return redirect(url_for('scanner_3d'))
+    
+    from meshy_ai import is_meshy_configured
+    
+    if not is_meshy_configured():
+        flash('Sistema de geração 3D por IA não está configurado.', 'error')
+        return redirect(url_for('scanner_3d'))
+    
+    # Get artifacts with photos that the user can access
+    if current_user.is_admin:
+        artifacts_with_photos = Artifact.query.filter(Artifact.photo_path.isnot(None)).all()
+    else:
+        artifacts_with_photos = Artifact.query.filter(
+            Artifact.photo_path.isnot(None),
+            Artifact.user_id == current_user.id
+        ).all()
+    
+    # Get pending and completed AI-generated models
+    pending_statuses = ['PENDING', 'IN_PROGRESS', 'PROCESSING']
+    
+    if current_user.is_admin:
+        pending_models = Scanner3D.query.filter(
+            Scanner3D.is_ai_generated == True,
+            Scanner3D.ai_status.in_(pending_statuses)
+        ).order_by(Scanner3D.scan_date.desc()).all()
+        
+        completed_models = Scanner3D.query.filter(
+            Scanner3D.is_ai_generated == True,
+            Scanner3D.ai_status == 'SUCCEEDED',
+            Scanner3D.file_path.isnot(None)
+        ).order_by(Scanner3D.scan_date.desc()).limit(6).all()
+    else:
+        pending_models = Scanner3D.query.filter(
+            Scanner3D.is_ai_generated == True,
+            Scanner3D.ai_status.in_(pending_statuses),
+            Scanner3D.generated_by_user_id == current_user.id
+        ).order_by(Scanner3D.scan_date.desc()).all()
+        
+        completed_models = Scanner3D.query.filter(
+            Scanner3D.is_ai_generated == True,
+            Scanner3D.ai_status == 'SUCCEEDED',
+            Scanner3D.file_path.isnot(None),
+            Scanner3D.generated_by_user_id == current_user.id
+        ).order_by(Scanner3D.scan_date.desc()).limit(6).all()
+    
+    return render_template('gerar_3d_ia.html', 
+                           artifacts_with_photos=artifacts_with_photos,
+                           pending_models=pending_models,
+                           completed_models=completed_models)
+
 @app.route('/generate_3d_ai/<int:artifact_id>', methods=['POST'])
 @login_required
 def generate_3d_ai(artifact_id):
