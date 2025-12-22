@@ -784,9 +784,9 @@ def scanner_3d():
     
     scans = Scanner3D.query.order_by(Scanner3D.scan_date.desc()).all()
     
-    # Check if Meshy AI is configured
-    from meshy_ai import is_meshy_configured
-    ai_configured = is_meshy_configured()
+    # Check if AI is configured (Hugging Face)
+    from huggingface_3d import is_ai_configured
+    ai_configured = is_ai_configured()
     
     # Get artifacts list for AI generation section
     artifacts_list = Artifact.query.all()
@@ -802,10 +802,10 @@ def gerar_3d_ia():
         flash('Acesso restrito. Apenas administradores e profissionais aprovados podem gerar modelos 3D.', 'warning')
         return redirect(url_for('scanner_3d'))
     
-    from meshy_ai import is_meshy_configured
+    from huggingface_3d import is_ai_configured
     
-    if not is_meshy_configured():
-        flash('Sistema de geração 3D por IA não está configurado.', 'error')
+    if not is_ai_configured():
+        flash('Sistema de geração 3D por IA não está configurado. Configure o token da Hugging Face.', 'error')
         return redirect(url_for('scanner_3d'))
     
     # Get artifacts with photos that the user can access
@@ -866,11 +866,11 @@ def generate_3d_ai(artifact_id):
         flash('Este artefato não possui foto. Adicione uma foto primeiro.', 'warning')
         return redirect(url_for('scanner_3d'))
     
-    from meshy_ai import is_meshy_configured, generate_3d_from_image
+    from huggingface_3d import is_ai_configured, generate_3d_synchronous
     
-    if not is_meshy_configured():
-        flash('Sistema de geração 3D por IA não está configurado.', 'error')
-        return redirect(url_for('scanner_3d'))
+    if not is_ai_configured():
+        flash('Sistema de geração 3D por IA não está configurado. Configure o token da Hugging Face.', 'error')
+        return redirect(url_for('gerar_3d_ia'))
     
     # Get the image URL - must be publicly accessible for AI processing
     photo_path = artifact.photo_path
@@ -879,7 +879,6 @@ def generate_3d_ai(artifact_id):
         image_url = photo_path
     else:
         # Local file - AI requires a public URL
-        # Check if we can construct a public URL using the deployment domain
         from flask import request
         host_url = request.host_url.rstrip('/')
         
@@ -891,29 +890,47 @@ def generate_3d_ai(artifact_id):
         
         current_app.logger.info(f"Using public URL for AI: {image_url}")
     
-    # Start the AI generation task
-    result = generate_3d_from_image(image_url)
+    # Create a tracking record first
+    import uuid
+    task_id = f"hf_{uuid.uuid4().hex[:16]}"
+    
+    scan = Scanner3D(
+        artifact_id=artifact_id,
+        is_ai_generated=True,
+        ai_task_id=task_id,
+        ai_status='PROCESSING',
+        ai_source_image=image_url,
+        scanner_type='IA - Reconstrução Estimada (Hugging Face)',
+        generated_by_user_id=current_user.id,
+        notes='Modelo 3D gerado por IA a partir de imagem. Destinado a visualização e fins educacionais. Não substitui escaneamento 3D profissional.'
+    )
+    db.session.add(scan)
+    db.session.commit()
+    
+    # Process the 3D generation synchronously
+    result = generate_3d_synchronous(image_url, artifact_id)
     
     if result.get('success'):
-        # Create a new Scanner3D record for tracking
-        scan = Scanner3D(
-            artifact_id=artifact_id,
-            is_ai_generated=True,
-            ai_task_id=result.get('task_id'),
-            ai_status='PENDING',
-            ai_source_image=image_url,
-            scanner_type='IA - Reconstrução Estimada',
-            generated_by_user_id=current_user.id,
-            notes='Modelo 3D gerado por IA a partir de imagem. Destinado a visualização e fins educacionais.'
-        )
-        db.session.add(scan)
+        scan.ai_status = 'SUCCEEDED'
+        scan.file_path = result.get('url')
         db.session.commit()
         
-        flash('Geração do modelo 3D iniciada! O processo pode levar alguns minutos.', 'success')
+        flash('Modelo 3D gerado com sucesso! Você pode visualizá-lo agora.', 'success')
+        return redirect(url_for('view_3d_model', scan_id=scan.id))
     else:
-        flash(f'Erro ao iniciar geração: {result.get("error", "Erro desconhecido")}', 'error')
+        error_msg = result.get('error', 'Erro desconhecido')
+        retry = result.get('retry', False)
+        
+        if retry:
+            scan.ai_status = 'PENDING'
+            db.session.commit()
+            flash(f'{error_msg}', 'warning')
+        else:
+            scan.ai_status = 'FAILED'
+            db.session.commit()
+            flash(f'Erro na geração: {error_msg}', 'error')
     
-    return redirect(url_for('scanner_3d'))
+    return redirect(url_for('gerar_3d_ia'))
 
 @app.route('/check_3d_status/<int:scan_id>')
 @login_required
@@ -933,38 +950,19 @@ def check_3d_status(scan_id):
             'thumbnail_url': scan.ai_thumbnail
         })
     
-    from meshy_ai import check_task_status, download_and_store_model
+    from huggingface_3d import check_task_status
     
     result = check_task_status(scan.ai_task_id)
     
     if result.get('success'):
         status = result.get('status')
-        scan.ai_status = status
         
-        if status == 'SUCCEEDED':
-            # Download and store the model
-            model_urls = result.get('model_urls', {})
-            glb_url = model_urls.get('glb')
-            
-            if glb_url:
-                store_result = download_and_store_model(glb_url, scan.artifact_id)
-                if store_result.get('success'):
-                    scan.file_path = store_result.get('url')
-                    scan.ai_thumbnail = result.get('thumbnail_url')
-                    db.session.commit()
-                    
-                    return jsonify({
-                        'success': True,
-                        'status': 'SUCCEEDED',
-                        'model_url': scan.file_path,
-                        'thumbnail_url': scan.ai_thumbnail
-                    })
-        
-        db.session.commit()
+        # For Hugging Face, processing is synchronous, so return current state
         return jsonify({
             'success': True,
-            'status': status,
-            'progress': result.get('progress', 0)
+            'status': scan.ai_status,
+            'progress': result.get('progress', 0),
+            'message': result.get('message', '')
         })
     
     return jsonify(result)

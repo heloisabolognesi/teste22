@@ -1,0 +1,98 @@
+PROMPT – SUBSTITUIÇÃO DA API MESHY POR HUGGING FACE (SCANNER 3D – IA)
+🎯 Objetivo
+
+Substituir a API da Meshy por uma solução baseada na Hugging Face, permitindo a geração de modelos 3D estimados a partir de imagem, com foco educacional, utilizando API com token gratuito.
+
+🔧 Alterações no Backend
+1️⃣ Remover dependência da Meshy
+
+Desativar chamadas para a API da Meshy
+
+Remover lógica específica de créditos da Meshy
+
+Manter a estrutura geral da funcionalidade (rotas, permissões, estados)
+
+2️⃣ Integração com Hugging Face
+
+Utilizar modelos disponíveis na Hugging Face para reconstrução 3D a partir de imagem, como:
+
+Zero-1-to-3
+
+Modelos baseados em NeRF / Image-to-3D
+
+A integração deve ser feita via Hugging Face Inference API.
+
+3️⃣ Autenticação
+
+Adicionar uso de token via variável de ambiente:
+
+Secrets (Replit):
+
+HUGGINGFACE_API_TOKEN=xxxxxxxxxxxxxxxx
+
+
+O token deve ser lido apenas no backend.
+
+4️⃣ Fluxo de geração
+
+Usuário envia uma imagem do artefato
+
+Backend envia a imagem para a Hugging Face API
+
+A IA gera uma reconstrução 3D estimada
+
+O resultado pode ser:
+
+Um arquivo 3D (.obj, .glb)
+
+Ou uma estrutura intermediária convertida para visualização
+
+O arquivo é salvo e associado ao artefato
+
+📌 Caso o modelo retorne apenas dados intermediários, criar conversão para formato visualizável no navegador.
+
+🖥️ Front-end (permanece igual)
+
+Manter o botão “Gerar modelo 3D (IA)”
+
+Manter a página dedicada de geração
+
+Manter o viewer 3D
+
+Não alterar layout ou UX já aprovados
+
+⚠️ Tratamento de limitações (IMPORTANTE)
+
+Caso a API da Hugging Face esteja lenta ou indisponível:
+
+Mostrar mensagem clara ao usuário
+
+Não permitir carregamento infinito
+
+Tratar erros HTTP (400, 403, 429, 500)
+
+Mensagem sugerida:
+
+“A geração 3D depende de serviços externos de IA e pode estar temporariamente indisponível.”
+
+📚 Transparência científica
+
+Em todos os textos, manter o termo:
+
+“Reconstrução 3D estimada por Inteligência Artificial”
+
+E deixar explícito:
+
+Uso educacional
+
+Não substitui escaneamento 3D profissional
+
+✅ Resultado esperado
+
+Funcionalidade ativa sem dependência de API paga
+
+Sistema funcional para testes e demonstração
+
+Arquitetura preparada para troca futura de IA
+
+Projeto coerente com contexto acadêmico
