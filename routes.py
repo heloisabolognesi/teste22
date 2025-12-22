@@ -783,7 +783,146 @@ def scanner_3d():
         return redirect(url_for('scanner_3d'))
     
     scans = Scanner3D.query.order_by(Scanner3D.scan_date.desc()).all()
-    return render_template('scanner_3d.html', form=form, scans=scans)
+    
+    # Check if Meshy AI is configured
+    from meshy_ai import is_meshy_configured
+    ai_configured = is_meshy_configured()
+    
+    # Get artifacts list for AI generation section
+    artifacts_list = Artifact.query.all()
+    
+    return render_template('scanner_3d.html', form=form, scans=scans, ai_configured=ai_configured, artifacts_list=artifacts_list)
+
+@app.route('/generate_3d_ai/<int:artifact_id>', methods=['POST'])
+@login_required
+def generate_3d_ai(artifact_id):
+    """Generate a 3D model from artifact photo using AI."""
+    artifact = Artifact.query.get_or_404(artifact_id)
+    
+    # Permission check: admin or artifact owner
+    if not current_user.is_admin and artifact.user_id != current_user.id:
+        flash('Você não tem permissão para gerar modelo 3D deste artefato.', 'error')
+        return redirect(url_for('scanner_3d'))
+    
+    # Check if artifact has a photo
+    if not artifact.photo_path:
+        flash('Este artefato não possui foto. Adicione uma foto primeiro.', 'warning')
+        return redirect(url_for('scanner_3d'))
+    
+    from meshy_ai import is_meshy_configured, generate_3d_from_image
+    
+    if not is_meshy_configured():
+        flash('Sistema de geração 3D por IA não está configurado.', 'error')
+        return redirect(url_for('scanner_3d'))
+    
+    # Get the image URL - must be publicly accessible for AI processing
+    photo_path = artifact.photo_path
+    if photo_path.startswith('http'):
+        # Already a Cloudinary or external URL
+        image_url = photo_path
+    else:
+        # Local file - AI requires a public URL
+        # Check if we can construct a public URL using the deployment domain
+        from flask import request
+        host_url = request.host_url.rstrip('/')
+        
+        # Construct a publicly accessible URL for the image
+        if photo_path.startswith('uploads/'):
+            image_url = f"{host_url}/{photo_path}"
+        else:
+            image_url = f"{host_url}/uploads/{photo_path}"
+        
+        current_app.logger.info(f"Using public URL for AI: {image_url}")
+    
+    # Start the AI generation task
+    result = generate_3d_from_image(image_url)
+    
+    if result.get('success'):
+        # Create a new Scanner3D record for tracking
+        scan = Scanner3D(
+            artifact_id=artifact_id,
+            is_ai_generated=True,
+            ai_task_id=result.get('task_id'),
+            ai_status='PENDING',
+            ai_source_image=image_url,
+            scanner_type='IA - Reconstrução Estimada',
+            generated_by_user_id=current_user.id,
+            notes='Modelo 3D gerado por IA a partir de imagem. Destinado a visualização e fins educacionais.'
+        )
+        db.session.add(scan)
+        db.session.commit()
+        
+        flash('Geração do modelo 3D iniciada! O processo pode levar alguns minutos.', 'success')
+    else:
+        flash(f'Erro ao iniciar geração: {result.get("error", "Erro desconhecido")}', 'error')
+    
+    return redirect(url_for('scanner_3d'))
+
+@app.route('/check_3d_status/<int:scan_id>')
+@login_required
+def check_3d_status(scan_id):
+    """Check the status of an AI 3D generation task."""
+    scan = Scanner3D.query.get_or_404(scan_id)
+    
+    if not scan.is_ai_generated or not scan.ai_task_id:
+        return jsonify({'success': False, 'error': 'Este não é um modelo gerado por IA'})
+    
+    # If already completed, return cached result
+    if scan.ai_status == 'SUCCEEDED' and scan.file_path:
+        return jsonify({
+            'success': True,
+            'status': 'SUCCEEDED',
+            'model_url': scan.file_path,
+            'thumbnail_url': scan.ai_thumbnail
+        })
+    
+    from meshy_ai import check_task_status, download_and_store_model
+    
+    result = check_task_status(scan.ai_task_id)
+    
+    if result.get('success'):
+        status = result.get('status')
+        scan.ai_status = status
+        
+        if status == 'SUCCEEDED':
+            # Download and store the model
+            model_urls = result.get('model_urls', {})
+            glb_url = model_urls.get('glb')
+            
+            if glb_url:
+                store_result = download_and_store_model(glb_url, scan.artifact_id)
+                if store_result.get('success'):
+                    scan.file_path = store_result.get('url')
+                    scan.ai_thumbnail = result.get('thumbnail_url')
+                    db.session.commit()
+                    
+                    return jsonify({
+                        'success': True,
+                        'status': 'SUCCEEDED',
+                        'model_url': scan.file_path,
+                        'thumbnail_url': scan.ai_thumbnail
+                    })
+        
+        db.session.commit()
+        return jsonify({
+            'success': True,
+            'status': status,
+            'progress': result.get('progress', 0)
+        })
+    
+    return jsonify(result)
+
+@app.route('/view_3d_model/<int:scan_id>')
+@login_required
+def view_3d_model(scan_id):
+    """View a 3D model in the browser."""
+    scan = Scanner3D.query.get_or_404(scan_id)
+    
+    if not scan.file_path:
+        flash('Modelo 3D não disponível.', 'warning')
+        return redirect(url_for('scanner_3d'))
+    
+    return render_template('view_3d_model.html', scan=scan)
 
 @app.route('/transporte', methods=['GET', 'POST'])
 @login_required

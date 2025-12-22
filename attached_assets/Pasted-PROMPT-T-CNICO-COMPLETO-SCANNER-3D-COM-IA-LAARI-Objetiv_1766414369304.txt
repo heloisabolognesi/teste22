@@ -1,0 +1,139 @@
+PROMPT TÉCNICO COMPLETO – SCANNER 3D COM IA (LAARI)
+🎯 Objetivo
+
+Implementar no LAARI uma funcionalidade de geração de modelo 3D a partir de UMA imagem, utilizando IA, 100% online, sem uso de scanner físico.
+
+📌 NOVA FUNCIONALIDADE: “Scanner 3D – IA”
+1️⃣ Interface (Front-end)
+
+Criar na aba Scanner 3D:
+
+Campo de upload de imagem do artefato (jpg, png)
+
+Botão com o texto:
+
+“Gerar modelo 3D (IA)”
+
+Texto informativo abaixo do botão:
+
+O modelo 3D gerado é uma reconstrução estimada por IA, destinada à visualização e fins educacionais. Não substitui escaneamento 3D profissional.
+
+Indicador de status:
+
+“Processando modelo…”
+
+“Modelo 3D gerado com sucesso”
+
+Mensagem de erro (caso falhe)
+
+2️⃣ Comportamento do botão “Gerar modelo 3D (IA)”
+
+Ao clicar no botão:
+
+Validar se a imagem foi enviada
+
+Enviar a imagem para o backend
+
+O backend deve:
+
+Encaminhar a imagem para uma API de geração de modelo 3D por IA
+
+Receber como retorno um arquivo .glb ou .obj
+
+Salvar o arquivo 3D de forma persistente (ex: Cloudinary, storage externo ou pasta dedicada)
+
+Associar o modelo 3D ao artefato catalogado
+
+Retornar o status para o front-end
+
+3️⃣ Exibição do modelo 3D
+
+Após gerado:
+
+Criar um visualizador 3D no navegador
+
+Usar Three.js ou biblioteca equivalente
+
+Permitir:
+
+Rotação
+
+Zoom
+
+Pan
+
+O modelo deve aparecer:
+
+Na aba Scanner 3D
+
+E também dentro da página do artefato (campo “Modelo 3D”)
+
+🔐 Permissões
+
+Apenas administradores ou o usuário que catalogou o artefato podem:
+
+Gerar modelo 3D
+
+Visualizar o botão “Gerar modelo 3D (IA)”
+
+Usuários comuns:
+
+Apenas visualizam o modelo já gerado
+
+⚠️ Importante (regra de projeto)
+
+Essa funcionalidade deve ser tratada como:
+“Reconstrução 3D estimada por IA”
+
+Não usar termos como:
+❌ Scanner científico
+❌ Medição precisa
+❌ Escaneamento técnico
+
+🧪 Tratamento de erros
+
+Implementar:
+
+Log no backend caso a API falhe
+
+Retorno claro no front:
+
+“Erro ao gerar modelo 3D. Tente novamente.”
+
+Garantir que o site não fique carregando infinitamente
+
+📚 TEXTO EXPLICATIVO (CIENTÍFICO / EDUCACIONAL – PARA O SITE)
+
+Reconstrução 3D por Inteligência Artificial
+
+O LAARI utiliza inteligência artificial para gerar modelos tridimensionais estimados a partir de imagens bidimensionais de artefatos arqueológicos. Essa funcionalidade tem caráter educativo e visual, permitindo a observação da forma geral do objeto em ambiente digital.
+
+O modelo gerado não substitui métodos científicos de escaneamento 3D ou análises métricas profissionais, sendo destinado ao apoio didático, à divulgação científica e à preservação digital.
+
+🧩 ESTRUTURA FINAL DA ABA “SCANNER 3D”
+
+Título: Scanner 3D – Reconstrução por IA
+
+Upload da imagem
+
+Botão: Gerar modelo 3D (IA)
+
+Status do processamento
+
+Visualizador 3D
+
+Aviso científico (transparência metodológica)
+
+✅ RESUMO (pra o Replit entender de vez)
+
+Não é scanner físico
+
+É IA
+
+É estimativa
+
+É visual
+
+É educacional
+
+É integrado ao artefato

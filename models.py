@@ -119,8 +119,17 @@ class Scanner3D(db.Model):
     file_size = db.Column(db.Integer)  # in bytes
     notes = db.Column(db.Text)
     
+    # AI Generation fields
+    is_ai_generated = db.Column(db.Boolean, default=False)
+    ai_task_id = db.Column(db.String(100))  # Meshy AI task ID
+    ai_status = db.Column(db.String(50))  # PENDING, PROCESSING, SUCCEEDED, FAILED
+    ai_source_image = db.Column(db.String(500))  # Source image URL
+    ai_thumbnail = db.Column(db.String(500))  # AI-generated thumbnail
+    generated_by_user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
+    
     # Relationship
     artifact = db.relationship('Artifact', backref='scans_3d')
+    generated_by = db.relationship('User', backref='generated_3d_models')
 
 class PhotoGallery(db.Model):
     id = db.Column(db.Integer, primary_key=True)
