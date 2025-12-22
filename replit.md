@@ -30,8 +30,8 @@ Preferred communication style: Simple, everyday language.
 -   **Artifact Management**: Cataloging with support for metadata, photo, and 3D model uploads, QR code generation, and full edit/delete functionality (creator or admin only).
 -   **Professional Directory**: Management of archaeological specialists with contact information, including LinkedIn and Currículo Lattes profiles. Includes full edit/delete functionality (admin only).
 -   **Transportation Tracking**: System for tracking the movement of artifacts.
--   **3D Digitization Records**: Integration for 3D scanner data, including manual upload of professional scans and AI-powered 3D model generation from images using Meshy AI API.
--   **AI 3D Reconstruction**: Generate estimated 3D models from artifact photos using AI. Features Three.js-based interactive viewer with rotation, zoom, and pan controls. Includes educational disclaimers about AI-generated content vs professional scanning.
+-   **3D Digitization Records**: Integration for 3D scanner data, including manual upload of professional scans and AI-powered 3D model generation from images using Hugging Face API.
+-   **AI 3D Reconstruction**: Generate estimated 3D models from artifact photos using Hugging Face's TripoSR model. Features Three.js-based interactive viewer with rotation, zoom, and pan controls. Includes educational disclaimers about AI-generated content vs professional scanning. Models are for educational/visualization purposes only.
 
 ### System Design Choices
 -   **Database**: PostgreSQL, configured via `DATABASE_URL` environment variable, with connection pooling.
@@ -62,7 +62,7 @@ Preferred communication style: Simple, everyday language.
 -   **Replit Object Storage**: Fallback for local development.
 
 ### AI Services
--   **Meshy AI**: Image-to-3D model generation API for creating estimated 3D reconstructions of artifacts (requires MESHY_API_KEY secret).
+-   **Hugging Face**: Image-to-3D model generation using TripoSR model via Inference API for creating estimated 3D reconstructions of artifacts (requires HUGGINGFACE_API_TOKEN secret). Free tier available.
 
 ### 3D Visualization
 -   **Three.js**: WebGL-based 3D model viewer for GLB/GLTF files with orbit controls.
