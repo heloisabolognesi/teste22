@@ -879,9 +879,31 @@ def generate_3d_ai(artifact_id):
         image_url = photo_path
         current_app.logger.info(f"Using Cloudinary URL for AI: {image_url}")
     else:
-        # Local file - pass the path directly, the AI module will read it
-        image_url = photo_path
-        current_app.logger.info(f"Using local path for AI: {image_url}")
+        # Local file - validate existence before proceeding
+        local_path = photo_path
+        if local_path.startswith('/'):
+            local_path = local_path[1:]
+        
+        # Check multiple possible locations
+        possible_paths = [
+            local_path,
+            f"static/{local_path}",
+            local_path.replace('uploads/', ''),
+            f"uploads/{local_path}"
+        ]
+        
+        file_found = False
+        for path in possible_paths:
+            if os.path.exists(path):
+                file_found = True
+                image_url = path
+                current_app.logger.info(f"Found local image at: {path}")
+                break
+        
+        if not file_found:
+            current_app.logger.error(f"Image file not found for artifact {artifact_id}: {photo_path}")
+            flash('Arquivo de imagem do artefato não encontrado no sistema. Verifique se a foto foi carregada corretamente.', 'error')
+            return redirect(url_for('gerar_3d_ia'))
     
     # Create a tracking record first
     import uuid

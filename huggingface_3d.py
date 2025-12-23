@@ -12,6 +12,10 @@ HUGGINGFACE_API_TOKEN = os.environ.get('HUGGINGFACE_API_TOKEN')
 
 SPACE_ID = "trellis-community/TRELLIS"
 
+OUTPUT_DIRS = ['uploads/3d_models', 'output', 'generated_models']
+for d in OUTPUT_DIRS:
+    os.makedirs(d, exist_ok=True)
+
 def is_ai_configured():
     """Check if Hugging Face AI is properly configured."""
     return bool(HUGGINGFACE_API_TOKEN)
@@ -51,11 +55,21 @@ def generate_3d_from_image(image_url, artifact_id=None):
 
 def download_image_to_temp(image_url_or_path):
     """Download image from URL or read from local file to a temporary file."""
+    if not image_url_or_path:
+        logger.error("Empty image path provided")
+        return None, "Caminho da imagem está vazio ou inválido."
+    
     try:
         if image_url_or_path.startswith('http://') or image_url_or_path.startswith('https://'):
+            logger.info(f"Downloading image from URL: {image_url_or_path}")
             response = requests.get(image_url_or_path, timeout=60)
             if response.status_code != 200:
-                return None, f"Erro ao baixar imagem: {response.status_code}"
+                logger.error(f"Failed to download image: HTTP {response.status_code}")
+                return None, f"Erro ao baixar imagem da nuvem: HTTP {response.status_code}"
+            
+            if len(response.content) < 1000:
+                logger.error(f"Downloaded image too small: {len(response.content)} bytes")
+                return None, "Imagem baixada está corrompida ou muito pequena."
             
             content_type = response.headers.get('content-type', 'image/jpeg')
             if 'png' in content_type.lower():
@@ -67,21 +81,37 @@ def download_image_to_temp(image_url_or_path):
             
             with tempfile.NamedTemporaryFile(delete=False, suffix=ext) as tmp_file:
                 tmp_file.write(response.content)
+                logger.info(f"Image saved to temp file: {tmp_file.name}, size: {len(response.content)} bytes")
                 return tmp_file.name, None
         else:
             local_path = image_url_or_path
             if local_path.startswith('/'):
                 local_path = local_path[1:]
             
-            if os.path.exists(local_path):
-                file_path = local_path
-            elif os.path.exists(f"static/{local_path}"):
-                file_path = f"static/{local_path}"
-            elif os.path.exists(local_path.replace('uploads/', '')):
-                file_path = local_path.replace('uploads/', '')
-            else:
-                logger.error(f"Local file not found: {local_path}")
-                return None, f"Arquivo de imagem não encontrado: {local_path}"
+            logger.info(f"Looking for local image: {local_path}")
+            
+            possible_paths = [
+                local_path,
+                f"static/{local_path}",
+                local_path.replace('uploads/', ''),
+                f"uploads/{local_path}"
+            ]
+            
+            file_path = None
+            for path in possible_paths:
+                if os.path.exists(path) and os.path.isfile(path):
+                    file_path = path
+                    logger.info(f"Found image at: {path}")
+                    break
+            
+            if not file_path:
+                logger.error(f"Local file not found in any of: {possible_paths}")
+                return None, f"Arquivo de imagem não encontrado no sistema: {local_path}"
+            
+            file_size = os.path.getsize(file_path)
+            if file_size < 1000:
+                logger.error(f"Local image too small: {file_size} bytes")
+                return None, "Arquivo de imagem está corrompido ou muito pequeno."
             
             ext = os.path.splitext(file_path)[1] or '.jpg'
             
@@ -90,11 +120,15 @@ def download_image_to_temp(image_url_or_path):
             
             with tempfile.NamedTemporaryFile(delete=False, suffix=ext) as tmp_file:
                 tmp_file.write(image_data)
+                logger.info(f"Local image copied to temp file: {tmp_file.name}, size: {len(image_data)} bytes")
                 return tmp_file.name, None
             
+    except IOError as e:
+        logger.error(f"IO Error reading image: {str(e)}")
+        return None, f"Erro ao ler arquivo de imagem: {str(e)}"
     except Exception as e:
         logger.error(f"Error downloading/reading image: {str(e)}")
-        return None, str(e)
+        return None, f"Erro inesperado ao processar imagem: {str(e)}"
 
 def process_3d_generation(image_url, artifact_id):
     """
@@ -153,18 +187,47 @@ def process_3d_generation(image_url, artifact_id):
             if isinstance(glb_file, dict) and 'path' in glb_file:
                 glb_file = glb_file['path']
             
-            if os.path.exists(glb_file):
-                with open(glb_file, 'rb') as f:
-                    model_data = f.read()
+            logger.info(f"Checking GLB file at: {glb_file}")
+            
+            if glb_file and os.path.exists(glb_file):
+                file_size = os.path.getsize(glb_file)
+                logger.info(f"GLB file found, size: {file_size} bytes")
                 
-                return store_model_data(model_data, artifact_id, 'glb')
+                if file_size < 100:
+                    logger.error(f"GLB file too small ({file_size} bytes), likely invalid")
+                    return {
+                        'success': False,
+                        'error': 'O modelo 3D gerado está corrompido ou vazio. Tente novamente com outra imagem.'
+                    }
+                
+                try:
+                    with open(glb_file, 'rb') as f:
+                        model_data = f.read()
+                    
+                    if not model_data or len(model_data) < 100:
+                        return {
+                            'success': False,
+                            'error': 'Dados do modelo 3D inválidos. Tente novamente.'
+                        }
+                    
+                    return store_model_data(model_data, artifact_id, 'glb')
+                except IOError as e:
+                    logger.error(f"Error reading GLB file: {str(e)}")
+                    return {
+                        'success': False,
+                        'error': f'Erro ao ler arquivo do modelo: {str(e)}'
+                    }
             else:
-                logger.error(f"GLB file not found: {glb_file}")
-                return {'success': False, 'error': 'Arquivo do modelo 3D não encontrado.'}
+                logger.error(f"GLB file not found or path is None: {glb_file}")
+                return {
+                    'success': False, 
+                    'error': 'Arquivo do modelo 3D não foi gerado pela IA. O serviço pode estar com problemas temporários.'
+                }
         
+        logger.error("No GLB file returned from TRELLIS API")
         return {
             'success': False,
-            'error': 'Modelo 3D não foi gerado corretamente. Tente novamente.'
+            'error': 'A IA não retornou um modelo 3D válido. Tente novamente com uma imagem mais nítida do artefato.'
         }
             
     except Exception as e:
