@@ -796,156 +796,16 @@ def scanner_3d():
 @app.route('/scanner-3d/gerar')
 @login_required
 def gerar_3d_ia():
-    """Dedicated page for AI 3D model generation."""
-    # Permission check: admin or users who can catalog
-    if not current_user.is_admin and not current_user.can_catalog_artifacts():
-        flash('Acesso restrito. Apenas administradores e profissionais aprovados podem gerar modelos 3D.', 'warning')
-        return redirect(url_for('scanner_3d'))
-    
-    from huggingface_3d import is_ai_configured
-    
-    if not is_ai_configured():
-        flash('Sistema de geração 3D por IA não está configurado. Configure o token da Hugging Face.', 'error')
-        return redirect(url_for('scanner_3d'))
-    
-    # Get artifacts with photos that the user can access
-    if current_user.is_admin:
-        artifacts_with_photos = Artifact.query.filter(Artifact.photo_path.isnot(None)).all()
-    else:
-        artifacts_with_photos = Artifact.query.filter(
-            Artifact.photo_path.isnot(None),
-            Artifact.user_id == current_user.id
-        ).all()
-    
-    # Get pending and completed AI-generated models
-    pending_statuses = ['PENDING', 'IN_PROGRESS', 'PROCESSING']
-    
-    if current_user.is_admin:
-        pending_models = Scanner3D.query.filter(
-            Scanner3D.is_ai_generated == True,
-            Scanner3D.ai_status.in_(pending_statuses)
-        ).order_by(Scanner3D.scan_date.desc()).all()
-        
-        completed_models = Scanner3D.query.filter(
-            Scanner3D.is_ai_generated == True,
-            Scanner3D.ai_status == 'SUCCEEDED',
-            Scanner3D.file_path.isnot(None)
-        ).order_by(Scanner3D.scan_date.desc()).limit(6).all()
-    else:
-        pending_models = Scanner3D.query.filter(
-            Scanner3D.is_ai_generated == True,
-            Scanner3D.ai_status.in_(pending_statuses),
-            Scanner3D.generated_by_user_id == current_user.id
-        ).order_by(Scanner3D.scan_date.desc()).all()
-        
-        completed_models = Scanner3D.query.filter(
-            Scanner3D.is_ai_generated == True,
-            Scanner3D.ai_status == 'SUCCEEDED',
-            Scanner3D.file_path.isnot(None),
-            Scanner3D.generated_by_user_id == current_user.id
-        ).order_by(Scanner3D.scan_date.desc()).limit(6).all()
-    
-    return render_template('gerar_3d_ia.html', 
-                           artifacts_with_photos=artifacts_with_photos,
-                           pending_models=pending_models,
-                           completed_models=completed_models)
+    """Dedicated page for AI 3D model generation - Currently in development."""
+    flash('A funcionalidade de Reconstrução 3D por Inteligência Artificial está em desenvolvimento e faz parte do roadmap do L.A.A.R.I. Consulte a seção conceitual na página de Scanner 3D.', 'info')
+    return redirect(url_for('scanner_3d'))
 
 @app.route('/generate_3d_ai/<int:artifact_id>', methods=['POST'])
 @login_required
 def generate_3d_ai(artifact_id):
-    """Generate a 3D model from artifact photo using AI."""
-    artifact = Artifact.query.get_or_404(artifact_id)
-    
-    # Permission check: admin or artifact owner
-    if not current_user.is_admin and artifact.user_id != current_user.id:
-        flash('Você não tem permissão para gerar modelo 3D deste artefato.', 'error')
-        return redirect(url_for('scanner_3d'))
-    
-    # Check if artifact has a photo
-    if not artifact.photo_path:
-        flash('Este artefato não possui foto. Adicione uma foto primeiro.', 'warning')
-        return redirect(url_for('scanner_3d'))
-    
-    from huggingface_3d import is_ai_configured, generate_3d_synchronous
-    
-    if not is_ai_configured():
-        flash('Sistema de geração 3D por IA não está configurado. Configure o token da Hugging Face.', 'error')
-        return redirect(url_for('gerar_3d_ia'))
-    
-    # Get the image path - can be Cloudinary URL or local path
-    photo_path = artifact.photo_path
-    if photo_path.startswith('http'):
-        # Already a Cloudinary or external URL
-        image_url = photo_path
-        current_app.logger.info(f"Using Cloudinary URL for AI: {image_url}")
-    else:
-        # Local file - validate existence before proceeding
-        local_path = photo_path
-        if local_path.startswith('/'):
-            local_path = local_path[1:]
-        
-        # Check multiple possible locations
-        possible_paths = [
-            local_path,
-            f"static/{local_path}",
-            local_path.replace('uploads/', ''),
-            f"uploads/{local_path}"
-        ]
-        
-        file_found = False
-        for path in possible_paths:
-            if os.path.exists(path):
-                file_found = True
-                image_url = path
-                current_app.logger.info(f"Found local image at: {path}")
-                break
-        
-        if not file_found:
-            current_app.logger.error(f"Image file not found for artifact {artifact_id}: {photo_path}")
-            flash('Arquivo de imagem do artefato não encontrado no sistema. Verifique se a foto foi carregada corretamente.', 'error')
-            return redirect(url_for('gerar_3d_ia'))
-    
-    # Create a tracking record first
-    import uuid
-    task_id = f"hf_{uuid.uuid4().hex[:16]}"
-    
-    scan = Scanner3D(
-        artifact_id=artifact_id,
-        is_ai_generated=True,
-        ai_task_id=task_id,
-        ai_status='PROCESSING',
-        ai_source_image=image_url,
-        scanner_type='IA - Reconstrução Estimada (Hugging Face)',
-        generated_by_user_id=current_user.id,
-        notes='Modelo 3D gerado por IA a partir de imagem. Destinado a visualização e fins educacionais. Não substitui escaneamento 3D profissional.'
-    )
-    db.session.add(scan)
-    db.session.commit()
-    
-    # Process the 3D generation synchronously
-    result = generate_3d_synchronous(image_url, artifact_id)
-    
-    if result.get('success'):
-        scan.ai_status = 'SUCCEEDED'
-        scan.file_path = result.get('url')
-        db.session.commit()
-        
-        flash('Modelo 3D gerado com sucesso! Você pode visualizá-lo agora.', 'success')
-        return redirect(url_for('view_3d_model', scan_id=scan.id))
-    else:
-        error_msg = result.get('error', 'Erro desconhecido')
-        retry = result.get('retry', False)
-        
-        if retry:
-            scan.ai_status = 'PENDING'
-            db.session.commit()
-            flash(f'{error_msg}', 'warning')
-        else:
-            scan.ai_status = 'FAILED'
-            db.session.commit()
-            flash(f'Erro na geração: {error_msg}', 'error')
-    
-    return redirect(url_for('gerar_3d_ia'))
+    """Generate a 3D model from artifact photo using AI - Currently in development."""
+    flash('A funcionalidade de Reconstrução 3D por Inteligência Artificial está em desenvolvimento e faz parte do roadmap do L.A.A.R.I.', 'info')
+    return redirect(url_for('scanner_3d'))
 
 @app.route('/check_3d_status/<int:scan_id>')
 @login_required
