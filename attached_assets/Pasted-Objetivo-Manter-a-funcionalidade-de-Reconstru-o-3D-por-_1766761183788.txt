@@ -1,0 +1,69 @@
+Objetivo:
+Manter a funcionalidade de Reconstrução 3D por Inteligência Artificial como em desenvolvimento, mas enriquecer a página com imagens ilustrativas que ajudem arqueólogos, avaliadores e banca a entender visualmente a proposta.
+
+🔹 O que precisa ser feito
+
+Na página Scanner 3D, dentro da seção:
+
+“🔒 Reconstrução 3D por Inteligência Artificial (Em Desenvolvimento)”
+
+1️⃣ Manter tudo como está
+
+Não reativar nenhuma rota de geração 3D
+
+Não adicionar botões funcionais
+
+Não alterar o texto explicativo, roadmap ou avisos científicos
+
+A funcionalidade continua conceitual
+
+2️⃣ Adicionar uma coluna visual com exemplos ilustrativos
+
+Ao lado do bloco de texto/fluxo conceitual, adicionar uma nova seção visual com o título:
+
+“Exemplos ilustrativos de reconstrução 3D”
+
+Essa seção deve conter imagens estáticas de exemplo, apenas para demonstração visual.
+
+3️⃣ Imagens a serem exibidas
+
+Adicionar 3 imagens ilustrativas, alinhadas verticalmente ou em grid (dependendo do layout responsivo), por exemplo:
+
+Exemplo 1: Artefato geométrico estilizado em 3D
+
+Exemplo 2: Escultura/cabeça arqueológica reconstruída em 3D
+
+Exemplo 3: Objeto arqueológico abstrato em modelo tridimensional
+
+📌 Importante:
+Essas imagens não representam modelos reais do acervo, apenas simulações visuais do resultado esperado.
+
+4️⃣ Legenda obrigatória (transparência científica)
+
+Abaixo das imagens, inserir um aviso discreto e profissional:
+
+“Imagens meramente ilustrativas. Os modelos 3D apresentados são exemplos conceituais e não representam reconstruções reais do acervo do L.A.A.R.I.”
+
+5️⃣ Diretrizes de layout
+
+As imagens devem:
+
+Harmonizar com a identidade visual do site
+
+Não competir com o texto principal
+
+Manter proporção e espaçamento adequados
+
+Em telas menores (mobile):
+
+As imagens devem ir abaixo do texto (layout responsivo)
+
+🎯 Resultado esperado
+
+A página continua acadêmica, honesta e madura
+
+A banca entende claramente a ideia
+
+O projeto demonstra visão de futuro, mesmo sem execução técnica no momento
+
+Nenhuma expectativa falsa de funcionalidade ativa
