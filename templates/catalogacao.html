@@ -134,46 +134,51 @@
                     {% endif %}
                 </div>
                 
-                {% if current_user.is_admin or artifact.user_id == current_user.id %}
-                <div class="modal fade" id="deleteModal{{ artifact.id }}" tabindex="-1" aria-hidden="true">
-                    <div class="modal-dialog modal-dialog-centered">
-                        <div class="modal-content">
-                            <div class="modal-header bg-danger text-white">
-                                <h5 class="modal-title">
-                                    <i class="fas fa-exclamation-triangle me-2"></i>
-                                    <span data-i18n="delete_confirm_title">Confirmar Exclusão</span>
-                                </h5>
-                                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
-                            </div>
-                            <div class="modal-body">
-                                <p data-i18n="delete_confirm_message">Tem certeza que deseja excluir este artefato?</p>
-                                <p class="fw-bold text-center mb-0">{{ artifact.name }}</p>
-                                <p class="text-center text-muted small">{{ artifact.qr_code }}</p>
-                                <div class="alert alert-warning small mb-0">
-                                    <i class="fas fa-exclamation-circle me-2"></i>
-                                    <span data-i18n="delete_warning">Esta ação não pode ser desfeita. Todos os dados do artefato serão permanentemente removidos.</span>
-                                </div>
-                            </div>
-                            <div class="modal-footer">
-                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
-                                    <i class="fas fa-times me-1"></i><span data-i18n="btn_cancel">Cancelar</span>
-                                </button>
-                                <form action="{{ url_for('excluir_artefato', id=artifact.id) }}" method="POST" class="d-inline">
-                                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
-                                    <button type="submit" class="btn btn-danger">
-                                        <i class="fas fa-trash me-1"></i><span data-i18n="btn_confirm_delete">Sim, Excluir</span>
-                                    </button>
-                                </form>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                {% endif %}
             </div>
         </div>
         {% endfor %}
     </div>
 </div>
+
+<!-- Delete Modals - Outside cards to avoid stacking context issues -->
+{% for artifact in artifacts %}
+{% if current_user.is_admin or artifact.user_id == current_user.id %}
+<div class="modal fade" id="deleteModal{{ artifact.id }}" tabindex="-1" aria-labelledby="deleteModalLabel{{ artifact.id }}" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header bg-danger text-white">
+                <h5 class="modal-title" id="deleteModalLabel{{ artifact.id }}">
+                    <i class="fas fa-exclamation-triangle me-2"></i>
+                    <span data-i18n="delete_confirm_title">Confirmar Exclusão</span>
+                </h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <p data-i18n="delete_confirm_message">Tem certeza que deseja excluir este artefato?</p>
+                <p class="fw-bold text-center mb-0">{{ artifact.name }}</p>
+                <p class="text-center text-muted small">{{ artifact.qr_code }}</p>
+                <div class="alert alert-warning small mb-0">
+                    <i class="fas fa-exclamation-circle me-2"></i>
+                    <span data-i18n="delete_warning">Esta ação não pode ser desfeita. Todos os dados do artefato serão permanentemente removidos.</span>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                    <i class="fas fa-times me-1"></i><span data-i18n="btn_cancel">Cancelar</span>
+                </button>
+                <form action="{{ url_for('excluir_artefato', id=artifact.id) }}" method="POST" class="d-inline">
+                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                    <button type="submit" class="btn btn-danger">
+                        <i class="fas fa-trash me-1"></i><span data-i18n="btn_confirm_delete">Sim, Excluir</span>
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endif %}
+{% endfor %}
+
 {% else %}
 <div class="empty-state text-center py-5">
     <i class="fas fa-archive fa-4x text-muted mb-4"></i>
