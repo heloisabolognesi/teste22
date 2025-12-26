@@ -130,11 +130,116 @@ def download_image_to_temp(image_url_or_path):
         logger.error(f"Error downloading/reading image: {str(e)}")
         return None, f"Erro inesperado ao processar imagem: {str(e)}"
 
+def extract_glb_from_response(result):
+    """
+    Extract GLB file data from TRELLIS API response.
+    
+    The API can return various formats:
+    - Tuple with file objects at different positions
+    - Dict with 'url', 'path', or 'value' keys
+    - DownloadableFile objects with .url or .path attributes
+    - Direct URL strings
+    - Local file paths
+    
+    Returns:
+        tuple: (model_data bytes or None, error message or None)
+    """
+    if result is None:
+        logger.error("TRELLIS returned None")
+        return None, "A IA não retornou nenhum resultado."
+    
+    logger.info(f"Parsing TRELLIS response: type={type(result).__name__}")
+    
+    candidates = []
+    
+    if isinstance(result, tuple):
+        for i, item in enumerate(result):
+            logger.debug(f"Result tuple[{i}]: type={type(item).__name__}, value={repr(item)[:200]}")
+            candidates.append(item)
+    elif isinstance(result, list):
+        for i, item in enumerate(result):
+            candidates.append(item)
+    else:
+        candidates.append(result)
+    
+    for candidate in candidates:
+        model_data, error = try_extract_glb_data(candidate)
+        if model_data:
+            return model_data, None
+    
+    return None, "Nenhum arquivo 3D válido encontrado na resposta da IA."
+
+def try_extract_glb_data(item):
+    """
+    Try to extract GLB binary data from a single response item.
+    
+    Returns:
+        tuple: (bytes or None, error or None)
+    """
+    if item is None:
+        return None, None
+    
+    glb_source = None
+    
+    if hasattr(item, 'url') and item.url:
+        glb_source = item.url
+        logger.info(f"Found DownloadableFile with URL: {glb_source}")
+    elif hasattr(item, 'path') and item.path:
+        glb_source = item.path
+        logger.info(f"Found object with path: {glb_source}")
+    elif isinstance(item, dict):
+        glb_source = item.get('url') or item.get('path') or item.get('value')
+        if glb_source:
+            logger.info(f"Found dict with source: {glb_source}")
+    elif isinstance(item, str) and item:
+        glb_source = item
+        logger.info(f"Found string source: {glb_source[:100]}")
+    
+    if not glb_source:
+        return None, None
+    
+    if isinstance(glb_source, str) and (glb_source.startswith('http://') or glb_source.startswith('https://')):
+        logger.info(f"Downloading GLB from URL: {glb_source}")
+        try:
+            response = requests.get(glb_source, timeout=120)
+            if response.status_code == 200:
+                data = response.content
+                if len(data) > 1000:
+                    logger.info(f"Downloaded GLB: {len(data)} bytes")
+                    return data, None
+                else:
+                    logger.warning(f"Downloaded file too small: {len(data)} bytes")
+                    return None, None
+            else:
+                logger.error(f"Failed to download GLB: HTTP {response.status_code}")
+                return None, None
+        except Exception as e:
+            logger.error(f"Error downloading GLB: {str(e)}")
+            return None, None
+    
+    if isinstance(glb_source, str) and os.path.exists(glb_source):
+        try:
+            file_size = os.path.getsize(glb_source)
+            if file_size > 1000:
+                with open(glb_source, 'rb') as f:
+                    data = f.read()
+                logger.info(f"Read local GLB file: {len(data)} bytes")
+                return data, None
+            else:
+                logger.warning(f"Local file too small: {file_size} bytes")
+                return None, None
+        except IOError as e:
+            logger.error(f"Error reading local GLB: {str(e)}")
+            return None, None
+    
+    return None, None
+
 def process_3d_generation(image_url, artifact_id):
     """
     Process the actual 3D model generation using Hugging Face Spaces.
     
     Uses the TRELLIS Space for image-to-3D generation.
+    This is an EXPERIMENTAL feature for educational/visualization purposes only.
     
     Args:
         image_url: URL of the image to convert
@@ -157,7 +262,7 @@ def process_3d_generation(image_url, artifact_id):
         
         client = Client(SPACE_ID, token=HUGGINGFACE_API_TOKEN)
         
-        logger.info("Starting 3D generation with TRELLIS...")
+        logger.info("Starting 3D generation with TRELLIS (experimental)...")
         
         result = client.predict(
             image=handle_file(temp_image_path),
@@ -173,61 +278,23 @@ def process_3d_generation(image_url, artifact_id):
             api_name="/generate_and_extract_glb"
         )
         
-        logger.info(f"TRELLIS result: {type(result)}, {result}")
+        logger.info(f"TRELLIS raw result type: {type(result).__name__}")
+        logger.debug(f"TRELLIS raw result: {repr(result)[:500]}")
         
-        glb_file = None
-        if isinstance(result, tuple) and len(result) >= 3:
-            glb_file = result[2]
-        elif isinstance(result, tuple) and len(result) >= 2:
-            glb_file = result[1]
-        elif isinstance(result, str):
-            glb_file = result
+        model_data, extract_error = extract_glb_from_response(result)
         
-        if glb_file:
-            if isinstance(glb_file, dict) and 'path' in glb_file:
-                glb_file = glb_file['path']
-            
-            logger.info(f"Checking GLB file at: {glb_file}")
-            
-            if glb_file and os.path.exists(glb_file):
-                file_size = os.path.getsize(glb_file)
-                logger.info(f"GLB file found, size: {file_size} bytes")
-                
-                if file_size < 100:
-                    logger.error(f"GLB file too small ({file_size} bytes), likely invalid")
-                    return {
-                        'success': False,
-                        'error': 'O modelo 3D gerado está corrompido ou vazio. Tente novamente com outra imagem.'
-                    }
-                
-                try:
-                    with open(glb_file, 'rb') as f:
-                        model_data = f.read()
-                    
-                    if not model_data or len(model_data) < 100:
-                        return {
-                            'success': False,
-                            'error': 'Dados do modelo 3D inválidos. Tente novamente.'
-                        }
-                    
-                    return store_model_data(model_data, artifact_id, 'glb')
-                except IOError as e:
-                    logger.error(f"Error reading GLB file: {str(e)}")
-                    return {
-                        'success': False,
-                        'error': f'Erro ao ler arquivo do modelo: {str(e)}'
-                    }
-            else:
-                logger.error(f"GLB file not found or path is None: {glb_file}")
-                return {
-                    'success': False, 
-                    'error': 'Arquivo do modelo 3D não foi gerado pela IA. O serviço pode estar com problemas temporários.'
-                }
+        if model_data and len(model_data) > 1000:
+            logger.info(f"Successfully extracted GLB data: {len(model_data)} bytes")
+            return store_model_data(model_data, artifact_id, 'glb')
         
-        logger.error("No GLB file returned from TRELLIS API")
+        if extract_error:
+            logger.error(f"GLB extraction failed: {extract_error}")
+        else:
+            logger.error("No valid GLB data found in TRELLIS response")
+        
         return {
             'success': False,
-            'error': 'A IA não retornou um modelo 3D válido. Tente novamente com uma imagem mais nítida do artefato.'
+            'error': 'A reconstrução 3D não pôde ser gerada no momento. Esta é uma funcionalidade experimental. Tente novamente com outra foto ou mais tarde.'
         }
             
     except Exception as e:
