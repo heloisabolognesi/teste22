@@ -318,9 +318,10 @@ def processar_importacao_excel():
         else:
             df = pd.read_excel(file, engine='openpyxl')
         
-        required_columns = ['codigo', 'nome', 'tipo_artefato', 'material', 'periodo', 
-                           'cultura', 'localizacao', 'descricao', 'estado_conservacao', 
-                           'dimensoes', 'data_catalogacao', 'responsavel']
+        required_columns = ['nome_artefato', 'tipo', 'estado_conservacao']
+        all_columns = ['nome_artefato', 'codigo_artefato', 'data_descoberta', 'tipo', 
+                      'local_origem', 'localizacao_arqueologica', 'profundidade', 
+                      'nivel_estratigrafico', 'coordenadas', 'estado_conservacao', 'observacoes']
         
         missing_columns = [col for col in required_columns if col not in df.columns]
         if missing_columns:
@@ -342,25 +343,22 @@ def processar_importacao_excel():
             row_num = idx + 2
             row_errors = []
             
-            if pd.isna(row.get('codigo')) or str(row.get('codigo')).strip() == '':
-                row_errors.append('código ausente')
-            if pd.isna(row.get('nome')) or str(row.get('nome')).strip() == '':
-                row_errors.append('nome ausente')
+            if pd.isna(row.get('nome_artefato')) or str(row.get('nome_artefato')).strip() == '':
+                row_errors.append('nome do artefato ausente')
             
             artifact = {
                 'row': row_num,
-                'codigo': str(row.get('codigo', '')).strip()[:100] if not pd.isna(row.get('codigo')) else '',
-                'nome': str(row.get('nome', '')).strip()[:200] if not pd.isna(row.get('nome')) else '',
-                'tipo_artefato': str(row.get('tipo_artefato', '')).strip()[:100] if not pd.isna(row.get('tipo_artefato')) else '',
-                'material': str(row.get('material', '')).strip()[:100] if not pd.isna(row.get('material')) else '',
-                'periodo': str(row.get('periodo', '')).strip()[:100] if not pd.isna(row.get('periodo')) else '',
-                'cultura': str(row.get('cultura', '')).strip()[:100] if not pd.isna(row.get('cultura')) else '',
-                'localizacao': str(row.get('localizacao', '')).strip()[:200] if not pd.isna(row.get('localizacao')) else '',
-                'descricao': str(row.get('descricao', '')).strip()[:500] if not pd.isna(row.get('descricao')) else '',
+                'nome_artefato': str(row.get('nome_artefato', '')).strip()[:200] if not pd.isna(row.get('nome_artefato')) else '',
+                'codigo_artefato': str(row.get('codigo_artefato', '')).strip()[:100] if not pd.isna(row.get('codigo_artefato')) else '',
+                'data_descoberta': str(row.get('data_descoberta', '')).strip()[:50] if not pd.isna(row.get('data_descoberta')) else '',
+                'tipo': str(row.get('tipo', '')).strip()[:100] if not pd.isna(row.get('tipo')) else '',
+                'local_origem': str(row.get('local_origem', '')).strip()[:200] if not pd.isna(row.get('local_origem')) else '',
+                'localizacao_arqueologica': str(row.get('localizacao_arqueologica', '')).strip()[:200] if not pd.isna(row.get('localizacao_arqueologica')) else '',
+                'profundidade': str(row.get('profundidade', '')).strip()[:50] if not pd.isna(row.get('profundidade')) else '',
+                'nivel_estratigrafico': str(row.get('nivel_estratigrafico', '')).strip()[:100] if not pd.isna(row.get('nivel_estratigrafico')) else '',
+                'coordenadas': str(row.get('coordenadas', '')).strip()[:100] if not pd.isna(row.get('coordenadas')) else '',
                 'estado_conservacao': str(row.get('estado_conservacao', '')).strip()[:50] if not pd.isna(row.get('estado_conservacao')) else '',
-                'dimensoes': str(row.get('dimensoes', '')).strip()[:100] if not pd.isna(row.get('dimensoes')) else '',
-                'data_catalogacao': str(row.get('data_catalogacao', '')).strip()[:50] if not pd.isna(row.get('data_catalogacao')) else '',
-                'responsavel': str(row.get('responsavel', '')).strip()[:100] if not pd.isna(row.get('responsavel')) else '',
+                'observacoes': str(row.get('observacoes', '')).strip()[:1000] if not pd.isna(row.get('observacoes')) else '',
                 'errors': row_errors
             }
             artifacts_data.append(artifact)
@@ -424,27 +422,43 @@ def confirmar_importacao_excel():
                 continue
             
             conservation_map = {
+                'excelente': 'excelente',
+                'bom': 'bom',
+                'regular': 'regular',
+                'ruim': 'ruim',
                 'inteiro': 'excelente',
                 'íntegro': 'excelente',
-                'bom': 'bom',
                 'fragmentado': 'regular',
                 'restaurado': 'bom',
-                'ruim': 'ruim',
                 'danificado': 'ruim'
             }
             estado = item.get('estado_conservacao', '')
             conservation = conservation_map.get(estado.lower() if estado else '', 'regular')
             
+            codigo = item.get('codigo_artefato', '').strip()
+            if not codigo:
+                codigo = f"LAR-{uuid.uuid4().hex[:8].upper()}"
+            
             artifact = Artifact(
-                name=item['nome'],
-                code=item['codigo'],
-                artifact_type=item['tipo_artefato'],
-                origin_location=item['localizacao'],
+                name=item['nome_artefato'],
+                code=codigo,
+                artifact_type=item.get('tipo', ''),
+                origin_location=item.get('local_origem', ''),
+                depth=item.get('profundidade', ''),
+                level=item.get('nivel_estratigrafico', ''),
+                coordinates=item.get('coordenadas', ''),
                 conservation_state=conservation,
-                observations=f"Período: {item['periodo']}\nCultura: {item['cultura']}\nMaterial: {item['material']}\nDimensões: {item['dimensoes']}\nDescrição: {item['descricao']}\nResponsável original: {item['responsavel']}\nData catalogação original: {item['data_catalogacao']}\n\n[Importado via Excel - Lote: {batch_id}]",
+                observations=f"Localização arqueológica: {item.get('localizacao_arqueologica', '')}\n{item.get('observacoes', '')}\n\n[Importado via Excel - Lote: {batch_id}]",
                 user_id=current_user.id,
                 qr_code=f"LAARI-{uuid.uuid4().hex[:8].upper()}"
             )
+            
+            if item.get('data_descoberta'):
+                try:
+                    from datetime import datetime
+                    artifact.discovery_date = datetime.strptime(item['data_descoberta'], '%Y-%m-%d').date()
+                except:
+                    pass
             
             db.session.add(artifact)
             imported_count += 1

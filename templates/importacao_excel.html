@@ -26,11 +26,18 @@
                 </h4>
             </div>
             <div class="card-body p-4">
-                <div class="alert alert-info mb-4">
+                <div class="alert alert-info mb-3">
                     <i class="fas fa-info-circle me-2"></i>
                     A funcionalidade de <strong>Importação via Excel</strong> permite a integração direta de acervos arqueológicos 
                     previamente catalogados em planilhas eletrônicas ao sistema L.A.A.R.I, garantindo preservação dos dados, 
                     rastreabilidade científica e validação manual antes da inserção no acervo digital.
+                </div>
+                
+                <div class="alert alert-warning mb-4">
+                    <i class="fas fa-camera me-2"></i>
+                    <strong>Importante:</strong> A importação via Excel contempla apenas <strong>dados textuais</strong>. 
+                    A planilha não deve conter imagens. As fotos dos artefatos devem ser adicionadas posteriormente 
+                    através da edição individual de cada registro no sistema.
                 </div>
                 
                 <form action="{{ url_for('processar_importacao_excel') }}" method="POST" enctype="multipart/form-data" id="importForm">
@@ -251,26 +258,28 @@
         <div class="card border-0 shadow mb-4">
             <div class="card-header bg-archaeological text-white">
                 <h5 class="mb-0">
-                    <i class="fas fa-table me-2"></i>Colunas Obrigatórias
+                    <i class="fas fa-table me-2"></i>Colunas da Planilha
                 </h5>
             </div>
             <div class="card-body p-0">
                 <table class="table table-sm table-striped mb-0">
                     <tbody>
-                        <tr><td class="px-3"><code>codigo</code></td><td class="text-muted small">Código único</td></tr>
-                        <tr><td class="px-3"><code>nome</code></td><td class="text-muted small">Nome identificador</td></tr>
-                        <tr><td class="px-3"><code>tipo_artefato</code></td><td class="text-muted small">Tipo do artefato</td></tr>
-                        <tr><td class="px-3"><code>material</code></td><td class="text-muted small">Material</td></tr>
-                        <tr><td class="px-3"><code>periodo</code></td><td class="text-muted small">Período histórico</td></tr>
-                        <tr><td class="px-3"><code>cultura</code></td><td class="text-muted small">Cultura associada</td></tr>
-                        <tr><td class="px-3"><code>localizacao</code></td><td class="text-muted small">Local de procedência</td></tr>
-                        <tr><td class="px-3"><code>descricao</code></td><td class="text-muted small">Descrição técnica</td></tr>
-                        <tr><td class="px-3"><code>estado_conservacao</code></td><td class="text-muted small">Estado de conservação</td></tr>
-                        <tr><td class="px-3"><code>dimensoes</code></td><td class="text-muted small">Dimensões</td></tr>
-                        <tr><td class="px-3"><code>data_catalogacao</code></td><td class="text-muted small">Data original</td></tr>
-                        <tr><td class="px-3"><code>responsavel</code></td><td class="text-muted small">Arqueólogo responsável</td></tr>
+                        <tr><td class="px-3"><code>nome_artefato</code> <span class="badge bg-danger">*</span></td><td class="text-muted small">Nome do artefato</td></tr>
+                        <tr><td class="px-3"><code>codigo_artefato</code></td><td class="text-muted small">Código (auto se vazio)</td></tr>
+                        <tr><td class="px-3"><code>data_descoberta</code></td><td class="text-muted small">Data (AAAA-MM-DD)</td></tr>
+                        <tr><td class="px-3"><code>tipo</code> <span class="badge bg-danger">*</span></td><td class="text-muted small">Tipo do artefato</td></tr>
+                        <tr><td class="px-3"><code>local_origem</code></td><td class="text-muted small">Local de origem</td></tr>
+                        <tr><td class="px-3"><code>localizacao_arqueologica</code></td><td class="text-muted small">Localização arqueológica</td></tr>
+                        <tr><td class="px-3"><code>profundidade</code></td><td class="text-muted small">Profundidade</td></tr>
+                        <tr><td class="px-3"><code>nivel_estratigrafico</code></td><td class="text-muted small">Nível estratigráfico</td></tr>
+                        <tr><td class="px-3"><code>coordenadas</code></td><td class="text-muted small">Coordenadas GPS</td></tr>
+                        <tr><td class="px-3"><code>estado_conservacao</code> <span class="badge bg-danger">*</span></td><td class="text-muted small">Estado de conservação</td></tr>
+                        <tr><td class="px-3"><code>observacoes</code></td><td class="text-muted small">Observações</td></tr>
                     </tbody>
                 </table>
+                <div class="p-2 bg-light small text-muted">
+                    <span class="badge bg-danger">*</span> Campos obrigatórios
+                </div>
             </div>
         </div>
         

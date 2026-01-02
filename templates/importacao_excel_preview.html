@@ -64,12 +64,10 @@
                 <thead class="table-dark">
                     <tr>
                         <th>Linha</th>
+                        <th>Nome do Artefato</th>
                         <th>Código</th>
-                        <th>Nome</th>
                         <th>Tipo</th>
-                        <th>Material</th>
-                        <th>Período</th>
-                        <th>Localização</th>
+                        <th>Local de Origem</th>
                         <th>Estado</th>
                         <th>Status</th>
                     </tr>
@@ -78,12 +76,10 @@
                     {% for artifact in artifacts %}
                     <tr class="{% if artifact.errors %}table-danger{% endif %}">
                         <td>{{ artifact.row }}</td>
-                        <td><code>{{ artifact.codigo or '-' }}</code></td>
-                        <td>{{ artifact.nome or '-' }}</td>
-                        <td>{{ artifact.tipo_artefato or '-' }}</td>
-                        <td>{{ artifact.material or '-' }}</td>
-                        <td>{{ artifact.periodo or '-' }}</td>
-                        <td>{{ artifact.localizacao[:30] if artifact.localizacao else '-' }}{% if artifact.localizacao and artifact.localizacao|length > 30 %}...{% endif %}</td>
+                        <td>{{ artifact.nome_artefato or '-' }}</td>
+                        <td><code>{{ artifact.codigo_artefato or '(auto)' }}</code></td>
+                        <td>{{ artifact.tipo or '-' }}</td>
+                        <td>{{ artifact.local_origem[:30] if artifact.local_origem else '-' }}{% if artifact.local_origem and artifact.local_origem|length > 30 %}...{% endif %}</td>
                         <td>{{ artifact.estado_conservacao or '-' }}</td>
                         <td>
                             {% if artifact.errors %}
@@ -112,6 +108,7 @@
                     <i class="fas fa-shield-alt me-2"></i>
                     <strong>Garantia:</strong> A importação não apaga dados existentes. 
                     Apenas os {{ valid }} registros válidos serão catalogados.
+                    <br><small class="text-muted">Artefatos sem código receberão código automático.</small>
                 </div>
             </div>
             <div class="col-md-6">
