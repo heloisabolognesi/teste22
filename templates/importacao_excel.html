@@ -7,12 +7,12 @@
     <div class="d-flex justify-content-between align-items-center">
         <div>
             <h1 class="display-6 fw-bold">
-                <i class="fas fa-file-excel me-3"></i>Importação via EXCEL
+                <i class="fas fa-file-excel me-3"></i><span data-i18n="excel_import_title">Importação via EXCEL</span>
             </h1>
-            <p class="lead text-muted">Integre acervos já catalogados anteriormente ao sistema L.A.A.R.I</p>
+            <p class="lead text-muted" data-i18n="excel_import_subtitle">Integre acervos já catalogados anteriormente ao sistema L.A.A.R.I</p>
         </div>
         <a href="{{ url_for('catalogacao') }}" class="btn btn-outline-secondary btn-lg">
-            <i class="fas fa-arrow-left me-2"></i>Voltar à Catalogação
+            <i class="fas fa-arrow-left me-2"></i><span data-i18n="excel_import_back">Voltar à Catalogação</span>
         </a>
     </div>
 </div>
@@ -22,22 +22,18 @@
         <div class="card border-0 shadow mb-4">
             <div class="card-header bg-archaeological text-white">
                 <h4 class="mb-0">
-                    <i class="fas fa-upload me-2"></i>Upload da Planilha
+                    <i class="fas fa-upload me-2"></i><span data-i18n="excel_upload_title">Upload da Planilha</span>
                 </h4>
             </div>
             <div class="card-body p-4">
                 <div class="alert alert-info mb-3">
                     <i class="fas fa-info-circle me-2"></i>
-                    A funcionalidade de <strong>Importação via Excel</strong> permite a integração direta de acervos arqueológicos 
-                    previamente catalogados em planilhas eletrônicas ao sistema L.A.A.R.I, garantindo preservação dos dados, 
-                    rastreabilidade científica e validação manual antes da inserção no acervo digital.
+                    <span data-i18n-html="excel_upload_info">A funcionalidade de <strong>Importação via Excel</strong> permite a integração direta de acervos arqueológicos previamente catalogados em planilhas eletrônicas ao sistema L.A.A.R.I, garantindo preservação dos dados, rastreabilidade científica e validação manual antes da inserção no acervo digital.</span>
                 </div>
                 
                 <div class="alert alert-warning mb-4">
                     <i class="fas fa-image me-2"></i>
-                    <strong>Sobre imagens:</strong> As imagens dos artefatos não são importadas pela planilha. 
-                    Para melhor uso e organização, as imagens devem ser adicionadas manualmente na edição de cada 
-                    artefato após a importação.
+                    <span data-i18n-html="excel_images_warning"><strong>Sobre imagens:</strong> As imagens dos artefatos não são importadas pela planilha. Para melhor uso e organização, as imagens devem ser adicionadas manualmente na edição de cada artefato após a importação.</span>
                 </div>
                 
                 <form action="{{ url_for('processar_importacao_excel') }}" method="POST" enctype="multipart/form-data" id="importForm">
@@ -45,18 +41,18 @@
                     
                     <div class="mb-4">
                         <label for="excel_file" class="form-label fw-bold">
-                            <i class="fas fa-file-excel me-2 text-archaeological"></i>Selecione a Planilha
+                            <i class="fas fa-file-excel me-2 text-archaeological"></i><span data-i18n="excel_select_file">Selecione a Planilha</span>
                         </label>
                         <input type="file" class="form-control form-control-lg" id="excel_file" name="excel_file" 
                                accept=".xlsx,.csv" required>
-                        <div class="form-text">
+                        <div class="form-text" data-i18n="excel_file_formats">
                             Formatos aceitos: Excel (.xlsx) ou CSV (.csv) • Máximo: 100 artefatos por arquivo
                         </div>
                     </div>
                     
                     <div class="d-grid">
                         <button type="submit" class="btn btn-archaeological btn-lg">
-                            <i class="fas fa-upload me-2"></i>Enviar para Validação
+                            <i class="fas fa-upload me-2"></i><span data-i18n="excel_btn_submit">Enviar para Validação</span>
                         </button>
                     </div>
                 </form>
@@ -66,45 +62,45 @@
         <div class="card border-0 shadow mb-4">
             <div class="card-header bg-secondary text-white">
                 <h4 class="mb-0">
-                    <i class="fas fa-info-circle me-2"></i>Sobre a Importação de Planilhas
+                    <i class="fas fa-info-circle me-2"></i><span data-i18n="excel_about_title">Sobre a Importação de Planilhas</span>
                 </h4>
             </div>
             <div class="card-body p-4">
                 <div class="row">
                     <div class="col-md-7">
-                        <p class="mb-3">
+                        <p class="mb-3" data-i18n-html="excel_about_text">
                             Reconhecemos que a maior parte da documentação arqueológica ainda é realizada em planilhas de Excel, 
                             e nosso objetivo é oferecer uma <strong>transição gradual e segura</strong> para a plataforma digital.
                         </p>
                         
                         <h6 class="fw-bold mt-4 mb-3">
-                            <i class="fas fa-shield-alt text-archaeological me-2"></i>Princípios da Importação
+                            <i class="fas fa-shield-alt text-archaeological me-2"></i><span data-i18n="excel_principles_title">Princípios da Importação</span>
                         </h6>
                         <ul class="list-unstyled">
                             <li class="mb-2">
                                 <i class="fas fa-graduation-cap text-archaeological me-2"></i>
-                                <strong>Uso educacional:</strong> Ferramenta pensada para apoio didático e preservação do patrimônio
+                                <strong data-i18n="excel_principle_educational">Uso educacional:</strong> <span data-i18n="excel_principle_educational_desc">Ferramenta pensada para apoio didático e preservação do patrimônio</span>
                             </li>
                             <li class="mb-2">
                                 <i class="fas fa-microscope text-archaeological me-2"></i>
-                                <strong>Transparência científica:</strong> Rastreabilidade completa da origem dos dados importados
+                                <strong data-i18n="excel_principle_transparency">Transparência científica:</strong> <span data-i18n="excel_principle_transparency_desc">Rastreabilidade completa da origem dos dados importados</span>
                             </li>
                             <li class="mb-2">
                                 <i class="fas fa-database text-archaeological me-2"></i>
-                                <strong>Integridade dos dados:</strong> Nenhuma informação pré-existente será perdida ou sobrescrita
+                                <strong data-i18n="excel_principle_integrity">Integridade dos dados:</strong> <span data-i18n="excel_principle_integrity_desc">Nenhuma informação pré-existente será perdida ou sobrescrita</span>
                             </li>
                         </ul>
                         
                         <div class="mt-4 pt-3 border-top">
                             <h6 class="fw-bold mb-3">
-                                <i class="fas fa-handshake text-archaeological me-2"></i>Integração Responsável de Acervos Existentes
+                                <i class="fas fa-handshake text-archaeological me-2"></i><span data-i18n="excel_integration_title">Integração Responsável de Acervos Existentes</span>
                             </h6>
-                            <p class="mb-2">
+                            <p class="mb-2" data-i18n-html="excel_integration_text">
                                 A importação via Excel no L.A.A.R.I. não tem como objetivo substituir o trabalho já realizado 
                                 pelos arqueólogos, mas sim <strong>valorizá-lo</strong> e integrá-lo a um ambiente digital estruturado.
                             </p>
                             <p class="mb-0 text-muted small">
-                                <em>O processo prioriza a leitura estruturada das informações, a preservação da autoria e a 
+                                <em data-i18n="excel_integration_note">O processo prioriza a leitura estruturada das informações, a preservação da autoria e a 
                                 rastreabilidade dos registros, garantindo que o acervo continue fiel à documentação original.</em>
                             </p>
                         </div>
@@ -117,35 +113,35 @@
                                     <div class="rounded-circle bg-archaeological text-white d-inline-flex align-items-center justify-content-center mb-2" style="width: 45px; height: 45px;">
                                         <i class="fas fa-upload"></i>
                                     </div>
-                                    <div class="fw-bold small">1. Upload</div>
+                                    <div class="fw-bold small">1. <span data-i18n="excel_step_upload">Upload</span></div>
                                 </div>
                                 <i class="fas fa-arrow-down text-archaeological mb-2"></i>
                                 <div class="workflow-step text-center mb-3">
                                     <div class="rounded-circle bg-archaeological text-white d-inline-flex align-items-center justify-content-center mb-2" style="width: 45px; height: 45px;">
                                         <i class="fas fa-check-double"></i>
                                     </div>
-                                    <div class="fw-bold small">2. Validação</div>
+                                    <div class="fw-bold small">2. <span data-i18n="excel_step_validation">Validação</span></div>
                                 </div>
                                 <i class="fas fa-arrow-down text-archaeological mb-2"></i>
                                 <div class="workflow-step text-center mb-3">
                                     <div class="rounded-circle bg-archaeological text-white d-inline-flex align-items-center justify-content-center mb-2" style="width: 45px; height: 45px;">
                                         <i class="fas fa-eye"></i>
                                     </div>
-                                    <div class="fw-bold small">3. Pré-visualização</div>
+                                    <div class="fw-bold small">3. <span data-i18n="excel_step_preview">Pré-visualização</span></div>
                                 </div>
                                 <i class="fas fa-arrow-down text-archaeological mb-2"></i>
                                 <div class="workflow-step text-center mb-3">
                                     <div class="rounded-circle bg-archaeological text-white d-inline-flex align-items-center justify-content-center mb-2" style="width: 45px; height: 45px;">
                                         <i class="fas fa-user-check"></i>
                                     </div>
-                                    <div class="fw-bold small">4. Confirmação</div>
+                                    <div class="fw-bold small">4. <span data-i18n="excel_step_confirmation">Confirmação</span></div>
                                 </div>
                                 <i class="fas fa-arrow-down text-archaeological mb-2"></i>
                                 <div class="workflow-step text-center">
                                     <div class="rounded-circle bg-archaeological text-white d-inline-flex align-items-center justify-content-center mb-2" style="width: 45px; height: 45px;">
                                         <i class="fas fa-database"></i>
                                     </div>
-                                    <div class="fw-bold small">5. Catalogação</div>
+                                    <div class="fw-bold small">5. <span data-i18n="excel_step_cataloging">Catalogação</span></div>
                                 </div>
                             </div>
                         </div>
@@ -157,11 +153,11 @@
         <div class="card border-0 shadow mb-4">
             <div class="card-header bg-warning text-dark">
                 <h5 class="mb-0">
-                    <i class="fas fa-exclamation-triangle me-2"></i>Limitações Técnicas (Intencionais)
+                    <i class="fas fa-exclamation-triangle me-2"></i><span data-i18n="excel_limitations_title">Limitações Técnicas (Intencionais)</span>
                 </h5>
             </div>
             <div class="card-body p-4">
-                <p class="mb-3">
+                <p class="mb-3" data-i18n-html="excel_limitations_intro">
                     As seguintes limitações foram estabelecidas como <strong>decisões técnicas conscientes</strong>, 
                     visando garantir a qualidade e integridade dos dados importados:
                 </p>
@@ -170,8 +166,8 @@
                         <div class="card bg-light border-0 h-100">
                             <div class="card-body text-center">
                                 <i class="fas fa-file-alt fa-2x text-archaeological mb-2"></i>
-                                <h6 class="fw-bold">Limite por Planilha</h6>
-                                <p class="small text-muted mb-0">Máximo de <strong>100 artefatos</strong> por arquivo importado</p>
+                                <h6 class="fw-bold" data-i18n="excel_limit_per_file">Limite por Planilha</h6>
+                                <p class="small text-muted mb-0" data-i18n-html="excel_limit_per_file_desc">Máximo de <strong>100 artefatos</strong> por arquivo importado</p>
                             </div>
                         </div>
                     </div>
@@ -179,8 +175,8 @@
                         <div class="card bg-light border-0 h-100">
                             <div class="card-body text-center">
                                 <i class="fas fa-table fa-2x text-archaeological mb-2"></i>
-                                <h6 class="fw-bold">Modelo Padrão</h6>
-                                <p class="small text-muted mb-0">A planilha deve seguir o <strong>modelo definido pelo sistema</strong></p>
+                                <h6 class="fw-bold" data-i18n="excel_standard_model">Modelo Padrão</h6>
+                                <p class="small text-muted mb-0" data-i18n-html="excel_standard_model_desc">A planilha deve seguir o <strong>modelo definido pelo sistema</strong></p>
                             </div>
                         </div>
                     </div>
@@ -188,8 +184,8 @@
                         <div class="card bg-light border-0 h-100">
                             <div class="card-body text-center">
                                 <i class="fas fa-columns fa-2x text-archaeological mb-2"></i>
-                                <h6 class="fw-bold">Colunas Reconhecidas</h6>
-                                <p class="small text-muted mb-0">Apenas <strong>colunas padronizadas</strong> serão processadas</p>
+                                <h6 class="fw-bold" data-i18n="excel_recognized_columns">Colunas Reconhecidas</h6>
+                                <p class="small text-muted mb-0" data-i18n-html="excel_recognized_columns_desc">Apenas <strong>colunas padronizadas</strong> serão processadas</p>
                             </div>
                         </div>
                     </div>
@@ -202,7 +198,7 @@
         <div class="card border-0 shadow mb-4">
             <div class="card-header bg-success text-white">
                 <h5 class="mb-0">
-                    <i class="fas fa-shield-alt me-2"></i>Garantias ao Usuário
+                    <i class="fas fa-shield-alt me-2"></i><span data-i18n="excel_guarantees_title">Garantias ao Usuário</span>
                 </h5>
             </div>
             <div class="card-body">
@@ -210,29 +206,29 @@
                     <li class="mb-3 d-flex align-items-start">
                         <i class="fas fa-check-circle text-success me-3 mt-1"></i>
                         <div>
-                            <strong>Dados Preservados</strong>
-                            <p class="small text-muted mb-0">A importação não apaga dados existentes no sistema</p>
+                            <strong data-i18n="excel_guarantee_preserved">Dados Preservados</strong>
+                            <p class="small text-muted mb-0" data-i18n="excel_guarantee_preserved_desc">A importação não apaga dados existentes no sistema</p>
                         </div>
                     </li>
                     <li class="mb-3 d-flex align-items-start">
                         <i class="fas fa-check-circle text-success me-3 mt-1"></i>
                         <div>
-                            <strong>Processo Reversível</strong>
-                            <p class="small text-muted mb-0">Todo processo de importação pode ser revertido</p>
+                            <strong data-i18n="excel_guarantee_reversible">Processo Reversível</strong>
+                            <p class="small text-muted mb-0" data-i18n="excel_guarantee_reversible_desc">Todo processo de importação pode ser revertido</p>
                         </div>
                     </li>
                     <li class="mb-3 d-flex align-items-start">
                         <i class="fas fa-check-circle text-success me-3 mt-1"></i>
                         <div>
-                            <strong>Histórico Completo</strong>
-                            <p class="small text-muted mb-0">O sistema mantém registro de todas as importações realizadas</p>
+                            <strong data-i18n="excel_guarantee_history">Histórico Completo</strong>
+                            <p class="small text-muted mb-0" data-i18n="excel_guarantee_history_desc">O sistema mantém registro de todas as importações realizadas</p>
                         </div>
                     </li>
                     <li class="d-flex align-items-start">
                         <i class="fas fa-check-circle text-success me-3 mt-1"></i>
                         <div>
-                            <strong>Confirmação Manual</strong>
-                            <p class="small text-muted mb-0">Nenhum dado é salvo sem aprovação explícita do usuário</p>
+                            <strong data-i18n="excel_guarantee_manual">Confirmação Manual</strong>
+                            <p class="small text-muted mb-0" data-i18n="excel_guarantee_manual_desc">Nenhum dado é salvo sem aprovação explícita do usuário</p>
                         </div>
                     </li>
                 </ul>
@@ -242,23 +238,23 @@
         <div class="card border-0 shadow mb-4">
             <div class="card-header bg-info text-white">
                 <h5 class="mb-0">
-                    <i class="fas fa-download me-2"></i>Modelo de Planilha
+                    <i class="fas fa-download me-2"></i><span data-i18n="excel_template_title">Modelo de Planilha</span>
                 </h5>
             </div>
             <div class="card-body">
-                <h6 class="fw-bold mb-3 text-archaeological">Estrutura do Modelo de Planilha</h6>
-                <p class="text-muted mb-3">
+                <h6 class="fw-bold mb-3 text-archaeological" data-i18n="excel_template_structure">Estrutura do Modelo de Planilha</h6>
+                <p class="text-muted mb-3" data-i18n-html="excel_template_desc">
                     O modelo disponível para download apresenta apenas a <strong>estrutura oficial</strong> 
                     do sistema LAARI, sem dados preenchidos. Cada linha da planilha representa um artefato 
                     arqueológico a ser catalogado.
                 </p>
-                <p class="text-muted small mb-3">
+                <p class="text-muted small mb-3" data-i18n="excel_template_instructions">
                     Basta preencher as informações dos seus artefatos seguindo os nomes das colunas 
                     indicadas e enviar o arquivo para importação.
                 </p>
                 <div class="text-center">
                     <a href="{{ url_for('download_modelo_excel') }}" class="btn btn-archaeological btn-lg">
-                        <i class="fas fa-file-excel me-2"></i>Baixar Modelo (.xlsx)
+                        <i class="fas fa-file-excel me-2"></i><span data-i18n="excel_btn_download">Baixar Modelo (.xlsx)</span>
                     </a>
                 </div>
             </div>
@@ -267,27 +263,27 @@
         <div class="card border-0 shadow mb-4">
             <div class="card-header bg-archaeological text-white">
                 <h5 class="mb-0">
-                    <i class="fas fa-table me-2"></i>Campos da Planilha
+                    <i class="fas fa-table me-2"></i><span data-i18n="excel_fields_title">Campos da Planilha</span>
                 </h5>
             </div>
             <div class="card-body p-0">
                 <table class="table table-sm table-striped mb-0">
                     <tbody>
-                        <tr><td class="px-3">Nome do Artefato <span class="badge bg-danger">*</span></td><td class="text-muted small">Identificação principal da peça</td></tr>
-                        <tr><td class="px-3">Código do Artefato</td><td class="text-muted small">Gerado automaticamente se deixado em branco</td></tr>
-                        <tr><td class="px-3">Data de Descoberta</td><td class="text-muted small">Formato ano-mês-dia (ex: 2024-03-15)</td></tr>
-                        <tr><td class="px-3">Tipo <span class="badge bg-danger">*</span></td><td class="text-muted small">Categoria do artefato</td></tr>
-                        <tr><td class="px-3">Local de Origem</td><td class="text-muted small">Sítio ou região de procedência</td></tr>
-                        <tr><td class="px-3">Localização Arqueológica</td><td class="text-muted small">Setor, quadra ou área específica</td></tr>
-                        <tr><td class="px-3">Profundidade</td><td class="text-muted small">Profundidade de escavação</td></tr>
-                        <tr><td class="px-3">Nível Estratigráfico</td><td class="text-muted small">Camada ou estrato</td></tr>
-                        <tr><td class="px-3">Coordenadas</td><td class="text-muted small">Posição geográfica (GPS)</td></tr>
-                        <tr><td class="px-3">Estado de Conservação <span class="badge bg-danger">*</span></td><td class="text-muted small">Condição atual da peça</td></tr>
-                        <tr><td class="px-3">Observações</td><td class="text-muted small">Anotações adicionais</td></tr>
+                        <tr><td class="px-3"><span data-i18n="excel_field_name">Nome do Artefato</span> <span class="badge bg-danger">*</span></td><td class="text-muted small" data-i18n="excel_field_name_desc">Identificação principal da peça</td></tr>
+                        <tr><td class="px-3" data-i18n="excel_field_code">Código do Artefato</td><td class="text-muted small" data-i18n="excel_field_code_desc">Gerado automaticamente se deixado em branco</td></tr>
+                        <tr><td class="px-3" data-i18n="excel_field_date">Data de Descoberta</td><td class="text-muted small" data-i18n="excel_field_date_desc">Formato ano-mês-dia (ex: 2024-03-15)</td></tr>
+                        <tr><td class="px-3"><span data-i18n="excel_field_type">Tipo</span> <span class="badge bg-danger">*</span></td><td class="text-muted small" data-i18n="excel_field_type_desc">Categoria do artefato</td></tr>
+                        <tr><td class="px-3" data-i18n="excel_field_origin">Local de Origem</td><td class="text-muted small" data-i18n="excel_field_origin_desc">Sítio ou região de procedência</td></tr>
+                        <tr><td class="px-3" data-i18n="excel_field_location">Localização Arqueológica</td><td class="text-muted small" data-i18n="excel_field_location_desc">Setor, quadra ou área específica</td></tr>
+                        <tr><td class="px-3" data-i18n="excel_field_depth">Profundidade</td><td class="text-muted small" data-i18n="excel_field_depth_desc">Profundidade de escavação</td></tr>
+                        <tr><td class="px-3" data-i18n="excel_field_level">Nível Estratigráfico</td><td class="text-muted small" data-i18n="excel_field_level_desc">Camada ou estrato</td></tr>
+                        <tr><td class="px-3" data-i18n="excel_field_coordinates">Coordenadas</td><td class="text-muted small" data-i18n="excel_field_coordinates_desc">Posição geográfica (GPS)</td></tr>
+                        <tr><td class="px-3"><span data-i18n="excel_field_conservation">Estado de Conservação</span> <span class="badge bg-danger">*</span></td><td class="text-muted small" data-i18n="excel_field_conservation_desc">Condição atual da peça</td></tr>
+                        <tr><td class="px-3" data-i18n="excel_field_observations">Observações</td><td class="text-muted small" data-i18n="excel_field_observations_desc">Anotações adicionais</td></tr>
                     </tbody>
                 </table>
                 <div class="p-2 bg-light small text-muted">
-                    <span class="badge bg-danger">*</span> Campos obrigatórios
+                    <span class="badge bg-danger">*</span> <span data-i18n="excel_required_fields">Campos obrigatórios</span>
                 </div>
             </div>
         </div>
@@ -295,7 +291,7 @@
         <div class="card border-0 shadow">
             <div class="card-header bg-secondary text-white">
                 <h5 class="mb-0">
-                    <i class="fas fa-question-circle me-2"></i>Dúvidas Frequentes
+                    <i class="fas fa-question-circle me-2"></i><span data-i18n="excel_faq_title">Dúvidas Frequentes</span>
                 </h5>
             </div>
             <div class="card-body">
@@ -303,11 +299,11 @@
                     <div class="accordion-item border-0">
                         <h2 class="accordion-header">
                             <button class="accordion-button collapsed px-0" type="button" data-bs-toggle="collapse" data-bs-target="#faq1">
-                                <small>Quais formatos são aceitos?</small>
+                                <small data-i18n="excel_faq_formats_q">Quais formatos são aceitos?</small>
                             </button>
                         </h2>
                         <div id="faq1" class="accordion-collapse collapse" data-bs-parent="#faqAccordion">
-                            <div class="accordion-body px-0 small text-muted">
+                            <div class="accordion-body px-0 small text-muted" data-i18n="excel_faq_formats_a">
                                 Arquivos Excel (.xlsx) e CSV (.csv) são suportados.
                             </div>
                         </div>
@@ -315,11 +311,11 @@
                     <div class="accordion-item border-0">
                         <h2 class="accordion-header">
                             <button class="accordion-button collapsed px-0" type="button" data-bs-toggle="collapse" data-bs-target="#faq2">
-                                <small>Posso importar fotos junto?</small>
+                                <small data-i18n="excel_faq_photos_q">Posso importar fotos junto?</small>
                             </button>
                         </h2>
                         <div id="faq2" class="accordion-collapse collapse" data-bs-parent="#faqAccordion">
-                            <div class="accordion-body px-0 small text-muted">
+                            <div class="accordion-body px-0 small text-muted" data-i18n="excel_faq_photos_a">
                                 As fotos devem ser adicionadas posteriormente através da edição individual de cada artefato.
                             </div>
                         </div>
@@ -327,11 +323,11 @@
                     <div class="accordion-item border-0">
                         <h2 class="accordion-header">
                             <button class="accordion-button collapsed px-0" type="button" data-bs-toggle="collapse" data-bs-target="#faq3">
-                                <small>E se houver erro na planilha?</small>
+                                <small data-i18n="excel_faq_errors_q">E se houver erro na planilha?</small>
                             </button>
                         </h2>
                         <div id="faq3" class="accordion-collapse collapse" data-bs-parent="#faqAccordion">
-                            <div class="accordion-body px-0 small text-muted">
+                            <div class="accordion-body px-0 small text-muted" data-i18n="excel_faq_errors_a">
                                 O sistema indica exatamente quais linhas contêm erros, permitindo correção antes da importação.
                             </div>
                         </div>
