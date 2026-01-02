@@ -32,6 +32,7 @@ Preferred communication style: Simple, everyday language.
 -   **Transportation Tracking**: System for tracking the movement of artifacts.
 -   **3D Digitization Records**: Integration for 3D scanner data, including manual upload of professional scans. Features Three.js-based interactive viewer with rotation, zoom, and pan controls.
 -   **AI 3D Reconstruction (Roadmap)**: Conceptual feature for generating estimated 3D models from artifact photos. Currently presented as a roadmap item with a conceptual workflow diagram. The feature is planned for future versions pending integration with specialized 3D generation services. Educational disclaimers emphasize the distinction between AI-estimated models and professional scanning.
+-   **Excel Import (Roadmap)**: Feature for importing artifact data from Excel spreadsheets (.xlsx, .csv). Presented as a conceptual workflow with 5 steps: Upload, Validation, Preview, Confirmation, and Cataloging. Includes intentional limitations (100 artifacts per file, standardized columns) and user guarantees (data preservation, reversibility, import history). Designed to facilitate gradual transition from traditional spreadsheet-based documentation.
 
 ### System Design Choices
 -   **Database**: PostgreSQL, configured via `DATABASE_URL` environment variable, with connection pooling.
