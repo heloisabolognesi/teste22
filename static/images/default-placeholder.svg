@@ -1,5 +1,12 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="200" height="200" viewBox="0 0 200 200">
-  <rect width="200" height="200" fill="#E6D2B7"/>
-  <circle cx="100" cy="75" r="35" fill="#5F3A1F" opacity="0.5"/>
-  <ellipse cx="100" cy="155" rx="50" ry="35" fill="#5F3A1F" opacity="0.5"/>
+<svg xmlns="http://www.w3.org/2000/svg" width="300" height="300" viewBox="0 0 300 300">
+  <rect width="300" height="300" fill="#E6D2B7"/>
+  <rect x="40" y="40" width="220" height="220" fill="#F5EDE0" rx="10"/>
+  <g fill="#5F3A1F" opacity="0.4">
+    <path d="M150 80 L130 120 L110 120 L125 145 L115 185 L150 160 L185 185 L175 145 L190 120 L170 120 Z" stroke="#5F3A1F" stroke-width="2" fill="none"/>
+    <circle cx="150" cy="135" r="15" fill="none" stroke="#5F3A1F" stroke-width="2"/>
+    <rect x="130" y="165" width="40" height="30" rx="3" fill="none" stroke="#5F3A1F" stroke-width="2"/>
+    <line x1="140" y1="175" x2="160" y2="175" stroke="#5F3A1F" stroke-width="2"/>
+    <line x1="140" y1="185" x2="155" y2="185" stroke="#5F3A1F" stroke-width="2"/>
+  </g>
+  <text x="150" y="235" text-anchor="middle" font-family="Arial, sans-serif" font-size="16" fill="#5F3A1F" opacity="0.7">Sem imagem</text>
 </svg>

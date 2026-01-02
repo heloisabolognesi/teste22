@@ -140,10 +140,25 @@ def upload_file(file, folder='uploads'):
         return upload_file_local(file, folder)
 
 
-def upload_artifact_photo(file):
-    """Upload an artifact photo."""
+def upload_artifact_photo(file, require_cloudinary=True):
+    """
+    Upload an artifact photo to Cloudinary.
+    
+    Args:
+        file: FileStorage object from Flask request
+        require_cloudinary: If True, fails when Cloudinary is not configured
+        
+    Returns:
+        str: The Cloudinary URL of the uploaded file, or None on failure
+    """
+    if not file or not file.filename:
+        return None
+        
     if CLOUDINARY_CONFIGURED:
         return upload_to_cloudinary(file, 'laari/artefatos')
+    elif require_cloudinary:
+        logger.error("Cloudinary is required for artifact photos but not configured")
+        return None
     return upload_file_local(file, ARTEFATOS_FOLDER)
 
 
@@ -365,17 +380,23 @@ def is_cloudinary_url(path):
     return path.startswith('http') and 'cloudinary.com' in path
 
 
-def get_image_url(path, default='/static/images/default-placeholder.png'):
+DEFAULT_PLACEHOLDER = '/static/images/default-placeholder.svg'
+
+
+def get_image_url(path, default=None):
     """
     Get the display URL for an image, handling both Cloudinary URLs and local paths.
     
     Args:
         path: The stored path/URL
-        default: Default image to return if path is invalid
+        default: Default image to return if path is invalid (uses SVG placeholder if None)
         
     Returns:
         str: The URL to display the image
     """
+    if default is None:
+        default = DEFAULT_PLACEHOLDER
+        
     if not path:
         return default
     
@@ -383,9 +404,37 @@ def get_image_url(path, default='/static/images/default-placeholder.png'):
         return path
     
     if path.startswith('uploads/'):
-        return f'/{path}'
+        if os.path.exists(path):
+            return f'/{path}'
+        return default
     
     if os.path.exists(path):
         return f'/{path}'
     
     return default
+
+
+def validate_image_url(url):
+    """
+    Validate if an image URL is accessible.
+    
+    Args:
+        url: The URL to validate
+        
+    Returns:
+        bool: True if valid and accessible
+    """
+    if not url:
+        return False
+    
+    if is_cloudinary_url(url):
+        return True
+    
+    if url.startswith('/'):
+        local_path = url.lstrip('/')
+        return os.path.exists(local_path)
+    
+    if os.path.exists(url):
+        return True
+    
+    return False
