@@ -11,9 +11,14 @@
             </h1>
             <p class="lead text-muted">{{ _('Gerencie e visualize todos os artefatos catalogados') }}</p>
         </div>
-        <a href="{{ url_for('catalogar_novo') }}" class="btn btn-archaeological btn-lg">
-            <i class="fas fa-plus me-2"></i>{{ _('Catalogar Novo') }}
-        </a>
+        <div class="d-flex gap-2">
+            <a href="{{ url_for('importacao_excel') }}" class="btn btn-outline-archaeological btn-lg">
+                <i class="fas fa-file-excel me-2"></i>Importação via EXCEL
+            </a>
+            <a href="{{ url_for('catalogar_novo') }}" class="btn btn-archaeological btn-lg">
+                <i class="fas fa-plus me-2"></i>{{ _('Catalogar Novo') }}
+            </a>
+        </div>
     </div>
 </div>
 

@@ -1,0 +1,268 @@
+{% extends "base.html" %}
+
+{% block title %}Importação via EXCEL - L.A.A.R.I{% endblock %}
+
+{% block content %}
+<div class="page-header mb-4">
+    <div class="d-flex justify-content-between align-items-center">
+        <div>
+            <h1 class="display-6 fw-bold">
+                <i class="fas fa-file-excel me-3"></i>Importação via EXCEL
+            </h1>
+            <p class="lead text-muted">Integre acervos já catalogados anteriormente ao sistema L.A.A.R.I</p>
+        </div>
+        <a href="{{ url_for('catalogacao') }}" class="btn btn-outline-secondary btn-lg">
+            <i class="fas fa-arrow-left me-2"></i>Voltar à Catalogação
+        </a>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-lg-8">
+        <div class="card border-0 shadow mb-4">
+            <div class="card-header bg-archaeological text-white">
+                <h4 class="mb-0">
+                    <i class="fas fa-info-circle me-2"></i>Sobre a Importação de Planilhas
+                </h4>
+            </div>
+            <div class="card-body p-4">
+                <div class="row">
+                    <div class="col-md-7">
+                        <p class="mb-3">
+                            A funcionalidade de <strong>importação via Excel</strong> foi desenvolvida para facilitar a 
+                            integração de acervos arqueológicos já catalogados em planilhas eletrônicas ao sistema L.A.A.R.I.
+                        </p>
+                        <p class="mb-3">
+                            Reconhecemos que a maior parte da documentação arqueológica ainda é realizada em planilhas de Excel, 
+                            e nosso objetivo é oferecer uma <strong>transição gradual e segura</strong> para a plataforma digital.
+                        </p>
+                        
+                        <h6 class="fw-bold mt-4 mb-3">
+                            <i class="fas fa-shield-alt text-archaeological me-2"></i>Princípios da Importação
+                        </h6>
+                        <ul class="list-unstyled">
+                            <li class="mb-2">
+                                <i class="fas fa-graduation-cap text-archaeological me-2"></i>
+                                <strong>Uso educacional:</strong> Ferramenta pensada para apoio didático e preservação do patrimônio
+                            </li>
+                            <li class="mb-2">
+                                <i class="fas fa-microscope text-archaeological me-2"></i>
+                                <strong>Transparência científica:</strong> Rastreabilidade completa da origem dos dados importados
+                            </li>
+                            <li class="mb-2">
+                                <i class="fas fa-database text-archaeological me-2"></i>
+                                <strong>Integridade dos dados:</strong> Nenhuma informação pré-existente será perdida ou sobrescrita
+                            </li>
+                        </ul>
+                    </div>
+                    
+                    <div class="col-md-5">
+                        <div class="card bg-light border-0 h-100">
+                            <div class="card-body d-flex flex-column align-items-center justify-content-center py-4">
+                                <div class="workflow-step text-center mb-3">
+                                    <div class="rounded-circle bg-archaeological text-white d-inline-flex align-items-center justify-content-center mb-2" style="width: 50px; height: 50px;">
+                                        <i class="fas fa-upload"></i>
+                                    </div>
+                                    <div class="fw-bold">1. Upload da Planilha</div>
+                                    <div class="small text-muted">Arquivo Excel ou CSV</div>
+                                </div>
+                                <i class="fas fa-arrow-down text-archaeological fs-5 mb-3"></i>
+                                <div class="workflow-step text-center mb-3">
+                                    <div class="rounded-circle bg-archaeological text-white d-inline-flex align-items-center justify-content-center mb-2" style="width: 50px; height: 50px;">
+                                        <i class="fas fa-check-double"></i>
+                                    </div>
+                                    <div class="fw-bold">2. Validação Automática</div>
+                                    <div class="small text-muted">Verificação de campos</div>
+                                </div>
+                                <i class="fas fa-arrow-down text-archaeological fs-5 mb-3"></i>
+                                <div class="workflow-step text-center mb-3">
+                                    <div class="rounded-circle bg-archaeological text-white d-inline-flex align-items-center justify-content-center mb-2" style="width: 50px; height: 50px;">
+                                        <i class="fas fa-eye"></i>
+                                    </div>
+                                    <div class="fw-bold">3. Pré-visualização</div>
+                                    <div class="small text-muted">Revisão dos dados</div>
+                                </div>
+                                <i class="fas fa-arrow-down text-archaeological fs-5 mb-3"></i>
+                                <div class="workflow-step text-center mb-3">
+                                    <div class="rounded-circle bg-archaeological text-white d-inline-flex align-items-center justify-content-center mb-2" style="width: 50px; height: 50px;">
+                                        <i class="fas fa-user-check"></i>
+                                    </div>
+                                    <div class="fw-bold">4. Confirmação Manual</div>
+                                    <div class="small text-muted">Aprovação explícita</div>
+                                </div>
+                                <i class="fas fa-arrow-down text-archaeological fs-5 mb-3"></i>
+                                <div class="workflow-step text-center">
+                                    <div class="rounded-circle bg-archaeological text-white d-inline-flex align-items-center justify-content-center mb-2" style="width: 50px; height: 50px;">
+                                        <i class="fas fa-database"></i>
+                                    </div>
+                                    <div class="fw-bold">5. Catalogação Automática</div>
+                                    <div class="small text-muted">Registro no sistema</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="text-center mt-4">
+                    <span class="badge bg-secondary p-2">
+                        <i class="fas fa-info-circle me-1"></i>
+                        Esta funcionalidade está em fase de implementação e será disponibilizada em breve
+                    </span>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card border-0 shadow mb-4">
+            <div class="card-header bg-warning text-dark">
+                <h5 class="mb-0">
+                    <i class="fas fa-exclamation-triangle me-2"></i>Limitações Técnicas (Intencionais)
+                </h5>
+            </div>
+            <div class="card-body p-4">
+                <p class="mb-3">
+                    As seguintes limitações foram estabelecidas como <strong>decisões técnicas conscientes</strong>, 
+                    visando garantir a qualidade e integridade dos dados importados:
+                </p>
+                <div class="row g-3">
+                    <div class="col-md-4">
+                        <div class="card bg-light border-0 h-100">
+                            <div class="card-body text-center">
+                                <i class="fas fa-file-alt fa-2x text-archaeological mb-2"></i>
+                                <h6 class="fw-bold">Limite por Planilha</h6>
+                                <p class="small text-muted mb-0">Máximo de <strong>100 artefatos</strong> por arquivo importado</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="card bg-light border-0 h-100">
+                            <div class="card-body text-center">
+                                <i class="fas fa-table fa-2x text-archaeological mb-2"></i>
+                                <h6 class="fw-bold">Modelo Padrão</h6>
+                                <p class="small text-muted mb-0">A planilha deve seguir o <strong>modelo definido pelo sistema</strong></p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="card bg-light border-0 h-100">
+                            <div class="card-body text-center">
+                                <i class="fas fa-columns fa-2x text-archaeological mb-2"></i>
+                                <h6 class="fw-bold">Colunas Reconhecidas</h6>
+                                <p class="small text-muted mb-0">Apenas <strong>colunas padronizadas</strong> serão processadas</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-lg-4">
+        <div class="card border-0 shadow mb-4">
+            <div class="card-header bg-success text-white">
+                <h5 class="mb-0">
+                    <i class="fas fa-shield-alt me-2"></i>Garantias ao Usuário
+                </h5>
+            </div>
+            <div class="card-body">
+                <ul class="list-unstyled mb-0">
+                    <li class="mb-3 d-flex align-items-start">
+                        <i class="fas fa-check-circle text-success me-3 mt-1"></i>
+                        <div>
+                            <strong>Dados Preservados</strong>
+                            <p class="small text-muted mb-0">A importação não apaga dados existentes no sistema</p>
+                        </div>
+                    </li>
+                    <li class="mb-3 d-flex align-items-start">
+                        <i class="fas fa-check-circle text-success me-3 mt-1"></i>
+                        <div>
+                            <strong>Processo Reversível</strong>
+                            <p class="small text-muted mb-0">Todo processo de importação pode ser revertido</p>
+                        </div>
+                    </li>
+                    <li class="mb-3 d-flex align-items-start">
+                        <i class="fas fa-check-circle text-success me-3 mt-1"></i>
+                        <div>
+                            <strong>Histórico Completo</strong>
+                            <p class="small text-muted mb-0">O sistema mantém registro de todas as importações realizadas</p>
+                        </div>
+                    </li>
+                    <li class="d-flex align-items-start">
+                        <i class="fas fa-check-circle text-success me-3 mt-1"></i>
+                        <div>
+                            <strong>Transição Gradual</strong>
+                            <p class="small text-muted mb-0">Migre seus dados no seu ritmo, sem pressão</p>
+                        </div>
+                    </li>
+                </ul>
+            </div>
+        </div>
+        
+        <div class="card border-0 shadow mb-4">
+            <div class="card-header bg-info text-white">
+                <h5 class="mb-0">
+                    <i class="fas fa-download me-2"></i>Modelo de Planilha
+                </h5>
+            </div>
+            <div class="card-body text-center">
+                <p class="text-muted mb-3">
+                    Baixe o modelo padrão de planilha para preparar seus dados para importação.
+                </p>
+                <button class="btn btn-outline-archaeological btn-lg" disabled>
+                    <i class="fas fa-file-excel me-2"></i>Baixar Modelo (.xlsx)
+                </button>
+                <small class="d-block text-muted mt-2">
+                    <em>Disponível em breve</em>
+                </small>
+            </div>
+        </div>
+        
+        <div class="card border-0 shadow">
+            <div class="card-header bg-secondary text-white">
+                <h5 class="mb-0">
+                    <i class="fas fa-question-circle me-2"></i>Dúvidas Frequentes
+                </h5>
+            </div>
+            <div class="card-body">
+                <div class="accordion accordion-flush" id="faqAccordion">
+                    <div class="accordion-item border-0">
+                        <h2 class="accordion-header">
+                            <button class="accordion-button collapsed px-0" type="button" data-bs-toggle="collapse" data-bs-target="#faq1">
+                                <small>Quais formatos são aceitos?</small>
+                            </button>
+                        </h2>
+                        <div id="faq1" class="accordion-collapse collapse" data-bs-parent="#faqAccordion">
+                            <div class="accordion-body px-0 small text-muted">
+                                Arquivos Excel (.xlsx, .xls) e CSV (.csv) são suportados.
+                            </div>
+                        </div>
+                    </div>
+                    <div class="accordion-item border-0">
+                        <h2 class="accordion-header">
+                            <button class="accordion-button collapsed px-0" type="button" data-bs-toggle="collapse" data-bs-target="#faq2">
+                                <small>Posso importar fotos junto?</small>
+                            </button>
+                        </h2>
+                        <div id="faq2" class="accordion-collapse collapse" data-bs-parent="#faqAccordion">
+                            <div class="accordion-body px-0 small text-muted">
+                                As fotos devem ser adicionadas posteriormente através da edição individual de cada artefato.
+                            </div>
+                        </div>
+                    </div>
+                    <div class="accordion-item border-0">
+                        <h2 class="accordion-header">
+                            <button class="accordion-button collapsed px-0" type="button" data-bs-toggle="collapse" data-bs-target="#faq3">
+                                <small>E se houver erro na planilha?</small>
+                            </button>
+                        </h2>
+                        <div id="faq3" class="accordion-collapse collapse" data-bs-parent="#faqAccordion">
+                            <div class="accordion-body px-0 small text-muted">
+                                O sistema indica exatamente quais linhas contêm erros, permitindo correção antes da importação.
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

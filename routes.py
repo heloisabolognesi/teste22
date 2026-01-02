@@ -272,6 +272,14 @@ def catalogacao():
     artifacts = Artifact.query.order_by(Artifact.created_at.desc()).all()
     return render_template('catalogacao.html', artifacts=artifacts)
 
+@app.route('/importacao-excel')
+@login_required
+def importacao_excel():
+    if not current_user.can_catalog_artifacts():
+        flash('Você não tem permissão para acessar a importação de dados.', 'warning')
+        return redirect(url_for('dashboard'))
+    return render_template('importacao_excel.html')
+
 @app.route('/catalogar_novo', methods=['GET', 'POST'])
 @login_required
 def catalogar_novo():

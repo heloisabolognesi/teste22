@@ -1,0 +1,89 @@
+Contexto:
+Estamos desenvolvendo o sistema LAARI (Laboratório & Acervo Arqueológico Remoto Integrado). Atualmente, a maior parte da documentação arqueológica ainda é feita em planilhas de Excel, e o sistema precisa dialogar com essa realidade.
+
+🔹 Alteração solicitada
+
+Na página de Catalogação, criar um novo botão com o texto:
+
+📄 Importação via EXCEL
+
+Esse botão deve:
+
+ficar visualmente integrado ao layout atual
+
+não substituir a catalogação manual
+
+funcionar como uma opção complementar
+
+Ao clicar, o usuário deve ser direcionado para uma nova página dedicada à importação de planilhas.
+
+🔹 Nova página: “Importação via EXCEL”
+
+Essa página deve apresentar conteúdo explicativo + fluxo conceitual, deixando claro que se trata de uma funcionalidade pensada para integração segura de dados antigos.
+
+1️⃣ Texto explicativo (institucional e sério)
+
+Inserir um texto explicando que:
+
+A funcionalidade permite importar planilhas de Excel (.xlsx ou .csv)
+
+O objetivo é integrar acervos já catalogados anteriormente
+
+Nenhuma informação pré-existente será perdida ou sobrescrita
+
+Destacar que a funcionalidade foi pensada com foco em:
+
+uso educacional
+
+transparência científica
+
+preservação da integridade dos dados
+
+2️⃣ Limitações (intencionais)
+
+Deixar explícito no texto:
+
+A importação possui limite de até 100 artefatos por planilha
+
+A planilha deve seguir um modelo padrão definido pelo sistema
+
+Apenas colunas reconhecidas serão importadas
+
+Isso deve ser apresentado como decisão técnica consciente, não como falha.
+
+3️⃣ Fluxo conceitual (passo a passo)
+
+Exibir visualmente ou em texto estruturado o seguinte fluxo:
+
+Upload da planilha
+Arquivo Excel ou CSV com modelo padronizado
+
+Validação automática
+O sistema verifica campos obrigatórios, formatos e inconsistências
+
+Pré-visualização dos dados
+O usuário visualiza exatamente como os artefatos serão catalogados
+
+Confirmação manual
+Nenhum dado é salvo sem confirmação explícita do usuário
+
+Catalogação automática
+Cada linha da planilha gera um artefato no sistema
+
+4️⃣ Garantias ao usuário
+
+Incluir uma seção destacando que:
+
+A importação não apaga dados existentes
+
+Todo processo é reversível
+
+O sistema mantém histórico de importações
+
+O objetivo é oferecer uma transição gradual e segura para arqueólogos
+
+🔹 Observações importantes
+
+Esta funcionalidade pode ser apresentada como já implementada conceitualmente, mesmo que evoluções técnicas ocorram em versões futuras
+
+O foco é demonstrar planejamento, responsabilidade técnica e respeito ao trabalho prévio dos arqueólogos
