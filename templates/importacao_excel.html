@@ -34,10 +34,10 @@
                 </div>
                 
                 <div class="alert alert-warning mb-4">
-                    <i class="fas fa-camera me-2"></i>
-                    <strong>Importante:</strong> A importação via Excel contempla apenas <strong>dados textuais</strong>. 
-                    A planilha não deve conter imagens. As fotos dos artefatos devem ser adicionadas posteriormente 
-                    através da edição individual de cada registro no sistema.
+                    <i class="fas fa-image me-2"></i>
+                    <strong>Sobre imagens:</strong> As imagens dos artefatos não são importadas pela planilha. 
+                    Para melhor uso e organização, as imagens devem ser adicionadas manualmente na edição de cada 
+                    artefato após a importação.
                 </div>
                 
                 <form action="{{ url_for('processar_importacao_excel') }}" method="POST" enctype="multipart/form-data" id="importForm">
