@@ -290,6 +290,9 @@ def download_modelo_excel():
 @app.route('/processar-importacao-excel', methods=['POST'])
 @login_required
 def processar_importacao_excel():
+    import json
+    import tempfile
+    
     if not current_user.can_catalog_artifacts():
         flash('Você não tem permissão para importar dados.', 'warning')
         return redirect(url_for('dashboard'))
@@ -303,8 +306,8 @@ def processar_importacao_excel():
         flash('Nenhum arquivo selecionado.', 'error')
         return redirect(url_for('importacao_excel'))
     
-    if not file.filename.endswith(('.xlsx', '.xls', '.csv')):
-        flash('Formato de arquivo não suportado. Use .xlsx, .xls ou .csv', 'error')
+    if not file.filename.endswith(('.xlsx', '.csv')):
+        flash('Formato de arquivo não suportado. Use .xlsx ou .csv', 'error')
         return redirect(url_for('importacao_excel'))
     
     try:
@@ -313,7 +316,7 @@ def processar_importacao_excel():
         if file.filename.endswith('.csv'):
             df = pd.read_csv(file)
         else:
-            df = pd.read_excel(file)
+            df = pd.read_excel(file, engine='openpyxl')
         
         required_columns = ['codigo', 'nome', 'tipo_artefato', 'material', 'periodo', 
                            'cultura', 'localizacao', 'descricao', 'estado_conservacao', 
@@ -346,32 +349,37 @@ def processar_importacao_excel():
             
             artifact = {
                 'row': row_num,
-                'codigo': str(row.get('codigo', '')).strip() if not pd.isna(row.get('codigo')) else '',
-                'nome': str(row.get('nome', '')).strip() if not pd.isna(row.get('nome')) else '',
-                'tipo_artefato': str(row.get('tipo_artefato', '')).strip() if not pd.isna(row.get('tipo_artefato')) else '',
-                'material': str(row.get('material', '')).strip() if not pd.isna(row.get('material')) else '',
-                'periodo': str(row.get('periodo', '')).strip() if not pd.isna(row.get('periodo')) else '',
-                'cultura': str(row.get('cultura', '')).strip() if not pd.isna(row.get('cultura')) else '',
-                'localizacao': str(row.get('localizacao', '')).strip() if not pd.isna(row.get('localizacao')) else '',
-                'descricao': str(row.get('descricao', '')).strip() if not pd.isna(row.get('descricao')) else '',
-                'estado_conservacao': str(row.get('estado_conservacao', '')).strip() if not pd.isna(row.get('estado_conservacao')) else '',
-                'dimensoes': str(row.get('dimensoes', '')).strip() if not pd.isna(row.get('dimensoes')) else '',
-                'data_catalogacao': str(row.get('data_catalogacao', '')).strip() if not pd.isna(row.get('data_catalogacao')) else '',
-                'responsavel': str(row.get('responsavel', '')).strip() if not pd.isna(row.get('responsavel')) else '',
+                'codigo': str(row.get('codigo', '')).strip()[:100] if not pd.isna(row.get('codigo')) else '',
+                'nome': str(row.get('nome', '')).strip()[:200] if not pd.isna(row.get('nome')) else '',
+                'tipo_artefato': str(row.get('tipo_artefato', '')).strip()[:100] if not pd.isna(row.get('tipo_artefato')) else '',
+                'material': str(row.get('material', '')).strip()[:100] if not pd.isna(row.get('material')) else '',
+                'periodo': str(row.get('periodo', '')).strip()[:100] if not pd.isna(row.get('periodo')) else '',
+                'cultura': str(row.get('cultura', '')).strip()[:100] if not pd.isna(row.get('cultura')) else '',
+                'localizacao': str(row.get('localizacao', '')).strip()[:200] if not pd.isna(row.get('localizacao')) else '',
+                'descricao': str(row.get('descricao', '')).strip()[:500] if not pd.isna(row.get('descricao')) else '',
+                'estado_conservacao': str(row.get('estado_conservacao', '')).strip()[:50] if not pd.isna(row.get('estado_conservacao')) else '',
+                'dimensoes': str(row.get('dimensoes', '')).strip()[:100] if not pd.isna(row.get('dimensoes')) else '',
+                'data_catalogacao': str(row.get('data_catalogacao', '')).strip()[:50] if not pd.isna(row.get('data_catalogacao')) else '',
+                'responsavel': str(row.get('responsavel', '')).strip()[:100] if not pd.isna(row.get('responsavel')) else '',
                 'errors': row_errors
             }
             artifacts_data.append(artifact)
             if row_errors:
                 errors.append({'row': row_num, 'errors': row_errors})
         
-        session['import_data'] = artifacts_data
-        session['import_errors'] = errors
+        import_token = uuid.uuid4().hex
+        import_file_path = os.path.join(tempfile.gettempdir(), f'laari_import_{current_user.id}_{import_token}.json')
+        with open(import_file_path, 'w', encoding='utf-8') as f:
+            json.dump({'artifacts': artifacts_data, 'errors': errors}, f, ensure_ascii=False)
+        
+        session['import_token'] = import_token
         
         return render_template('importacao_excel_preview.html', 
                              artifacts=artifacts_data, 
                              errors=errors,
                              total=len(artifacts_data),
-                             valid=len(artifacts_data) - len(errors))
+                             valid=len(artifacts_data) - len(errors),
+                             import_token=import_token)
     
     except Exception as e:
         current_app.logger.error(f"Erro ao processar planilha: {str(e)}")
@@ -381,16 +389,33 @@ def processar_importacao_excel():
 @app.route('/confirmar-importacao-excel', methods=['POST'])
 @login_required
 def confirmar_importacao_excel():
+    import json
+    import tempfile
+    
     if not current_user.can_catalog_artifacts():
         flash('Você não tem permissão para importar dados.', 'warning')
         return redirect(url_for('dashboard'))
     
-    import_data = session.get('import_data', [])
-    if not import_data:
-        flash('Nenhum dado para importar. Por favor, envie a planilha novamente.', 'error')
+    import_token = session.get('import_token')
+    if not import_token:
+        flash('Sessão expirada. Por favor, envie a planilha novamente.', 'error')
+        return redirect(url_for('importacao_excel'))
+    
+    import_file_path = os.path.join(tempfile.gettempdir(), f'laari_import_{current_user.id}_{import_token}.json')
+    if not os.path.exists(import_file_path):
+        flash('Dados da importação não encontrados. Por favor, envie a planilha novamente.', 'error')
+        session.pop('import_token', None)
         return redirect(url_for('importacao_excel'))
     
     try:
+        with open(import_file_path, 'r', encoding='utf-8') as f:
+            data = json.load(f)
+        
+        import_data = data.get('artifacts', [])
+        if not import_data:
+            flash('Nenhum dado para importar.', 'error')
+            return redirect(url_for('importacao_excel'))
+        
         imported_count = 0
         batch_id = f"IMPORT-{uuid.uuid4().hex[:8].upper()}"
         
@@ -407,7 +432,8 @@ def confirmar_importacao_excel():
                 'ruim': 'ruim',
                 'danificado': 'ruim'
             }
-            conservation = conservation_map.get(item['estado_conservacao'].lower(), 'regular')
+            estado = item.get('estado_conservacao', '')
+            conservation = conservation_map.get(estado.lower() if estado else '', 'regular')
             
             artifact = Artifact(
                 name=item['nome'],
@@ -425,8 +451,8 @@ def confirmar_importacao_excel():
         
         db.session.commit()
         
-        session.pop('import_data', None)
-        session.pop('import_errors', None)
+        os.remove(import_file_path)
+        session.pop('import_token', None)
         
         flash(f'Importação concluída com sucesso! {imported_count} artefatos foram catalogados. (Lote: {batch_id})', 'success')
         return redirect(url_for('catalogacao'))
@@ -440,8 +466,15 @@ def confirmar_importacao_excel():
 @app.route('/cancelar-importacao-excel', methods=['POST'])
 @login_required
 def cancelar_importacao_excel():
-    session.pop('import_data', None)
-    session.pop('import_errors', None)
+    import tempfile
+    
+    import_token = session.get('import_token')
+    if import_token:
+        import_file_path = os.path.join(tempfile.gettempdir(), f'laari_import_{current_user.id}_{import_token}.json')
+        if os.path.exists(import_file_path):
+            os.remove(import_file_path)
+    
+    session.pop('import_token', None)
     flash('Importação cancelada.', 'info')
     return redirect(url_for('importacao_excel'))
 
