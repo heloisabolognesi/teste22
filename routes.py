@@ -280,6 +280,171 @@ def importacao_excel():
         return redirect(url_for('dashboard'))
     return render_template('importacao_excel.html')
 
+@app.route('/download-modelo-excel')
+@login_required
+def download_modelo_excel():
+    return send_file('static/templates/modelo_importacao_laari.xlsx', 
+                     as_attachment=True, 
+                     download_name='modelo_importacao_laari.xlsx')
+
+@app.route('/processar-importacao-excel', methods=['POST'])
+@login_required
+def processar_importacao_excel():
+    if not current_user.can_catalog_artifacts():
+        flash('Você não tem permissão para importar dados.', 'warning')
+        return redirect(url_for('dashboard'))
+    
+    if 'excel_file' not in request.files:
+        flash('Nenhum arquivo selecionado.', 'error')
+        return redirect(url_for('importacao_excel'))
+    
+    file = request.files['excel_file']
+    if file.filename == '':
+        flash('Nenhum arquivo selecionado.', 'error')
+        return redirect(url_for('importacao_excel'))
+    
+    if not file.filename.endswith(('.xlsx', '.xls', '.csv')):
+        flash('Formato de arquivo não suportado. Use .xlsx, .xls ou .csv', 'error')
+        return redirect(url_for('importacao_excel'))
+    
+    try:
+        import pandas as pd
+        
+        if file.filename.endswith('.csv'):
+            df = pd.read_csv(file)
+        else:
+            df = pd.read_excel(file)
+        
+        required_columns = ['codigo', 'nome', 'tipo_artefato', 'material', 'periodo', 
+                           'cultura', 'localizacao', 'descricao', 'estado_conservacao', 
+                           'dimensoes', 'data_catalogacao', 'responsavel']
+        
+        missing_columns = [col for col in required_columns if col not in df.columns]
+        if missing_columns:
+            flash(f'Colunas obrigatórias ausentes: {", ".join(missing_columns)}', 'error')
+            return redirect(url_for('importacao_excel'))
+        
+        if len(df) > 100:
+            flash('A planilha excede o limite de 100 artefatos. Por favor, divida em arquivos menores.', 'error')
+            return redirect(url_for('importacao_excel'))
+        
+        if len(df) == 0:
+            flash('A planilha está vazia.', 'error')
+            return redirect(url_for('importacao_excel'))
+        
+        artifacts_data = []
+        errors = []
+        
+        for idx, row in df.iterrows():
+            row_num = idx + 2
+            row_errors = []
+            
+            if pd.isna(row.get('codigo')) or str(row.get('codigo')).strip() == '':
+                row_errors.append('código ausente')
+            if pd.isna(row.get('nome')) or str(row.get('nome')).strip() == '':
+                row_errors.append('nome ausente')
+            
+            artifact = {
+                'row': row_num,
+                'codigo': str(row.get('codigo', '')).strip() if not pd.isna(row.get('codigo')) else '',
+                'nome': str(row.get('nome', '')).strip() if not pd.isna(row.get('nome')) else '',
+                'tipo_artefato': str(row.get('tipo_artefato', '')).strip() if not pd.isna(row.get('tipo_artefato')) else '',
+                'material': str(row.get('material', '')).strip() if not pd.isna(row.get('material')) else '',
+                'periodo': str(row.get('periodo', '')).strip() if not pd.isna(row.get('periodo')) else '',
+                'cultura': str(row.get('cultura', '')).strip() if not pd.isna(row.get('cultura')) else '',
+                'localizacao': str(row.get('localizacao', '')).strip() if not pd.isna(row.get('localizacao')) else '',
+                'descricao': str(row.get('descricao', '')).strip() if not pd.isna(row.get('descricao')) else '',
+                'estado_conservacao': str(row.get('estado_conservacao', '')).strip() if not pd.isna(row.get('estado_conservacao')) else '',
+                'dimensoes': str(row.get('dimensoes', '')).strip() if not pd.isna(row.get('dimensoes')) else '',
+                'data_catalogacao': str(row.get('data_catalogacao', '')).strip() if not pd.isna(row.get('data_catalogacao')) else '',
+                'responsavel': str(row.get('responsavel', '')).strip() if not pd.isna(row.get('responsavel')) else '',
+                'errors': row_errors
+            }
+            artifacts_data.append(artifact)
+            if row_errors:
+                errors.append({'row': row_num, 'errors': row_errors})
+        
+        session['import_data'] = artifacts_data
+        session['import_errors'] = errors
+        
+        return render_template('importacao_excel_preview.html', 
+                             artifacts=artifacts_data, 
+                             errors=errors,
+                             total=len(artifacts_data),
+                             valid=len(artifacts_data) - len(errors))
+    
+    except Exception as e:
+        current_app.logger.error(f"Erro ao processar planilha: {str(e)}")
+        flash(f'Erro ao processar o arquivo: {str(e)}', 'error')
+        return redirect(url_for('importacao_excel'))
+
+@app.route('/confirmar-importacao-excel', methods=['POST'])
+@login_required
+def confirmar_importacao_excel():
+    if not current_user.can_catalog_artifacts():
+        flash('Você não tem permissão para importar dados.', 'warning')
+        return redirect(url_for('dashboard'))
+    
+    import_data = session.get('import_data', [])
+    if not import_data:
+        flash('Nenhum dado para importar. Por favor, envie a planilha novamente.', 'error')
+        return redirect(url_for('importacao_excel'))
+    
+    try:
+        imported_count = 0
+        batch_id = f"IMPORT-{uuid.uuid4().hex[:8].upper()}"
+        
+        for item in import_data:
+            if item.get('errors'):
+                continue
+            
+            conservation_map = {
+                'inteiro': 'excelente',
+                'íntegro': 'excelente',
+                'bom': 'bom',
+                'fragmentado': 'regular',
+                'restaurado': 'bom',
+                'ruim': 'ruim',
+                'danificado': 'ruim'
+            }
+            conservation = conservation_map.get(item['estado_conservacao'].lower(), 'regular')
+            
+            artifact = Artifact(
+                name=item['nome'],
+                code=item['codigo'],
+                artifact_type=item['tipo_artefato'],
+                origin_location=item['localizacao'],
+                conservation_state=conservation,
+                observations=f"Período: {item['periodo']}\nCultura: {item['cultura']}\nMaterial: {item['material']}\nDimensões: {item['dimensoes']}\nDescrição: {item['descricao']}\nResponsável original: {item['responsavel']}\nData catalogação original: {item['data_catalogacao']}\n\n[Importado via Excel - Lote: {batch_id}]",
+                user_id=current_user.id,
+                qr_code=f"LAARI-{uuid.uuid4().hex[:8].upper()}"
+            )
+            
+            db.session.add(artifact)
+            imported_count += 1
+        
+        db.session.commit()
+        
+        session.pop('import_data', None)
+        session.pop('import_errors', None)
+        
+        flash(f'Importação concluída com sucesso! {imported_count} artefatos foram catalogados. (Lote: {batch_id})', 'success')
+        return redirect(url_for('catalogacao'))
+    
+    except Exception as e:
+        db.session.rollback()
+        current_app.logger.error(f"Erro ao confirmar importação: {str(e)}")
+        flash(f'Erro ao importar dados: {str(e)}', 'error')
+        return redirect(url_for('importacao_excel'))
+
+@app.route('/cancelar-importacao-excel', methods=['POST'])
+@login_required
+def cancelar_importacao_excel():
+    session.pop('import_data', None)
+    session.pop('import_errors', None)
+    flash('Importação cancelada.', 'info')
+    return redirect(url_for('importacao_excel'))
+
 @app.route('/catalogar_novo', methods=['GET', 'POST'])
 @login_required
 def catalogar_novo():

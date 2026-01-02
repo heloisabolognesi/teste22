@@ -1,0 +1,141 @@
+MODELO DE PLANILHA (OBRIGATÓRIO)
+
+O sistema deve aceitar apenas planilhas que sigam exatamente o modelo padrão do LAARI.
+
+Campos obrigatórios (colunas):
+
+codigo
+
+nome
+
+tipo_artefato
+
+material
+
+periodo
+
+cultura
+
+localizacao
+
+descricao
+
+estado_conservacao
+
+dimensoes
+
+data_catalogacao
+
+responsavel
+
+Limite máximo:
+
+100 artefatos por planilha
+
+⚙️ BACK-END – PROCESSAMENTO
+
+Ler o arquivo Excel ou CSV
+
+Validar:
+
+Estrutura das colunas
+
+Campos obrigatórios preenchidos
+
+Converter cada linha em um artefato
+
+Antes de salvar:
+
+Exibir pré-visualização em tabela
+
+Destacar erros ou campos ausentes
+
+✅ CONFIRMAÇÃO MANUAL
+
+Nenhum dado deve ser salvo automaticamente.
+
+A importação só ocorre após o usuário clicar em:
+“Confirmar Importação”
+
+🛡️ GARANTIAS DE SEGURANÇA
+
+Nenhum dado existente deve ser apagado
+
+Importações devem ser reversíveis
+
+Cada importação deve gerar:
+
+ID do lote
+
+Data
+
+Usuário responsável
+
+Artefatos importados devem receber:
+
+origem = "importacao_excel"
+
+📜 MENSAGEM INSTITUCIONAL
+
+Exibir na página:
+
+“A importação via Excel permite a integração segura de acervos arqueológicos previamente catalogados, respeitando os princípios de integridade dos dados, rastreabilidade científica e transição gradual para o ambiente digital.”
+
+🧠 OBSERVAÇÃO IMPORTANTE
+
+Essa funcionalidade não utiliza Inteligência Artificial, tratando-se de processamento estruturado de dados, garantindo confiabilidade científica.
+
+2️⃣ MODELO OFICIAL DE PLANILHA (LAARI)
+📄 Nome do arquivo
+
+modelo_importacao_laari.xlsx
+
+📊 ESTRUTURA DA PLANILHA
+Coluna	Descrição
+codigo	Código único do artefato
+nome	Nome identificador
+tipo_artefato	Ex: vaso, ferramenta, fragmento
+material	Ex: cerâmica, pedra, metal
+periodo	Ex: Pré-colonial, Colonial
+cultura	Cultura associada
+localizacao	Local de procedência
+descricao	Descrição técnica
+estado_conservacao	Inteiro, fragmentado, restaurado
+dimensoes	Altura x largura x profundidade
+data_catalogacao	Data original do registro
+responsavel	Arqueólogo responsável
+
+📌 Linha 1 = cabeçalhos
+📌 Cada linha seguinte = 1 artefato
+
+⚠️ REGRAS
+
+Não remover colunas
+
+Não alterar nomes
+
+Máx. 100 linhas preenchidas
+
+Campos vazios serão sinalizados na pré-visualização
+
+3️⃣ BOTÃO “BAIXAR MODELO DE PLANILHA”
+📥 FUNCIONALIDADE
+
+Na página de importação, criar um card lateral ou inferior com:
+
+Título:
+📥 Modelo de Planilha
+
+Texto:
+“Utilize o modelo oficial do LAARI para preparar seus dados para importação segura.”
+
+Botão:
+⬇️ Baixar modelo (.xlsx)
+
+⚙️ TÉCNICO
+
+Arquivo armazenado no sistema
+
+Download direto
+
+Nenhuma autenticação extra necessária
