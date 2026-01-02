@@ -422,17 +422,22 @@ def image_url_filter(path, default='/static/images/default-placeholder.svg'):
     """
     Convert storage path/URL to a displayable image URL.
     Handles both Cloudinary URLs and local file paths.
+    Returns fallback placeholder for missing/invalid images.
     """
     if not path:
         return default
     
-    # If it's already a full URL (Cloudinary), return as-is
+    # If it's already a full Cloudinary URL, return as-is
     if path.startswith('http://') or path.startswith('https://'):
+        if 'cloudinary.com' in path:
+            return path
         return path
     
-    # If it's a relative local path starting with 'uploads/', serve it
+    # If it's a relative local path starting with 'uploads/', check if file exists
     if path.startswith('uploads/'):
-        return f'/{path}'
+        if os.path.exists(path):
+            return f'/{path}'
+        return default
     
     # For any other path, try to serve through storage route
     # But don't expose absolute paths - only allow relative paths

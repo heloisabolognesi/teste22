@@ -93,15 +93,10 @@
                         data-type="{{ artifact.artifact_type }}" 
                         data-conservation="{{ artifact.conservation_state }}">
                         <td>
-                            {% if artifact.photo_path %}
-                                <img src="{{ url_for('serve_storage_file', file_path=artifact.photo_path) }}" 
-                                     alt="{{ artifact.name }}" 
-                                     class="artifact-thumbnail rounded">
-                            {% else %}
-                                <div class="no-photo-thumbnail d-flex align-items-center justify-content-center">
-                                    <i class="fas fa-image text-muted"></i>
-                                </div>
-                            {% endif %}
+                            <img src="{{ artifact.photo_path|image_url }}" 
+                                 alt="{{ artifact.name }}" 
+                                 class="artifact-thumbnail rounded"
+                                 onerror="this.src='/static/images/default-placeholder.svg'">
                         </td>
                         <td>
                             <div class="fw-bold">{{ artifact.name }}</div>

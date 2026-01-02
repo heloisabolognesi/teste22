@@ -28,15 +28,12 @@
         {% for artifact in artifacts %}
         <div class="col-lg-4 col-md-6">
             <div class="card artifact-card h-100 border-0 shadow-sm">
-                {% if artifact.photo_path %}
                 <div class="card-img-top-container">
-                    <img src="{{ url_for('serve_storage_file', file_path=artifact.photo_path) }}" class="card-img-top artifact-photo" alt="{{ artifact.name }}">
+                    <img src="{{ artifact.photo_path|image_url }}" 
+                         class="card-img-top artifact-photo" 
+                         alt="{{ artifact.name }}"
+                         onerror="this.src='/static/images/default-placeholder.svg'">
                 </div>
-                {% else %}
-                <div class="card-img-top no-image d-flex align-items-center justify-content-center">
-                    <i class="fas fa-image fa-3x text-muted"></i>
-                </div>
-                {% endif %}
                 
                 <div class="card-body p-3">
                     <h5 class="card-title fw-bold">{{ artifact.name }}</h5>

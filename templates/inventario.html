@@ -155,13 +155,10 @@
                         <tr>
                             <td>
                                 <div class="d-flex align-items-center">
-                                    {% if artifact.photo_path %}
-                                        <img src="{{ url_for('serve_storage_file', file_path=artifact.photo_path) }}" alt="{{ artifact.name }}" class="artifact-thumbnail-sm me-3">
-                                    {% else %}
-                                        <div class="no-photo-thumbnail-sm me-3">
-                                            <i class="fas fa-image text-muted"></i>
-                                        </div>
-                                    {% endif %}
+                                    <img src="{{ artifact.photo_path|image_url }}" 
+                                         alt="{{ artifact.name }}" 
+                                         class="artifact-thumbnail-sm me-3"
+                                         onerror="this.src='/static/images/default-placeholder.svg'">
                                     <div>
                                         <div class="fw-bold">{{ artifact.name }}</div>
                                         <small class="text-muted">{{ artifact.qr_code }}</small>

@@ -524,14 +524,31 @@ def catalogar_novo():
             qr_code=f"LAARI-{uuid.uuid4().hex[:8].upper()}"
         )
         
-        # Handle photo upload
+        # Handle photo upload (Cloudinary required)
         if form.photo.data:
-            from storage import upload_artifact_photo
-            photo_url = upload_artifact_photo(form.photo.data)
-            if photo_url:
-                artifact.photo_path = photo_url
+            from storage import upload_artifact_photo, is_cloudinary_available
+            if not is_cloudinary_available():
+                lang = session.get('language', 'pt')
+                messages = {
+                    'pt': 'Serviço de armazenamento de imagens não disponível. Cadastre o artefato sem foto ou tente novamente mais tarde.',
+                    'en': 'Image storage service is not available. Register artifact without photo or try again later.',
+                    'es': 'Servicio de almacenamiento de imágenes no disponible. Registre el artefacto sin foto o intente nuevamente más tarde.',
+                    'fr': 'Service de stockage d\'images non disponible. Enregistrez l\'artefact sans photo ou réessayez plus tard.'
+                }
+                flash(messages.get(lang, messages['pt']), 'warning')
             else:
-                flash('Erro ao fazer upload da foto. Tente novamente.', 'warning')
+                photo_url = upload_artifact_photo(form.photo.data)
+                if photo_url:
+                    artifact.photo_path = photo_url
+                else:
+                    lang = session.get('language', 'pt')
+                    messages = {
+                        'pt': 'Erro ao fazer upload da foto. O artefato será salvo sem imagem.',
+                        'en': 'Error uploading photo. The artifact will be saved without an image.',
+                        'es': 'Error al subir la foto. El artefacto se guardará sin imagen.',
+                        'fr': 'Erreur lors du téléchargement de la photo. L\'artefact sera enregistré sans image.'
+                    }
+                    flash(messages.get(lang, messages['pt']), 'warning')
         
         # Handle 3D model upload
         if form.model_3d.data:
@@ -600,14 +617,33 @@ def editar_artefato(id):
         artifact.coordinates = form.coordinates.data
         artifact.observations = form.observations.data
         
-        # Handle new photo upload
+        # Handle new photo upload (Cloudinary required)
         if form.photo.data:
-            from storage import upload_artifact_photo, delete_file
-            if artifact.photo_path:
-                delete_file(artifact.photo_path)
-            photo_url = upload_artifact_photo(form.photo.data)
-            if photo_url:
-                artifact.photo_path = photo_url
+            from storage import upload_artifact_photo, delete_file, is_cloudinary_available
+            if not is_cloudinary_available():
+                lang = session.get('language', 'pt')
+                messages = {
+                    'pt': 'Serviço de armazenamento de imagens não disponível. Tente novamente mais tarde.',
+                    'en': 'Image storage service is not available. Please try again later.',
+                    'es': 'Servicio de almacenamiento de imágenes no disponible. Intente nuevamente más tarde.',
+                    'fr': 'Service de stockage d\'images non disponible. Veuillez réessayer plus tard.'
+                }
+                flash(messages.get(lang, messages['pt']), 'warning')
+            else:
+                photo_url = upload_artifact_photo(form.photo.data)
+                if photo_url:
+                    if artifact.photo_path:
+                        delete_file(artifact.photo_path)
+                    artifact.photo_path = photo_url
+                else:
+                    lang = session.get('language', 'pt')
+                    messages = {
+                        'pt': 'Erro ao fazer upload da nova foto. A imagem anterior será mantida.',
+                        'en': 'Error uploading new photo. The previous image will be kept.',
+                        'es': 'Error al subir la nueva foto. La imagen anterior se mantendrá.',
+                        'fr': 'Erreur lors du téléchargement de la nouvelle photo. L\'image précédente sera conservée.'
+                    }
+                    flash(messages.get(lang, messages['pt']), 'warning')
         
         # Handle new 3D model upload
         if form.model_3d.data:

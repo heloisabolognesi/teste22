@@ -22,15 +22,14 @@
             </div>
             
             <div class="card-body p-4">
-                {% if artifact.photo_path %}
                 <div class="mb-4 text-center">
-                    <img src="{{ url_for('serve_storage_file', file_path=artifact.photo_path) }}" 
+                    <img src="{{ artifact.photo_path|image_url }}" 
                          alt="{{ artifact.name }}" 
                          class="img-fluid rounded shadow-sm" 
-                         style="max-height: 200px;">
+                         style="max-height: 200px;"
+                         onerror="this.src='/static/images/default-placeholder.svg'">
                     <p class="text-muted small mt-2" data-i18n="edit_current_photo">Foto atual do artefato</p>
                 </div>
-                {% endif %}
                 
                 <form method="POST" enctype="multipart/form-data" class="needs-validation" novalidate>
                     {{ form.hidden_tag() }}
