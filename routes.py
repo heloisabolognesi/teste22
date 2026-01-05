@@ -509,23 +509,6 @@ def catalogar_novo():
     
     form = ArtifactForm()
     
-    # Enhanced debugging for file upload issues
-    if request.method == 'POST':
-        import logging
-        logging.info(f"=== UPLOAD DEBUG START ===")
-        logging.info(f"Request method: {request.method}")
-        logging.info(f"Content-Type header: {request.content_type}")
-        logging.info(f"Request files: {list(request.files.keys())}")
-        if 'photo' in request.files:
-            photo_file = request.files['photo']
-            logging.info(f"Photo file from request.files: filename={photo_file.filename}, content_type={photo_file.content_type}")
-        else:
-            logging.info("No 'photo' key in request.files")
-        logging.info(f"Form photo.data: {form.photo.data}")
-        if form.photo.data:
-            logging.info(f"Form photo.data.filename: {form.photo.data.filename}")
-        logging.info(f"=== UPLOAD DEBUG END ===")
-    
     if form.validate_on_submit():
         artifact = Artifact(
             name=form.name.data,
