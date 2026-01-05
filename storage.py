@@ -25,11 +25,11 @@ PROFILES_FOLDER = os.path.join(UPLOAD_FOLDER, 'profiles')
 for folder in [ARTEFATOS_FOLDER, EQUIPE_FOLDER, GALLERY_FOLDER, CVS_FOLDER, QRCODES_FOLDER, PROFILES_FOLDER]:
     os.makedirs(folder, exist_ok=True)
 
-# Configure Cloudinary
+# Configure Cloudinary (strip whitespace from credentials)
 CLOUDINARY_CONFIGURED = False
-CLOUDINARY_CLOUD_NAME = os.environ.get('CLOUDINARY_CLOUD_NAME')
-CLOUDINARY_API_KEY = os.environ.get('CLOUDINARY_API_KEY')
-CLOUDINARY_API_SECRET = os.environ.get('CLOUDINARY_API_SECRET')
+CLOUDINARY_CLOUD_NAME = (os.environ.get('CLOUDINARY_CLOUD_NAME') or '').strip()
+CLOUDINARY_API_KEY = (os.environ.get('CLOUDINARY_API_KEY') or '').strip()
+CLOUDINARY_API_SECRET = (os.environ.get('CLOUDINARY_API_SECRET') or '').strip()
 
 if CLOUDINARY_CLOUD_NAME and CLOUDINARY_API_KEY and CLOUDINARY_API_SECRET:
     cloudinary.config(
@@ -60,29 +60,55 @@ def upload_to_cloudinary(file, folder='laari'):
     Returns:
         str: The secure URL of the uploaded file, or None on failure
     """
-    if not file or not file.filename:
+    if not file:
+        logger.error("Cloudinary upload failed: No file provided")
+        return None
+    
+    if not file.filename:
+        logger.error("Cloudinary upload failed: File has no filename")
         return None
     
     try:
         original_filename = secure_filename(file.filename)
         if not original_filename:
+            logger.error(f"Cloudinary upload failed: Invalid filename after sanitization: {file.filename}")
             return None
+        
+        # Reset file stream position to beginning
+        file.seek(0)
+        
+        # Read file content into memory
+        file_content = file.read()
+        if not file_content:
+            logger.error(f"Cloudinary upload failed: File is empty: {original_filename}")
+            return None
+        
+        logger.info(f"Uploading to Cloudinary: {original_filename} ({len(file_content)} bytes) to folder: {folder}")
         
         public_id = f"{folder}/{uuid.uuid4().hex}_{original_filename.rsplit('.', 1)[0]}"
         
         result = cloudinary.uploader.upload(
-            file,
+            file_content,
             public_id=public_id,
             resource_type="auto",
             overwrite=True
         )
         
         secure_url = result.get('secure_url')
-        logger.info(f"File uploaded to Cloudinary: {secure_url}")
-        return secure_url
+        if secure_url:
+            logger.info(f"File uploaded to Cloudinary successfully: {secure_url}")
+            return secure_url
+        else:
+            logger.error(f"Cloudinary upload returned no secure_url. Result: {result}")
+            return None
         
     except Exception as e:
-        logger.error(f"Error uploading to Cloudinary: {str(e)}")
+        # Log detailed error info for debugging
+        error_type = type(e).__name__
+        error_msg = str(e)
+        logger.error(f"Cloudinary upload error: {error_type}: {error_msg}")
+        import traceback
+        logger.error(f"Full traceback: {traceback.format_exc()}")
         return None
 
 
