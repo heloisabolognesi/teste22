@@ -946,15 +946,47 @@ def editar_profissional(id):
         professional.linkedin = form.linkedin.data
         professional.lattes_cv = form.lattes_cv.data
         
-        # Handle new photo upload
-        if form.profile_photo.data:
-            from storage import upload_professional_photo, delete_file
-            # Delete old photo if exists
-            if professional.profile_photo:
-                delete_file(professional.profile_photo)
-            photo_url = upload_professional_photo(form.profile_photo.data)
-            if photo_url:
-                professional.profile_photo = photo_url
+        # Handle new photo upload (check if file was actually provided)
+        has_photo = form.profile_photo.data and hasattr(form.profile_photo.data, 'filename') and form.profile_photo.data.filename
+        if has_photo:
+            from storage import upload_professional_photo, delete_file, is_cloudinary_available
+            import logging
+            
+            if not is_cloudinary_available():
+                lang = session.get('language', 'pt')
+                messages = {
+                    'pt': 'Serviço de armazenamento de imagens não disponível.',
+                    'en': 'Image storage service not available.',
+                    'es': 'Servicio de almacenamiento de imágenes no disponible.',
+                    'fr': 'Service de stockage d\'images non disponible.'
+                }
+                flash(messages.get(lang, messages['pt']), 'error')
+            else:
+                # Delete old photo if exists
+                if professional.profile_photo:
+                    delete_file(professional.profile_photo)
+                
+                photo_url = upload_professional_photo(form.profile_photo.data)
+                if photo_url:
+                    professional.profile_photo = photo_url
+                    logging.info(f"Professional photo uploaded: {photo_url}")
+                    lang = session.get('language', 'pt')
+                    messages = {
+                        'pt': 'Foto de perfil atualizada com sucesso!',
+                        'en': 'Profile photo updated successfully!',
+                        'es': '¡Foto de perfil actualizada con éxito!',
+                        'fr': 'Photo de profil mise à jour avec succès!'
+                    }
+                    flash(messages.get(lang, messages['pt']), 'success')
+                else:
+                    lang = session.get('language', 'pt')
+                    messages = {
+                        'pt': 'Erro ao fazer upload da foto. Verifique se é uma imagem válida (JPG/PNG, máx 5MB).',
+                        'en': 'Error uploading photo. Check if it is a valid image (JPG/PNG, max 5MB).',
+                        'es': 'Error al subir la foto. Verifique si es una imagen válida (JPG/PNG, máx 5MB).',
+                        'fr': 'Erreur lors du téléchargement. Vérifiez si c\'est une image valide (JPG/PNG, max 5MB).'
+                    }
+                    flash(messages.get(lang, messages['pt']), 'error')
         
         db.session.commit()
         

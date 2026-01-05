@@ -22,16 +22,29 @@
             </div>
             
             <div class="card-body p-4">
-                {% if professional.profile_photo %}
+                <!-- Foto Atual do Profissional -->
                 <div class="mb-4 text-center">
+                    {% if professional.profile_photo %}
                     <img src="{{ professional.profile_photo|image_url }}" 
                          alt="{{ professional.name }}" 
-                         class="rounded-circle shadow-sm" 
+                         class="rounded-circle shadow-sm border border-3 border-archaeological" 
                          style="width: 150px; height: 150px; object-fit: cover;"
-                         onerror="this.style.display='none';">
-                    <p class="text-muted small mt-2" data-i18n="prof_edit_current_photo">Foto atual do profissional</p>
+                         onerror="this.src='/static/images/default-placeholder.svg';">
+                    <p class="text-success small mt-2">
+                        <i class="fas fa-check-circle me-1"></i>
+                        <span data-i18n="prof_edit_current_photo">Foto atual do profissional</span>
+                    </p>
+                    {% else %}
+                    <div class="d-inline-flex align-items-center justify-content-center rounded-circle bg-light border border-3 border-secondary" 
+                         style="width: 150px; height: 150px;">
+                        <i class="fas fa-user fa-4x text-muted"></i>
+                    </div>
+                    <p class="text-muted small mt-2">
+                        <i class="fas fa-info-circle me-1"></i>
+                        <span data-i18n="prof_edit_no_photo">Nenhuma foto cadastrada</span>
+                    </p>
+                    {% endif %}
                 </div>
-                {% endif %}
                 
                 <form method="POST" enctype="multipart/form-data" class="needs-validation" novalidate>
                     {{ form.hidden_tag() }}
@@ -86,15 +99,46 @@
                         </div>
                         
                         <div class="col-12">
-                            <div class="alert alert-info">
-                                <i class="fas fa-info-circle me-2"></i>
-                                <span data-i18n="prof_edit_photo_note">Para alterar a foto, selecione uma nova imagem. A foto atual será mantida se nenhuma nova for selecionada.</span>
+                            <div class="card bg-light border-0">
+                                <div class="card-body">
+                                    <h6 class="fw-bold mb-3">
+                                        <i class="fas fa-camera me-2"></i>
+                                        {% if professional.profile_photo %}
+                                        <span data-i18n="prof_edit_change_photo">Alterar Foto de Perfil</span>
+                                        {% else %}
+                                        <span data-i18n="prof_edit_add_photo">Adicionar Foto de Perfil</span>
+                                        {% endif %}
+                                    </h6>
+                                    
+                                    <div class="alert alert-info mb-3">
+                                        <i class="fas fa-info-circle me-2"></i>
+                                        {% if professional.profile_photo %}
+                                        <span data-i18n="prof_edit_photo_note">Para alterar a foto, selecione uma nova imagem. A foto atual será mantida se nenhuma nova for selecionada.</span>
+                                        {% else %}
+                                        <span data-i18n="prof_edit_photo_add_note">Adicione uma foto para o perfil do profissional.</span>
+                                        {% endif %}
+                                    </div>
+                                    
+                                    <label for="{{ form.profile_photo.id }}" class="form-label fw-bold">
+                                        <i class="fas fa-upload me-2"></i>
+                                        {% if professional.profile_photo %}
+                                        <span data-i18n="prof_edit_new_photo">Nova Foto de Perfil</span>
+                                        {% else %}
+                                        <span data-i18n="prof_edit_select_photo">Selecionar Foto</span>
+                                        {% endif %}
+                                    </label>
+                                    {{ form.profile_photo(class="form-control", accept=".jpg,.jpeg,.png") }}
+                                    <small class="form-text text-muted">
+                                        <i class="fas fa-file-image me-1"></i>
+                                        <span data-i18n="prof_photo_formats">Formatos aceitos: JPG, JPEG, PNG (máx. 5MB)</span>
+                                    </small>
+                                    {% if form.profile_photo.errors %}
+                                        <div class="invalid-feedback d-block">
+                                            {% for error in form.profile_photo.errors %}{{ error }}{% endfor %}
+                                        </div>
+                                    {% endif %}
+                                </div>
                             </div>
-                            <label for="{{ form.profile_photo.id }}" class="form-label fw-bold">
-                                <i class="fas fa-camera me-2"></i><span data-i18n="prof_edit_new_photo">Nova Foto de Perfil</span>
-                            </label>
-                            {{ form.profile_photo(class="form-control", accept=".jpg,.jpeg,.png") }}
-                            <small class="form-text text-muted" data-i18n="prof_photo_formats">Formatos aceitos: JPG, JPEG, PNG</small>
                         </div>
                         
                         <div class="col-12">
