@@ -1292,7 +1292,9 @@ def admin():
         return redirect(url_for('dashboard'))
     
     users = User.query.all()
-    return render_template('admin.html', users=users)
+    highlight_user_id = request.args.get('highlight', type=int)
+    active_filter = request.args.get('filter', '')
+    return render_template('admin.html', users=users, highlight_user_id=highlight_user_id, active_filter=active_filter)
 
 @app.route('/admin/toggle_user/<int:user_id>')
 @login_required
@@ -1364,12 +1366,15 @@ def validate_cv(user_id, action):
         # Get current language for multilingual messages
         lang = session.get('language', 'pt')
         messages = {
-            'pt': f'Currículo de {user.username} foi aprovado! O usuário agora tem acesso à catalogação.',
-            'en': f'CV of {user.username} has been approved! The user now has access to cataloging.',
-            'es': f'Currículum de {user.username} ha sido aprobado! El usuario ya tiene acceso a la catalogación.',
-            'fr': f'CV de {user.username} a été approuvé! L\'utilisateur a maintenant accès au catalogage.'
+            'pt': f'Currículo de {user.username} foi aprovado com sucesso! O usuário foi movido para a lista de usuários aprovados abaixo.',
+            'en': f'CV of {user.username} has been approved! The user has been moved to the approved users list below.',
+            'es': f'Currículum de {user.username} ha sido aprobado! El usuario ha sido movido a la lista de usuarios aprobados.',
+            'fr': f'CV de {user.username} a été approuvé! L\'utilisateur a été déplacé vers la liste des utilisateurs approuvés.'
         }
         flash(messages.get(lang, messages['pt']), 'success')
+        
+        # Redirect with highlight parameter to show the approved user
+        return redirect(url_for('admin', highlight=user_id, filter='aprovados'))
         
     elif action == 'reject':
         reason = request.form.get('reason', request.args.get('reason', 'Currículo não atende aos requisitos.'))

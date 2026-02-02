@@ -197,7 +197,7 @@
 {% endif %}
 
 <!-- User Management -->
-<div class="user-management">
+<div class="user-management" id="user-management">
     <div class="d-flex justify-content-between align-items-center mb-4">
         <h3 class="h4 mb-0">Gerenciamento de Usuários</h3>
         <div class="admin-actions">
@@ -207,6 +207,24 @@
             <button type="button" class="btn btn-archaeological" onclick="exportUserList()">
                 <i class="fas fa-download me-2"></i>Exportar Lista
             </button>
+        </div>
+    </div>
+    
+    <!-- Filtros de Status -->
+    <div class="mb-3">
+        <div class="btn-group" role="group">
+            <a href="{{ url_for('admin') }}" class="btn btn-sm {{ 'btn-archaeological' if not active_filter else 'btn-outline-secondary' }}">
+                <i class="fas fa-users me-1"></i>Todos
+            </a>
+            <a href="{{ url_for('admin', filter='aprovados') }}" class="btn btn-sm {{ 'btn-archaeological' if active_filter == 'aprovados' else 'btn-outline-secondary' }}">
+                <i class="fas fa-check-circle me-1"></i>Aprovados
+            </a>
+            <a href="{{ url_for('admin', filter='pendentes') }}" class="btn btn-sm {{ 'btn-archaeological' if active_filter == 'pendentes' else 'btn-outline-secondary' }}">
+                <i class="fas fa-clock me-1"></i>Pendentes
+            </a>
+            <a href="{{ url_for('admin', filter='rejeitados') }}" class="btn btn-sm {{ 'btn-archaeological' if active_filter == 'rejeitados' else 'btn-outline-secondary' }}">
+                <i class="fas fa-times-circle me-1"></i>Rejeitados
+            </a>
         </div>
     </div>
     
@@ -231,7 +249,26 @@
                     </thead>
                     <tbody>
                         {% for user in users %}
-                        <tr>
+                        {% set user_status = '' %}
+                        {% if user.account_type == 'profissional' %}
+                            {% set user_status = user.cv_status %}
+                        {% elif user.account_type == 'universitaria' %}
+                            {% set user_status = user.institution_status %}
+                        {% else %}
+                            {% set user_status = 'Aprovado' %}
+                        {% endif %}
+                        
+                        {% set show_user = true %}
+                        {% if active_filter == 'aprovados' and user_status != 'Aprovado' %}
+                            {% set show_user = false %}
+                        {% elif active_filter == 'pendentes' and user_status != 'Em análise' %}
+                            {% set show_user = false %}
+                        {% elif active_filter == 'rejeitados' and user_status != 'Rejeitado' %}
+                            {% set show_user = false %}
+                        {% endif %}
+                        
+                        {% if show_user %}
+                        <tr class="{{ 'table-success highlight-row' if highlight_user_id == user.id else '' }}" id="user-{{ user.id }}">
                             <td>
                                 <div class="form-check">
                                     <input class="form-check-input user-checkbox" type="checkbox" value="{{ user.id }}">
@@ -347,6 +384,7 @@
                                 </div>
                             </td>
                         </tr>
+                        {% endif %}
                         {% endfor %}
                     </tbody>
                 </table>
@@ -690,5 +728,34 @@
     function viewSystemLogs() {
         alert('Visualização de logs será implementada em breve.');
     }
+    
+    // Auto-scroll to highlighted user after approval
+    document.addEventListener('DOMContentLoaded', function() {
+        {% if highlight_user_id %}
+        var highlightedRow = document.getElementById('user-{{ highlight_user_id }}');
+        if (highlightedRow) {
+            setTimeout(function() {
+                highlightedRow.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                highlightedRow.classList.add('highlight-pulse');
+            }, 500);
+        }
+        {% endif %}
+    });
 </script>
+
+<style>
+    .highlight-row {
+        background-color: #d4edda !important;
+        border-left: 4px solid #28a745 !important;
+    }
+    
+    .highlight-pulse {
+        animation: pulse-highlight 2s ease-in-out;
+    }
+    
+    @keyframes pulse-highlight {
+        0%, 100% { background-color: #d4edda; }
+        50% { background-color: #a8e6cf; }
+    }
+</style>
 {% endblock %}
