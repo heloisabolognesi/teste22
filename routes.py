@@ -1438,17 +1438,6 @@ def toggle_admin_status(user_id):
     
     return redirect(url_for('admin'))
 
-@app.route('/admin/estatisticas')
-@login_required
-def admin_estatisticas():
-    """Platform statistics page with GA4 metrics placeholder."""
-    if not current_user.is_admin:
-        flash('Acesso negado. Apenas administradores podem acessar esta página.', 'error')
-        return redirect(url_for('dashboard'))
-    
-    return render_template('admin_estatisticas.html')
-
-
 @app.route('/admin/monitoramento')
 @login_required
 def admin_monitoramento():
