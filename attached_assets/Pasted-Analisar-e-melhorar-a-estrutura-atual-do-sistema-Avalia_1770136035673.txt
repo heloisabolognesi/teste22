@@ -1,0 +1,114 @@
+Analisar e melhorar a estrutura atual do sistema
+
+Avaliar organização de pastas, serviços e camadas
+
+Reduzir acoplamento e duplicações
+
+Manter total compatibilidade com o código existente
+
+Criar um sistema de monitoramento de usuários
+Registrar e processar:
+
+Quantidade de usuários que entraram no sistema
+
+Tempo total que cada usuário permaneceu logado
+
+Usuários ativos no momento
+
+Histórico de sessões
+
+Adicionar a página de monitoramento na Administração
+
+Integrar a nova funcionalidade dentro do painel administrativo
+
+Criar uma rota protegida, por exemplo:
+
+/admin/monitoramento
+
+ou /admin/usuarios/monitoramento
+
+Garantir que apenas administradores tenham acesso
+
+Adicionar o item no menu lateral/topo do admin
+
+Controle de sessões
+
+Registrar:
+
+ID do usuário
+
+Data/hora de login
+
+Data/hora de logout ou expiração
+
+Duração da sessão
+
+Tratar:
+
+Logout manual
+
+Sessão expirada
+
+Fechamento inesperado do navegador
+
+Backend
+
+Criar middleware de rastreamento de sessão
+
+Criar tabela/coleção de sessões no banco
+
+Expor endpoints seguros para o painel administrativo
+
+Garantir performance e segurança
+
+Frontend (Admin)
+
+Criar página de monitoramento dentro do layout administrativo existente
+
+Exibir:
+
+Cards (usuários ativos, total de logins)
+
+Tabela detalhada de sessões
+
+Atualização automática (polling ou realtime, se possível)
+
+Boas práticas
+
+Código limpo e documentado
+
+Separação clara de responsabilidades
+
+Preparar a estrutura para escalabilidade futura
+
+Regras importantes
+
+❌ Não remover funcionalidades existentes
+
+❌ Não quebrar o layout atual do admin
+
+✅ Integrar a nova página ao fluxo administrativo existente
+
+✅ Explicar brevemente cada mudança feita
+
+Entrega esperada
+
+Nova página de monitoramento visível na Administração
+
+Backend funcional para coleta e leitura de dados
+
+Controle de acesso para administradores
+
+Explicação resumida da arquitetura final
+
+Instruções de teste
+
+Se quiser, posso:
+
+Ajustar o prompt para Replit + IA específica
+
+Criar o schema da tabela de sessões
+
+Gerar o texto do menu administrativo
+
+Ou escrever um prompt ainda mais curto e direto 👌

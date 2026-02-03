@@ -147,3 +147,45 @@ class PhotoGallery(db.Model):
     
     # Relationship
     created_by = db.relationship('User', backref='photo_galleries')
+
+
+class UserSession(db.Model):
+    """Track user sessions for monitoring and analytics"""
+    id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+    session_token = db.Column(db.String(100), unique=True, nullable=False)
+    
+    # Session timing
+    login_at = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
+    logout_at = db.Column(db.DateTime)
+    last_activity = db.Column(db.DateTime, default=datetime.utcnow)
+    
+    # Session metadata
+    ip_address = db.Column(db.String(50))
+    user_agent = db.Column(db.String(500))
+    
+    # Session status
+    is_active = db.Column(db.Boolean, default=True)
+    logout_type = db.Column(db.String(50))  # manual, expired, forced
+    
+    # Relationship
+    user = db.relationship('User', backref='sessions')
+    
+    @property
+    def duration_seconds(self):
+        """Calculate session duration in seconds"""
+        end_time = self.logout_at or datetime.utcnow()
+        return int((end_time - self.login_at).total_seconds())
+    
+    @property
+    def duration_formatted(self):
+        """Format duration as human-readable string"""
+        seconds = self.duration_seconds
+        hours = seconds // 3600
+        minutes = (seconds % 3600) // 60
+        secs = seconds % 60
+        if hours > 0:
+            return f"{hours}h {minutes}m {secs}s"
+        elif minutes > 0:
+            return f"{minutes}m {secs}s"
+        return f"{secs}s"

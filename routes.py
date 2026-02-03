@@ -8,7 +8,7 @@ from werkzeug.utils import secure_filename
 from datetime import datetime
 
 from app import app, db, LANGUAGES
-from models import User, Artifact, Professional, Transport, Scanner3D, PhotoGallery
+from models import User, Artifact, Professional, Transport, Scanner3D, PhotoGallery, UserSession
 from forms import LoginForm, RegisterForm, ArtifactForm, ProfessionalForm, TransportForm, Scanner3DForm, AdminUserForm, PhotoGalleryForm
 from storage import upload_file, upload_artifact_photo, upload_professional_photo, upload_gallery_photo, download_file, file_exists, get_content_type, generate_qr_code_image
 
@@ -18,6 +18,73 @@ def allowed_file(filename, allowed_extensions):
 def save_uploaded_file(file, folder='uploads'):
     """Save uploaded file to local storage"""
     return upload_file(file, folder)
+
+
+# Session tracking middleware
+SESSION_TIMEOUT_MINUTES = 30
+SESSION_ACTIVITY_UPDATE_INTERVAL = 60  # Only update last_activity every 60 seconds
+_last_cleanup_check = None
+
+@app.before_request
+def update_session_activity():
+    """Update last_activity for active sessions - throttled to reduce DB writes"""
+    from flask_login import current_user
+    
+    if current_user.is_authenticated:
+        session_token = session.get('monitoring_session_token')
+        last_update_str = session.get('last_activity_update')
+        now = datetime.utcnow()
+        
+        # Safely parse last update timestamp
+        should_update = True
+        if last_update_str:
+            try:
+                last_update = datetime.fromisoformat(last_update_str)
+                if (now - last_update).total_seconds() < SESSION_ACTIVITY_UPDATE_INTERVAL:
+                    should_update = False
+            except (ValueError, TypeError):
+                session.pop('last_activity_update', None)
+        
+        # Only update DB if throttle interval passed
+        if session_token and should_update:
+            updated = UserSession.query.filter_by(
+                session_token=session_token, 
+                is_active=True
+            ).update({'last_activity': now})
+            if updated:
+                db.session.commit()
+            session['last_activity_update'] = now.isoformat()
+    
+    # Run cleanup periodically (every 60 seconds, not on every request)
+    cleanup_expired_sessions()
+
+
+def cleanup_expired_sessions():
+    """Expire stale sessions - runs at most once per minute using bulk update"""
+    from datetime import timedelta
+    global _last_cleanup_check
+    
+    now = datetime.utcnow()
+    if _last_cleanup_check and (now - _last_cleanup_check).total_seconds() < 60:
+        return
+    
+    _last_cleanup_check = now
+    timeout_threshold = now - timedelta(minutes=SESSION_TIMEOUT_MINUTES)
+    
+    # Bulk update using SQL expression to set logout_at to each row's last_activity
+    updated = UserSession.query.filter(
+        UserSession.is_active == True,
+        UserSession.last_activity < timeout_threshold
+    ).update({
+        'is_active': False,
+        'logout_at': UserSession.last_activity,
+        'logout_type': 'expired'
+    }, synchronize_session=False)
+    
+    if updated:
+        db.session.commit()
+
+
 
 
 @app.route('/uploads/<path:file_path>')
@@ -76,6 +143,34 @@ def login():
         if user and check_password_hash(user.password_hash, form.password.data):
             if user.is_active_user:
                 login_user(user)
+                
+                # Close any previous active sessions for this user
+                previous_sessions = UserSession.query.filter_by(
+                    user_id=user.id, 
+                    is_active=True
+                ).all()
+                for prev_session in previous_sessions:
+                    prev_session.is_active = False
+                    prev_session.logout_at = datetime.utcnow()
+                    prev_session.logout_type = 'forced'
+                
+                # Create new session record for monitoring
+                session_token = str(uuid.uuid4())
+                user_session = UserSession(
+                    user_id=user.id,
+                    session_token=session_token,
+                    login_at=datetime.utcnow(),
+                    last_activity=datetime.utcnow(),
+                    ip_address=request.remote_addr,
+                    user_agent=request.headers.get('User-Agent', '')[:500],
+                    is_active=True
+                )
+                db.session.add(user_session)
+                db.session.commit()
+                
+                # Store session token in Flask session for logout tracking
+                session['monitoring_session_token'] = session_token
+                
                 return redirect(url_for('dashboard'))
             else:
                 flash('Sua conta está desativada. Contate o administrador.', 'error')
@@ -207,6 +302,17 @@ def register():
 @app.route('/logout')
 @login_required
 def logout():
+    # Close session record for monitoring
+    session_token = session.get('monitoring_session_token')
+    if session_token:
+        user_session = UserSession.query.filter_by(session_token=session_token, is_active=True).first()
+        if user_session:
+            user_session.logout_at = datetime.utcnow()
+            user_session.is_active = False
+            user_session.logout_type = 'manual'
+            db.session.commit()
+        session.pop('monitoring_session_token', None)
+    
     logout_user()
     return redirect(url_for('index'))
 
@@ -1341,6 +1447,63 @@ def admin_estatisticas():
         return redirect(url_for('dashboard'))
     
     return render_template('admin_estatisticas.html')
+
+
+@app.route('/admin/monitoramento')
+@login_required
+def admin_monitoramento():
+    """User session monitoring page for administrators."""
+    if not current_user.is_admin:
+        flash('Acesso negado. Apenas administradores podem acessar esta página.', 'error')
+        return redirect(url_for('dashboard'))
+    
+    from datetime import timedelta
+    
+    # Run cleanup of expired sessions periodically
+    cleanup_expired_sessions()
+    
+    # Active sessions (users currently online)
+    active_sessions = UserSession.query.filter_by(is_active=True).all()
+    active_users_count = len(active_sessions)
+    
+    # Total unique logins today
+    today_start = datetime.utcnow().replace(hour=0, minute=0, second=0, microsecond=0)
+    today_logins = UserSession.query.filter(UserSession.login_at >= today_start).count()
+    
+    # Total logins this week
+    week_start = today_start - timedelta(days=today_start.weekday())
+    week_logins = UserSession.query.filter(UserSession.login_at >= week_start).count()
+    
+    # Total registered users
+    total_users = User.query.count()
+    
+    # Recent sessions (last 50)
+    recent_sessions = UserSession.query.order_by(UserSession.login_at.desc()).limit(50).all()
+    
+    # Average session duration (for completed sessions)
+    completed_sessions = UserSession.query.filter(
+        UserSession.logout_at.isnot(None)
+    ).all()
+    
+    if completed_sessions:
+        total_duration = sum(s.duration_seconds for s in completed_sessions)
+        avg_duration_seconds = total_duration // len(completed_sessions)
+        avg_hours = avg_duration_seconds // 3600
+        avg_minutes = (avg_duration_seconds % 3600) // 60
+        avg_duration_formatted = f"{avg_hours}h {avg_minutes}m" if avg_hours > 0 else f"{avg_minutes}m"
+    else:
+        avg_duration_formatted = "N/A"
+    
+    return render_template('admin_monitoramento.html',
+        active_sessions=active_sessions,
+        active_users_count=active_users_count,
+        today_logins=today_logins,
+        week_logins=week_logins,
+        total_users=total_users,
+        recent_sessions=recent_sessions,
+        avg_duration_formatted=avg_duration_formatted
+    )
+
 
 # CV and Institution Validation Routes
 @app.route('/admin/validate_cv/<int:user_id>/<action>', methods=['POST'])

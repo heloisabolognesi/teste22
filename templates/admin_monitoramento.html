@@ -1,0 +1,248 @@
+{% extends "base.html" %}
+
+{% block title %}Monitoramento de Usuários - L.A.A.R.I{% endblock %}
+
+{% block content %}
+<div class="page-header mb-4">
+    <h1 class="display-6 fw-bold">
+        <i class="fas fa-user-clock me-3"></i>Monitoramento de Usuários
+    </h1>
+    <p class="lead text-muted">Acompanhamento em tempo real de sessões e atividades dos usuários</p>
+</div>
+
+<div class="row g-4 mb-5">
+    <div class="col-lg-3 col-md-6">
+        <div class="card border-0 shadow-sm h-100 border-start border-success border-4">
+            <div class="card-body text-center p-4">
+                <div class="stat-icon bg-success text-white rounded-circle mx-auto mb-3" style="width: 60px; height: 60px; display: flex; align-items: center; justify-content: center;">
+                    <i class="fas fa-circle fa-lg blink-online"></i>
+                </div>
+                <h2 class="display-5 fw-bold text-success" id="active-users-count">{{ active_users_count }}</h2>
+                <p class="text-muted mb-0">Usuários Online</p>
+                <small class="text-secondary">(Sessões ativas agora)</small>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-lg-3 col-md-6">
+        <div class="card border-0 shadow-sm h-100 border-start border-primary border-4">
+            <div class="card-body text-center p-4">
+                <div class="stat-icon bg-primary text-white rounded-circle mx-auto mb-3" style="width: 60px; height: 60px; display: flex; align-items: center; justify-content: center;">
+                    <i class="fas fa-sign-in-alt fa-lg"></i>
+                </div>
+                <h2 class="display-5 fw-bold text-primary">{{ today_logins }}</h2>
+                <p class="text-muted mb-0">Logins Hoje</p>
+                <small class="text-secondary">(Desde meia-noite UTC)</small>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-lg-3 col-md-6">
+        <div class="card border-0 shadow-sm h-100 border-start border-info border-4">
+            <div class="card-body text-center p-4">
+                <div class="stat-icon bg-info text-white rounded-circle mx-auto mb-3" style="width: 60px; height: 60px; display: flex; align-items: center; justify-content: center;">
+                    <i class="fas fa-calendar-week fa-lg"></i>
+                </div>
+                <h2 class="display-5 fw-bold text-info">{{ week_logins }}</h2>
+                <p class="text-muted mb-0">Logins Esta Semana</p>
+                <small class="text-secondary">(Últimos 7 dias)</small>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-lg-3 col-md-6">
+        <div class="card border-0 shadow-sm h-100 border-start border-warning border-4">
+            <div class="card-body text-center p-4">
+                <div class="stat-icon bg-warning text-white rounded-circle mx-auto mb-3" style="width: 60px; height: 60px; display: flex; align-items: center; justify-content: center;">
+                    <i class="fas fa-clock fa-lg"></i>
+                </div>
+                <h2 class="display-5 fw-bold text-warning">{{ avg_duration_formatted }}</h2>
+                <p class="text-muted mb-0">Tempo Médio</p>
+                <small class="text-secondary">(Duração das sessões)</small>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row g-4 mb-4">
+    <div class="col-lg-5">
+        <div class="card border-0 shadow-sm h-100">
+            <div class="card-header bg-success text-white d-flex justify-content-between align-items-center">
+                <h5 class="mb-0">
+                    <i class="fas fa-circle blink-online me-2"></i>Usuários Online Agora
+                </h5>
+                <span class="badge bg-white text-success" id="online-badge">{{ active_users_count }}</span>
+            </div>
+            <div class="card-body p-0">
+                <div class="table-responsive" style="max-height: 400px; overflow-y: auto;">
+                    <table class="table table-hover mb-0">
+                        <thead class="sticky-top bg-light">
+                            <tr>
+                                <th>Usuário</th>
+                                <th>Desde</th>
+                                <th>Tempo</th>
+                            </tr>
+                        </thead>
+                        <tbody id="active-sessions-body">
+                            {% if active_sessions %}
+                                {% for session in active_sessions %}
+                                <tr>
+                                    <td>
+                                        <i class="fas fa-circle text-success me-2" style="font-size: 8px;"></i>
+                                        {{ session.user.username }}
+                                    </td>
+                                    <td>
+                                        <small>{{ session.login_at.strftime('%H:%M') }}</small>
+                                    </td>
+                                    <td>
+                                        <span class="badge bg-light text-dark">{{ session.duration_formatted }}</span>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            {% else %}
+                                <tr>
+                                    <td colspan="3" class="text-center text-muted py-4">
+                                        <i class="fas fa-user-slash fa-2x mb-2 d-block"></i>
+                                        Nenhum usuário online no momento
+                                    </td>
+                                </tr>
+                            {% endif %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-lg-7">
+        <div class="card border-0 shadow-sm h-100">
+            <div class="card-header bg-light d-flex justify-content-between align-items-center">
+                <h5 class="mb-0">
+                    <i class="fas fa-history me-2"></i>Histórico de Sessões
+                </h5>
+                <span class="badge bg-secondary">Últimas 50</span>
+            </div>
+            <div class="card-body p-0">
+                <div class="table-responsive" style="max-height: 400px; overflow-y: auto;">
+                    <table class="table table-hover table-striped mb-0">
+                        <thead class="sticky-top bg-light">
+                            <tr>
+                                <th>Usuário</th>
+                                <th>Login</th>
+                                <th>Logout</th>
+                                <th>Duração</th>
+                                <th>Status</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for session in recent_sessions %}
+                            <tr>
+                                <td>
+                                    <strong>{{ session.user.username }}</strong>
+                                </td>
+                                <td>
+                                    <small>{{ session.login_at.strftime('%d/%m %H:%M') }}</small>
+                                </td>
+                                <td>
+                                    {% if session.logout_at %}
+                                        <small>{{ session.logout_at.strftime('%d/%m %H:%M') }}</small>
+                                    {% else %}
+                                        <small class="text-success">-</small>
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    <span class="badge bg-light text-dark">{{ session.duration_formatted }}</span>
+                                </td>
+                                <td>
+                                    {% if session.is_active %}
+                                        <span class="badge bg-success">
+                                            <i class="fas fa-circle me-1" style="font-size: 6px;"></i>Online
+                                        </span>
+                                    {% elif session.logout_type == 'manual' %}
+                                        <span class="badge bg-secondary">
+                                            <i class="fas fa-sign-out-alt me-1"></i>Logout
+                                        </span>
+                                    {% elif session.logout_type == 'expired' %}
+                                        <span class="badge bg-warning text-dark">
+                                            <i class="fas fa-clock me-1"></i>Expirado
+                                        </span>
+                                    {% elif session.logout_type == 'forced' %}
+                                        <span class="badge bg-danger">
+                                            <i class="fas fa-ban me-1"></i>Forçado
+                                        </span>
+                                    {% else %}
+                                        <span class="badge bg-light text-dark">Desconhecido</span>
+                                    {% endif %}
+                                </td>
+                            </tr>
+                            {% else %}
+                            <tr>
+                                <td colspan="5" class="text-center text-muted py-4">
+                                    <i class="fas fa-inbox fa-2x mb-2 d-block"></i>
+                                    Nenhuma sessão registrada ainda
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="card border-0 shadow-sm mb-4">
+    <div class="card-body">
+        <div class="row align-items-center">
+            <div class="col-md-6">
+                <h5 class="fw-bold mb-2">
+                    <i class="fas fa-info-circle me-2"></i>Informações do Sistema
+                </h5>
+                <p class="text-muted mb-0">
+                    <strong>Timeout de sessão:</strong> 30 minutos de inatividade<br>
+                    <strong>Total de usuários cadastrados:</strong> {{ total_users }}
+                </p>
+            </div>
+            <div class="col-md-6 text-md-end">
+                <p class="text-muted small mb-0">
+                    <i class="fas fa-sync-alt me-1"></i>
+                    Atualização automática a cada 30 segundos
+                </p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="d-flex justify-content-between mt-4">
+    <a href="{{ url_for('admin') }}" class="btn btn-secondary btn-lg">
+        <i class="fas fa-arrow-left me-2"></i>Voltar ao Painel
+    </a>
+    
+    <a href="{{ url_for('admin_monitoramento') }}" class="btn btn-archaeological btn-lg">
+        <i class="fas fa-sync-alt me-2"></i>Atualizar Dados
+    </a>
+</div>
+
+<style>
+    .blink-online {
+        animation: blink 1.5s ease-in-out infinite;
+    }
+    
+    @keyframes blink {
+        0%, 100% { opacity: 1; }
+        50% { opacity: 0.4; }
+    }
+    
+    .sticky-top {
+        position: sticky;
+        top: 0;
+        z-index: 10;
+    }
+</style>
+
+<script>
+    setTimeout(function() {
+        window.location.reload();
+    }, 30000);
+</script>
+{% endblock %}
