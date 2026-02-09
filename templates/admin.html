@@ -110,11 +110,17 @@
                                 <td>{{ user.created_at.strftime('%d/%m/%Y %H:%M') }}</td>
                                 <td>
                                     {% if user.cv_file_path %}
-                                        <a href="{{ url_for('static', filename=user.cv_file_path) }}" target="_blank" class="btn btn-sm btn-outline-primary">
-                                            <i class="fas fa-eye me-1"></i><span data-translate="admin_view_cv">Ver CV</span>
+                                        {% if user.cv_file_path.startswith('http') %}
+                                        <a href="{{ user.cv_file_path }}" target="_blank" rel="noopener noreferrer" class="btn btn-sm btn-outline-primary">
+                                            <i class="fas fa-file-pdf me-1"></i><span data-translate="admin_view_cv">Ver Currículo</span>
                                         </a>
+                                        {% else %}
+                                        <a href="{{ url_for('serve_storage_file', file_path=user.cv_file_path) }}" target="_blank" rel="noopener noreferrer" class="btn btn-sm btn-outline-primary">
+                                            <i class="fas fa-file-pdf me-1"></i><span data-translate="admin_view_cv">Ver Currículo</span>
+                                        </a>
+                                        {% endif %}
                                     {% else %}
-                                        <span class="text-muted">Não disponível</span>
+                                        <span class="text-muted"><i class="fas fa-exclamation-circle me-1"></i>Currículo em PDF não enviado.</span>
                                     {% endif %}
                                 </td>
                                 <td>
