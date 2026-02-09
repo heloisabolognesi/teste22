@@ -613,7 +613,7 @@
                                 <div class="row">
                                     <div class="col-md-6">
                                         <p><strong>Status CV:</strong> ${getStatusBadge(u.cv_status)}</p>
-                                        ${u.cv_file_url ? `<p><a href="${u.cv_file_url}" target="_blank" class="btn btn-sm btn-outline-primary"><i class="fas fa-file-pdf me-1"></i>Ver Currículo</a></p>` : ''}
+                                        ${u.cv_file_url ? `<p><a href="${u.cv_file_url}" target="_blank" rel="noopener noreferrer" class="btn btn-sm btn-outline-primary"><i class="fas fa-file-pdf me-1"></i>Ver Currículo</a></p>` : (u.cv_status ? '<p><span class="badge bg-danger"><i class="fas fa-exclamation-triangle me-1"></i>Currículo indisponível</span></p>' : '')}
                                     </div>
                                     <div class="col-md-6">
                                         ${u.cv_reviewed_at ? `<p><strong>Revisado em:</strong> ${u.cv_reviewed_at}</p>` : ''}

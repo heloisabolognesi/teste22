@@ -267,7 +267,22 @@ def register():
             
             # Handle CV upload for professional accounts
             if account_type == 'profissional' and form.cv_file.data:
-                cv_path = save_uploaded_file(form.cv_file.data, 'uploads/cvs')
+                cv_file = form.cv_file.data
+                
+                # Validate MIME type
+                if cv_file.content_type not in ('application/pdf', 'application/x-pdf'):
+                    flash('Apenas arquivos PDF são permitidos para o currículo. O arquivo enviado não é um PDF válido.', 'error')
+                    return render_template('register.html', form=form)
+                
+                # Validate PDF header (%PDF-)
+                cv_file.seek(0)
+                header = cv_file.read(5)
+                cv_file.seek(0)
+                if header != b'%PDF-':
+                    flash('O arquivo enviado não é um PDF válido. Verifique se o arquivo não está corrompido ou foi renomeado.', 'error')
+                    return render_template('register.html', form=form)
+                
+                cv_path = save_uploaded_file(cv_file, 'uploads/cvs')
                 if cv_path:
                     user.cv_file_path = cv_path
                     user.cv_status = 'Em análise'

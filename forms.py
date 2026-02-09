@@ -21,7 +21,7 @@ class RegisterForm(FlaskForm):
     ], validators=[DataRequired()])
     
     # CV upload (for professional accounts)
-    cv_file = FileField('Currículo (CV)', validators=[FileAllowed(['pdf', 'doc', 'docx'], 'Apenas PDF, DOC ou DOCX são permitidos!')])
+    cv_file = FileField('Currículo (CV)', validators=[FileAllowed(['pdf'], 'Apenas arquivos PDF são permitidos!')])
     
     # Institutional fields (for university accounts)
     institution_name = StringField('Nome da Instituição', validators=[Optional(), Length(max=200)])
