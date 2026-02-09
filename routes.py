@@ -1349,8 +1349,8 @@ def api_usuario_detalhes(id):
         if user.cv_file_path:
             if user.cv_file_path.startswith('http'):
                 cv_url = user.cv_file_path
-            else:
-                cv_url = url_for('serve_storage_file', file_path=user.cv_file_path)
+            elif user.cv_file_path.startswith('uploads/') and os.path.exists(user.cv_file_path):
+                cv_url = f'/{user.cv_file_path}'
         
         university_name = user.university_custom if user.university_custom else user.university
         

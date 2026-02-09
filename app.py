@@ -454,6 +454,28 @@ def image_url_filter(path, default='/static/images/default-placeholder.svg'):
     
     return default
 
+@app.template_filter('file_url')
+def file_url_filter(path):
+    """
+    Convert storage path/URL to a direct file URL.
+    Returns None if file is not available.
+    """
+    if not path:
+        return None
+    
+    if path.startswith('http://') or path.startswith('https://'):
+        return path
+    
+    if path.startswith('uploads/'):
+        if os.path.exists(path):
+            return f'/{path}'
+        return None
+    
+    if not path.startswith('/') and os.path.exists(path):
+        return f'/{path}'
+    
+    return None
+
 @login_manager.user_loader
 def load_user(user_id):
     from models import User
