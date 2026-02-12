@@ -193,10 +193,14 @@ def register():
         else:
             account_type = form.account_type.data
             
-            # Validate professional account - CV upload required
+            # Validate professional account - Lattes URL required
             if account_type == 'profissional':
-                if not form.cv_file.data or not form.cv_file.data.filename:
-                    flash('Por favor, envie seu currículo (CV) para criar uma conta profissional.', 'error')
+                lattes_url = (form.lattes_url.data or '').strip()
+                if not lattes_url:
+                    flash('Por favor, informe o link do seu Currículo Lattes para criar uma conta profissional.', 'error')
+                    return render_template('register.html', form=form)
+                if not (lattes_url.startswith('http://lattes.cnpq.br/') or lattes_url.startswith('https://lattes.cnpq.br/')):
+                    flash('Informe um link válido do Currículo Lattes (CNPq). Ex: https://lattes.cnpq.br/0000000000000000', 'error')
                     return render_template('register.html', form=form)
             
             # Validate university account - institutional fields required
@@ -265,30 +269,10 @@ def register():
                 country=form.country.data if account_type in ['estudante', 'universitaria'] else None
             )
             
-            # Handle CV upload for professional accounts
-            if account_type == 'profissional' and form.cv_file.data:
-                cv_file = form.cv_file.data
-                
-                # Validate MIME type
-                if cv_file.content_type not in ('application/pdf', 'application/x-pdf'):
-                    flash('Apenas arquivos PDF são permitidos para o currículo. O arquivo enviado não é um PDF válido.', 'error')
-                    return render_template('register.html', form=form)
-                
-                # Validate PDF header (%PDF-)
-                cv_file.seek(0)
-                header = cv_file.read(5)
-                cv_file.seek(0)
-                if header != b'%PDF-':
-                    flash('O arquivo enviado não é um PDF válido. Verifique se o arquivo não está corrompido ou foi renomeado.', 'error')
-                    return render_template('register.html', form=form)
-                
-                cv_path = save_uploaded_file(cv_file, 'uploads/cvs')
-                if cv_path:
-                    user.cv_file_path = cv_path
-                    user.cv_status = 'Em análise'
-                else:
-                    flash('Erro ao fazer upload do currículo. Tente novamente.', 'warning')
-                    return render_template('register.html', form=form)
+            # Save Lattes URL for professional accounts
+            if account_type == 'profissional':
+                user.lattes_url = lattes_url
+                user.cv_status = 'Em análise'
             
             # Handle institutional data for university accounts
             if account_type == 'universitaria':
@@ -304,7 +288,7 @@ def register():
             
             # Custom success messages based on account type
             if account_type == 'profissional':
-                flash('Cadastro realizado! Seu currículo está em análise. Você receberá um email quando for aprovado.', 'success')
+                flash('Cadastro realizado! Seu Currículo Lattes está em análise. Você receberá um email quando for aprovado.', 'success')
             elif account_type == 'universitaria':
                 flash('Cadastro institucional realizado! Aguarde a validação do administrador para ter acesso completo.', 'success')
             else:
@@ -363,10 +347,10 @@ def catalogacao():
         # Add specific reason based on account type
         if current_user.account_type == 'profissional' and current_user.cv_status == 'Em análise':
             reasons = {
-                'pt': 'Seu currículo ainda está em análise.',
-                'en': 'Your CV is still under review.',
-                'es': 'Tu currículum todavía está en revisión.',
-                'fr': 'Votre CV est toujours en cours d\'examen.'
+                'pt': 'Seu Currículo Lattes ainda está em análise.',
+                'en': 'Your Lattes CV is still under review.',
+                'es': 'Tu Currículo Lattes todavía está en revisión.',
+                'fr': 'Votre CV Lattes est toujours en cours d\'examen.'
             }
             flash(messages.get(lang, messages['pt']) + reasons.get(lang, reasons['pt']), 'warning')
         elif current_user.account_type == 'universitaria' and current_user.institution_status == 'Em análise':
@@ -1379,6 +1363,7 @@ def api_usuario_detalhes(id):
                 'is_active_user': user.is_active_user,
                 'created_at': user.created_at.strftime('%d/%m/%Y %H:%M') if user.created_at else None,
                 'account_type': user.account_type,
+                'lattes_url': user.lattes_url,
                 'cv_file_url': cv_url,
                 'cv_status': user.cv_status,
                 'cv_rejection_reason': user.cv_rejection_reason,

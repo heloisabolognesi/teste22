@@ -98,7 +98,7 @@
                                 <th>Usuário</th>
                                 <th>Email</th>
                                 <th>Data de Cadastro</th>
-                                <th>Currículo</th>
+                                <th>Currículo Lattes</th>
                                 <th>Ações</th>
                             </tr>
                         </thead>
@@ -109,13 +109,21 @@
                                 <td>{{ user.email }}</td>
                                 <td>{{ user.created_at.strftime('%d/%m/%Y %H:%M') }}</td>
                                 <td>
-                                    {% set cv_url = user.cv_file_path|file_url %}
-                                    {% if cv_url %}
-                                        <a href="{{ cv_url }}" target="_blank" rel="noopener noreferrer" class="btn btn-sm btn-outline-primary">
-                                            <i class="fas fa-file-pdf me-1"></i><span data-translate="admin_view_cv">Ver Currículo</span>
+                                    {% if user.lattes_url %}
+                                        <a href="{{ user.lattes_url }}" target="_blank" rel="noopener noreferrer" class="btn btn-sm btn-outline-primary">
+                                            <i class="fas fa-graduation-cap me-1"></i>Abrir Currículo Lattes
                                         </a>
+                                    {% elif user.cv_file_path %}
+                                        {% set cv_url = user.cv_file_path|file_url %}
+                                        {% if cv_url %}
+                                            <a href="{{ cv_url }}" target="_blank" rel="noopener noreferrer" class="btn btn-sm btn-outline-secondary">
+                                                <i class="fas fa-file-pdf me-1"></i>Ver CV (legado)
+                                            </a>
+                                        {% else %}
+                                            <span class="text-muted"><i class="fas fa-exclamation-circle me-1"></i>CV indisponível</span>
+                                        {% endif %}
                                     {% else %}
-                                        <span class="text-muted"><i class="fas fa-exclamation-circle me-1"></i>Currículo em PDF não enviado.</span>
+                                        <span class="text-muted"><i class="fas fa-exclamation-circle me-1"></i>Currículo não informado</span>
                                     {% endif %}
                                 </td>
                                 <td>
@@ -613,7 +621,7 @@
                                 <div class="row">
                                     <div class="col-md-6">
                                         <p><strong>Status CV:</strong> ${getStatusBadge(u.cv_status)}</p>
-                                        ${u.cv_file_url ? `<p><a href="${u.cv_file_url}" target="_blank" rel="noopener noreferrer" class="btn btn-sm btn-outline-primary"><i class="fas fa-file-pdf me-1"></i>Ver Currículo</a></p>` : (u.cv_status ? '<p><span class="badge bg-danger"><i class="fas fa-exclamation-triangle me-1"></i>Currículo indisponível</span></p>' : '')}
+                                        ${u.lattes_url ? `<p><a href="${u.lattes_url}" target="_blank" rel="noopener noreferrer" class="btn btn-sm btn-outline-primary"><i class="fas fa-graduation-cap me-1"></i>Abrir Currículo Lattes</a></p>` : (u.cv_file_url ? `<p><a href="${u.cv_file_url}" target="_blank" rel="noopener noreferrer" class="btn btn-sm btn-outline-secondary"><i class="fas fa-file-pdf me-1"></i>Ver CV (legado)</a></p>` : (u.cv_status ? '<p><span class="badge bg-warning text-dark"><i class="fas fa-exclamation-triangle me-1"></i>Currículo não informado</span></p>' : ''))}
                                     </div>
                                     <div class="col-md-6">
                                         ${u.cv_reviewed_at ? `<p><strong>Revisado em:</strong> ${u.cv_reviewed_at}</p>` : ''}

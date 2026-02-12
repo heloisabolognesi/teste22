@@ -38,7 +38,7 @@
             </div>
             
             <div class="card-body p-4">
-                <form method="POST" enctype="multipart/form-data" class="needs-validation" novalidate id="registerForm">
+                <form method="POST" class="needs-validation" novalidate id="registerForm">
                     {{ form.hidden_tag() }}
                     
                     <div class="mb-3">
@@ -101,27 +101,27 @@
                     <div id="professionalFields" style="display: none;">
                         <hr class="my-4">
                         <h5 class="mb-3">
-                            <i class="fas fa-file-alt me-2"></i><span data-translate="form_cv_upload">Enviar Currículo</span>
+                            <i class="fas fa-graduation-cap me-2"></i><span data-translate="form_lattes_title">Currículo Lattes</span>
                         </h5>
                         <div class="alert alert-info">
                             <i class="fas fa-info-circle me-2"></i>
-                            <span data-translate="form_cv_upload_desc">Envie seu currículo em PDF, DOC ou DOCX (máx. 16MB)</span>
+                            <span data-translate="form_lattes_desc">Informe o link do seu Currículo Lattes (CNPq) para validação profissional</span>
                         </div>
                         
                         <div class="mb-3">
-                            <label for="{{ form.cv_file.id }}" class="form-label">
-                                <span data-translate="form_cv_file">Currículo (CV)</span> <span class="text-danger">*</span>
+                            <label for="{{ form.lattes_url.id }}" class="form-label">
+                                <span data-translate="form_lattes_label">Link do Currículo Lattes</span> <span class="text-danger">*</span>
                             </label>
-                            {{ form.cv_file(class="form-control", accept=".pdf,.doc,.docx") }}
-                            {% if form.cv_file.errors %}
+                            {{ form.lattes_url(class="form-control", placeholder="https://lattes.cnpq.br/0000000000000000") }}
+                            {% if form.lattes_url.errors %}
                                 <div class="invalid-feedback d-block">
-                                    {% for error in form.cv_file.errors %}
+                                    {% for error in form.lattes_url.errors %}
                                         {{ error }}
                                     {% endfor %}
                                 </div>
                             {% endif %}
                             <small class="form-text text-muted">
-                                <span data-translate="form_cv_status_pending">Seu currículo será analisado por um administrador antes de ter acesso à catalogação</span>
+                                <span data-translate="form_lattes_status_pending">Seu Currículo Lattes será verificado por um administrador antes de ter acesso à catalogação</span>
                             </small>
                         </div>
                     </div>

@@ -1,7 +1,7 @@
 from flask_wtf import FlaskForm
 from flask_wtf.file import FileField, FileAllowed
-from wtforms import StringField, TextAreaField, SelectField, DateField, IntegerField, BooleanField, PasswordField
-from wtforms.validators import DataRequired, Email, Length, Optional
+from wtforms import StringField, TextAreaField, SelectField, DateField, IntegerField, BooleanField, PasswordField, URLField
+from wtforms.validators import DataRequired, Email, Length, Optional, URL
 
 class LoginForm(FlaskForm):
     email = StringField('Email', validators=[DataRequired(), Email()], render_kw={"autocomplete": "email"})
@@ -20,8 +20,8 @@ class RegisterForm(FlaskForm):
         ('estudante', 'Conta Estudante')
     ], validators=[DataRequired()])
     
-    # CV upload (for professional accounts)
-    cv_file = FileField('Currículo (CV)', validators=[FileAllowed(['pdf'], 'Apenas arquivos PDF são permitidos!')])
+    # Lattes CV URL (for professional accounts)
+    lattes_url = URLField('Link do Currículo Lattes', validators=[Optional(), Length(max=255)], render_kw={"placeholder": "https://lattes.cnpq.br/0000000000000000"})
     
     # Institutional fields (for university accounts)
     institution_name = StringField('Nome da Instituição', validators=[Optional(), Length(max=200)])
