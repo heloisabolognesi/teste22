@@ -122,7 +122,7 @@ class Scanner3D(db.Model):
     
     # AI Generation fields
     is_ai_generated = db.Column(db.Boolean, default=False)
-    ai_task_id = db.Column(db.String(100))  # Meshy AI task ID
+    ai_task_id = db.Column(db.String(100))
     ai_status = db.Column(db.String(50))  # PENDING, PROCESSING, SUCCEEDED, FAILED
     ai_source_image = db.Column(db.String(500))  # Source image URL
     ai_thumbnail = db.Column(db.String(500))  # AI-generated thumbnail

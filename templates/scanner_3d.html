@@ -368,29 +368,6 @@
 
 {% block scripts %}
 <script>
-    function checkStatus(scanId) {
-        fetch(`/check_3d_status/${scanId}`)
-            .then(response => response.json())
-            .then(data => {
-                if (data.success) {
-                    if (data.status === 'SUCCEEDED') {
-                        location.reload();
-                    } else if (data.status === 'FAILED') {
-                        alert('A geração do modelo falhou. Tente novamente.');
-                        location.reload();
-                    } else {
-                        alert(`Status: ${data.status}. Progresso: ${data.progress || 0}%`);
-                    }
-                } else {
-                    alert('Erro ao verificar status: ' + (data.error || 'Erro desconhecido'));
-                }
-            })
-            .catch(error => {
-                console.error('Error:', error);
-                alert('Erro ao verificar status.');
-            });
-    }
-    
     document.addEventListener('DOMContentLoaded', function() {
         const fileInput = document.getElementById('scan_file');
         

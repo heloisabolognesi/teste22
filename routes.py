@@ -1202,63 +1202,7 @@ def scanner_3d():
     
     scans = Scanner3D.query.order_by(Scanner3D.scan_date.desc()).all()
     
-    # Check if AI is configured (Hugging Face)
-    from huggingface_3d import is_ai_configured
-    ai_configured = is_ai_configured()
-    
-    # Get artifacts list for AI generation section
-    artifacts_list = Artifact.query.all()
-    
-    return render_template('scanner_3d.html', form=form, scans=scans, ai_configured=ai_configured, artifacts_list=artifacts_list)
-
-@app.route('/scanner-3d/gerar')
-@login_required
-def gerar_3d_ia():
-    """Dedicated page for AI 3D model generation - Currently in development."""
-    flash('A funcionalidade de Reconstrução 3D por Inteligência Artificial está em desenvolvimento e faz parte do roadmap do L.A.A.R.I. Consulte a seção conceitual na página de Scanner 3D.', 'info')
-    return redirect(url_for('scanner_3d'))
-
-@app.route('/generate_3d_ai/<int:artifact_id>', methods=['POST'])
-@login_required
-def generate_3d_ai(artifact_id):
-    """Generate a 3D model from artifact photo using AI - Currently in development."""
-    flash('A funcionalidade de Reconstrução 3D por Inteligência Artificial está em desenvolvimento e faz parte do roadmap do L.A.A.R.I.', 'info')
-    return redirect(url_for('scanner_3d'))
-
-@app.route('/check_3d_status/<int:scan_id>')
-@login_required
-def check_3d_status(scan_id):
-    """Check the status of an AI 3D generation task."""
-    scan = Scanner3D.query.get_or_404(scan_id)
-    
-    if not scan.is_ai_generated or not scan.ai_task_id:
-        return jsonify({'success': False, 'error': 'Este não é um modelo gerado por IA'})
-    
-    # If already completed, return cached result
-    if scan.ai_status == 'SUCCEEDED' and scan.file_path:
-        return jsonify({
-            'success': True,
-            'status': 'SUCCEEDED',
-            'model_url': scan.file_path,
-            'thumbnail_url': scan.ai_thumbnail
-        })
-    
-    from huggingface_3d import check_task_status
-    
-    result = check_task_status(scan.ai_task_id)
-    
-    if result.get('success'):
-        status = result.get('status')
-        
-        # For Hugging Face, processing is synchronous, so return current state
-        return jsonify({
-            'success': True,
-            'status': scan.ai_status,
-            'progress': result.get('progress', 0),
-            'message': result.get('message', '')
-        })
-    
-    return jsonify(result)
+    return render_template('scanner_3d.html', form=form, scans=scans)
 
 @app.route('/view_3d_model/<int:scan_id>')
 @login_required

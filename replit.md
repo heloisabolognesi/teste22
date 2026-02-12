@@ -31,7 +31,6 @@ Preferred communication style: Simple, everyday language.
 -   **Professional Directory**: Management of archaeological specialists with contact information, including LinkedIn and Currículo Lattes profiles. Includes full edit/delete functionality (admin only).
 -   **Transportation Tracking**: System for tracking the movement of artifacts.
 -   **3D Digitization Records**: Integration for 3D scanner data, including manual upload of professional scans. Features Three.js-based interactive viewer with rotation, zoom, and pan controls.
--   **AI 3D Reconstruction (Roadmap)**: Conceptual feature for generating estimated 3D models from artifact photos. Currently presented as a roadmap item with a conceptual workflow diagram. The feature is planned for future versions pending integration with specialized 3D generation services. Educational disclaimers emphasize the distinction between AI-estimated models and professional scanning.
 -   **Excel Import**: Fully functional feature for importing artifact data from Excel spreadsheets (.xlsx, .xls) and CSV files. Implements a 5-step workflow: Upload, Validation, Preview, Confirmation, and Cataloging. Includes intentional limitations (100 artifacts per file, 12 standardized columns) and user guarantees (data preservation, reversibility, import history with batch IDs). Designed to facilitate gradual transition from traditional spreadsheet-based documentation.
 -   **User Session Monitoring**: Real-time tracking of user sessions for administrators. Features include: active users count, login history with timestamps, session duration tracking, automatic session expiration (30 min timeout), and logout type classification (manual, expired, forced). Accessible via `/admin/monitoramento` with auto-refresh every 30 seconds.
 
@@ -62,9 +61,6 @@ Preferred communication style: Simple, everyday language.
 ### Storage
 -   **Cloudinary**: For persistent image and file storage (profile photos, artifact images, 3D models).
 -   **Replit Object Storage**: Fallback for local development.
-
-### AI Services (Roadmap)
--   **Hugging Face**: Image-to-3D model generation using TripoSR model via Inference API for creating estimated 3D reconstructions of artifacts. Currently in development phase and presented as a conceptual roadmap feature pending integration with specialized 3D generation services.
 
 ### 3D Visualization
 -   **Three.js**: WebGL-based 3D model viewer for GLB/GLTF files with orbit controls.
