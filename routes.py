@@ -12,6 +12,28 @@ from models import User, Artifact, Professional, Transport, Scanner3D, PhotoGall
 from forms import LoginForm, RegisterForm, ArtifactForm, ProfessionalForm, TransportForm, Scanner3DForm, AdminUserForm, PhotoGalleryForm
 from storage import upload_file, upload_artifact_photo, upload_professional_photo, upload_gallery_photo, download_file, file_exists, get_content_type, generate_qr_code_image
 
+def is_visitor():
+    return session.get('role') == 'visitor'
+
+def visitor_not_allowed():
+    if is_visitor():
+        flash('Acesso restrito. Faça login para utilizar esta funcionalidade.', 'warning')
+        return redirect(url_for('acervo_visitante'))
+    return None
+
+VISITOR_ALLOWED_ENDPOINTS = {
+    'index', 'entrar_visitante', 'acervo_visitante', 'sair_visitante',
+    'login', 'register', 'static', 'serve_uploads', 'serve_storage_file'
+}
+
+@app.before_request
+def restrict_visitor_access():
+    if is_visitor():
+        endpoint = request.endpoint
+        if endpoint and endpoint not in VISITOR_ALLOWED_ENDPOINTS:
+            flash('Acesso restrito. Faça login para utilizar esta funcionalidade.', 'warning')
+            return redirect(url_for('acervo_visitante'))
+
 def allowed_file(filename, allowed_extensions):
     return '.' in filename and filename.rsplit('.', 1)[1].lower() in allowed_extensions
 
@@ -130,10 +152,30 @@ def serve_storage_file(file_path):
 
 @app.route('/')
 def index():
+    if is_visitor():
+        session.pop('role', None)
     return render_template('index.html')
+
+@app.route('/entrar-visitante')
+def entrar_visitante():
+    session['role'] = 'visitor'
+    return redirect(url_for('acervo_visitante'))
+
+@app.route('/acervo-publico')
+def acervo_visitante():
+    if not is_visitor():
+        return redirect(url_for('login'))
+    artifacts = Artifact.query.order_by(Artifact.name).all()
+    return render_template('acervo_visitante.html', artifacts=artifacts)
+
+@app.route('/sair-visitante')
+def sair_visitante():
+    session.pop('role', None)
+    return redirect(url_for('index'))
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
+    session.pop('role', None)
     if current_user.is_authenticated:
         return redirect(url_for('dashboard'))
     

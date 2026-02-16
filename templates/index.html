@@ -56,7 +56,7 @@
 
             <div class="welcome-actions">
                 <div class="row g-4 justify-content-center">
-                    <div class="col-md-6">
+                    <div class="col-md-4">
                         <div class="card h-100 shadow-sm border-0 action-card">
                             <div class="card-body text-center p-4">
                                 <i class="fas fa-sign-in-alt fa-3x mb-3 text-archaeological"></i>
@@ -69,7 +69,7 @@
                         </div>
                     </div>
                     
-                    <div class="col-md-6">
+                    <div class="col-md-4">
                         <div class="card h-100 shadow-sm border-0 action-card">
                             <div class="card-body text-center p-4">
                                 <i class="fas fa-user-plus fa-3x mb-3 text-archaeological"></i>
@@ -77,6 +77,19 @@
                                 <p class="card-text" data-i18n="register_description">Crie uma nova conta para acessar o sistema</p>
                                 <a href="{{ url_for('register') }}" class="btn btn-outline-archaeological btn-lg">
                                     <i class="fas fa-user-plus me-2"></i><span data-i18n="btn_criar_conta">Criar Conta</span>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-md-4">
+                        <div class="card h-100 shadow-sm border-0 action-card">
+                            <div class="card-body text-center p-4">
+                                <i class="fas fa-eye fa-3x mb-3 text-archaeological"></i>
+                                <h4 class="card-title" data-i18n="visitor_title">Acesso Público</h4>
+                                <p class="card-text" data-i18n="visitor_description">Navegue pelo acervo com acesso limitado</p>
+                                <a href="{{ url_for('entrar_visitante') }}" class="btn btn-outline-archaeological btn-lg">
+                                    <i class="fas fa-eye me-2"></i><span data-i18n="btn_entrar_visitante">Entrar como Visitante</span>
                                 </a>
                             </div>
                         </div>
