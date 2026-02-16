@@ -1349,6 +1349,43 @@ def admin():
     active_filter = request.args.get('filter', '')
     return render_template('admin.html', users=users, highlight_user_id=highlight_user_id, active_filter=active_filter)
 
+@app.route('/admin/export-users')
+@login_required
+def export_users():
+    if not current_user.is_admin:
+        flash('Acesso negado.', 'error')
+        return redirect(url_for('dashboard'))
+    
+    import csv
+    import io
+    
+    users = User.query.order_by(User.id).all()
+    
+    def generate():
+        output = io.StringIO()
+        writer = csv.writer(output, delimiter=';')
+        writer.writerow(['ID', 'Nome', 'Email', 'Tipo de Conta', 'Status', 'Data de Cadastro', 'Status do CV'])
+        yield output.getvalue()
+        output.seek(0)
+        output.truncate(0)
+        
+        for user in users:
+            status = 'Ativo' if user.is_active_user else 'Inativo'
+            account_type = user.account_type or 'N/A'
+            created = user.created_at.strftime('%d/%m/%Y %H:%M') if user.created_at else 'N/A'
+            cv_status = user.cv_status or 'N/A'
+            
+            writer.writerow([user.id, user.username, user.email, account_type, status, created, cv_status])
+            yield output.getvalue()
+            output.seek(0)
+            output.truncate(0)
+    
+    return Response(
+        generate(),
+        mimetype='text/csv',
+        headers={"Content-Disposition": "attachment;filename=usuarios.csv"}
+    )
+
 @app.route('/admin/toggle_user/<int:user_id>')
 @login_required
 def toggle_user_status(user_id):
